@@ -1,0 +1,1529 @@
+
+
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<script type="text/javascript">
+		var contextPath= "";
+	</script>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<title>YUDO Global Networks</title>
+
+	<link rel="shortcut icon" href="/static/images/favicon.ico">
+	<link rel="stylesheet" type="text/css" href="/static/css/yudo.css" />
+
+	<script type="text/javascript" src="/static/js/lib/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/jquery.tmpl.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/jquery.cookie.js"></script>
+	<script type="text/javascript" src="/static/js/lib/jquery.fileDownload.js"></script>
+	<script type="text/javascript" src="/static/js/lib/TweenMax.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/swiper.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/three.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/moment.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/lodash.min.js"></script>
+	<script type="text/javascript" src="/static/js/util.js"></script>
+	<script type="text/javascript" src="/static/js/k.swipeList.js"></script>
+	<script type="text/javascript" src="/static/js/k.main.js"></script>
+	<script type="text/javascript" src="/static/js/k.parallax.js"></script>
+
+	<script type="text/javascript" src="/static/js/common.js"></script>
+	<script type="text/javascript" src="/static/js/ajax.js"></script>
+	<script type="text/javascript" src="/static/js/interpreter.js"></script>
+	<script type="text/javascript" src="/static/js/popup.js"></script>
+<!-- 	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
+	<style type="text/css">
+	.skiptranslate {display: none;}
+	</style>
+	
+
+<script type="text/javascript">
+var _swiper = null;
+var mapCanvas = null;
+var mapContext = null;
+
+$(function(){
+	window.GlobalNetwork = (function($){
+		var init = function(){
+			_bindEvent();
+			_pageInit();
+		},
+		_bindEvent = function(){
+			new Swiper(".tab-swipe", {
+				slidesPerView: "auto",
+				spaceBetween: 48,
+				direction: "horizontal",
+				freeMode: true,
+				on: {
+					init: function (swiper) {
+						_swiper = swiper;
+						$(".tab-swipe").addClass("on");
+						setTimeout(swiper.update(), 100);
+					}
+				},
+				breakpoints: {
+					300: {
+						spaceBetween: 16
+					},
+					768: {
+						spaceBetween: 24
+					},
+					1024: {
+						spaceBetween: 48
+					},
+				}
+			});
+			$(".global-02 .button-list .k-area").on("mouseenter", function (){
+				goHoverMap($(this).index());
+			});
+			drawCanvas();
+		}
+		, _pageInit = function() {
+			Ajax.ajax(contextPath+"/"+util.getLang()+"/support/contact-info/global-network/getPageInit"
+				, {}
+				, function(data) {
+					//상단 네트워크 수 세팅
+					if(!_.isEmpty(data.globalNetworkTop)) {
+						globalTopAnimation(data.globalNetworkTop.cntyCnt, data.globalNetworkTop.ntwkCnt);
+					}
+					//국가 선택 목록 세팅
+					_makeCountry(data.countryList);
+					//하단 네트워크 목록 세팅
+					_makeNetworkList(data.networkList);
+			});
+		}
+		, _countryList = function(cntnnCd) {
+			Ajax.ajax(contextPath+"/"+util.getLang()+"/support/contact-info/global-network/getCountryListByCntnnCd"
+				, {cntnnCd : cntnnCd}
+				, function(list) {
+					_makeCountry(list);
+					_list(cntnnCd, '');
+			});
+		}
+		, _list = function(cntnnCd, cntyId) {
+			Ajax.ajax(contextPath+"/"+util.getLang()+"/support/contact-info/global-network/getListAllInfo"
+				, {cntnnCd : cntnnCd, cntyId : cntyId}
+				, function(list) {
+					_makeNetworkList(list)
+			});
+		}
+		, _makeCountry = function(list) {
+			$("#countrySelect").empty();
+			$("#cntyComboTxt").attr("placeholder", "Select a country name.")
+			_.forEach(list, function(obj, idx) {
+				$.tmpl(countryListTmpl, obj).appendTo("#countrySelect");
+			});
+		}
+		, _makeNetworkList = function(list) {
+			$("#networkList").empty();
+			_.forEach(list, function(obj, idx) {
+				var businessTypes=[];
+				_.forEach(_.map(obj.globalNetworkBusinessTypeListForWeb, 'bizTpNm'), function(v){
+					businessTypes.push(util.getInterpreter(v, '', 'global-network'));
+				});
+				obj.businessType = _.join(businessTypes, "/");
+				$.tmpl(networkTmpl, obj).appendTo("#networkList");
+			});
+		}
+		, drawCanvas = function (){
+			mapCanvas = document.getElementById('mapCanvas');
+			mapContext = mapCanvas.getContext('2d');
+			setTimeout(drawMapData, 100);
+			$(window).resize(function (){
+				drawMapData();
+			});
+			drawMapData();
+			$(".map-inner").mousemove(function (e){
+				var scrollTop = $(window).scrollTop();
+				var offsetLeft = $(mapCanvas).offset().left;
+				var offsetTop = $(mapCanvas).offset().top;
+				var mx = e.clientX - offsetLeft;
+				var my = e.clientY - offsetTop + scrollTop;
+				var tw = $(".map-inner").width();
+				var th = $(".map-inner").height();
+				var perX = mx * 100 / tw;
+				var perY = my * 100 / th;
+				var tx = perX * 1018 / 100;
+				var ty = perY * 600 / 100;
+				var imgData = mapContext.getImageData(tx, ty, 2, 2);
+				for (var i=0; i<imgData.data.length; i+=4) {
+					var r = imgData.data[i];
+					var g = imgData.data[i+1];
+					var b = imgData.data[i+2];
+					var a = imgData.data[i+3];
+					if(r == 0 && g == 0 && b == 0){
+						continue;
+					}
+					if(r == 100 && g == 100 && b == 100){
+						goHoverMap(0)
+					}
+					if(r == 100 && g == 100 && b == 0){
+						goHoverMap(1)
+					}
+					if(r == 255 && g == 0 && b == 0){
+						goHoverMap(2)
+					}
+					if(r == 200 && g == 200 && b == 100){
+						goHoverMap(3)
+					}
+					if(r == 200 && g == 200 && b == 200){
+						goHoverMap(4)
+					}
+					if(r == 200 && g == 100 && b == 100){
+						goHoverMap(5)
+					}
+				}
+			});
+
+			$(".map-inner").mouseout(function (e){
+				$(".global-02 .k-map .map-inner .map-list .map-item").removeClass("hover");
+				$(".global-02 .button-list .k-area").removeClass("hover");
+			});
+		}
+		, drawMapData = function () {
+			var m01 = document.getElementById("m01");
+			var m02 = document.getElementById("m02");
+			var m03 = document.getElementById("m03");
+			var m04 = document.getElementById("m04");
+			var m05 = document.getElementById("m05");
+			var m06 = document.getElementById("m06");
+			mapContext.drawImage(m01, 0, 0);
+			mapContext.drawImage(m02, 0, 0);
+			mapContext.drawImage(m03, 0, 0);
+			mapContext.drawImage(m04, 0, 0);
+			mapContext.drawImage(m05, 0, 0);
+			mapContext.drawImage(m06, 0, 0);
+		}
+		;
+// 		init();
+		return {
+			init: init,
+			list: _list,
+			countryList: _countryList,
+		}
+	})(jQuery);
+});
+
+function pageInit() {
+	window.GlobalNetwork.init();
+}
+
+function goMoveTab(no, cntnnCd, str){
+	$(".global-02 .k-tab .tab-inner .swiper-slide").removeClass("active");
+	$(".global-02 .k-tab .tab-inner .swiper-slide").eq(no).addClass("active");
+	$(".global-02 .k-map .map-inner .map-list .map-item").removeClass("on");
+	$(".global-02 .k-map .map-inner .map-list .map-item").eq(no).addClass("on");
+	$(".global-02 .button-list .k-area").removeClass("on");
+	$(".global-02 .button-list .k-area").eq(no).addClass("on");
+
+	$(".global-02 .k-map .map-inner .map-list .map-item").removeClass("hover");
+	$(".global-02 .button-list .k-area").removeClass("hover");
+
+
+	window.GlobalNetwork.countryList(cntnnCd);
+	
+	try{
+        if(str == "btn"){
+            $("html, body").animate({"scrollTop":$(".global-02 .k-controll").offset().top - 82}, 500);
+        }
+    }catch(e){}
+}
+
+function openDetailMap(globNtwkSeq) {
+	location.href = contextPath+"/"+util.getLang()+"/support/contact-info/global-network-map?globNtwkSeq="+globNtwkSeq;
+}
+
+function changeCountry(cntryId, cntryNm, $this) {
+	var parent = $($this).parent().parent().parent().parent();
+	parent.removeClass("on");
+	$("#cntyComboTxt").val(cntryNm);
+	window.GlobalNetwork.list('',cntryId);
+}
+
+function goHoverMap(no){
+	$(".global-02 .k-map .map-inner .map-list .map-item").removeClass("hover");
+	$(".global-02 .k-map .map-inner .map-list .map-item").eq(no).addClass("hover");
+
+	$(".global-02 .button-list .k-area").removeClass("hover");
+	$(".global-02 .button-list .k-area").eq(no).addClass("hover");
+}
+</script>
+
+
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-VW15DZRVDV"></script>
+	<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+
+	gtag('config', 'G-VW15DZRVDV');
+	</script>
+
+</head>
+<body>
+	<div id="root"></div>
+	<div id="google_translate_element" style="display:none;"></div>
+	<div class="root">
+		
+
+
+
+<!--banner-top banner-center banner-bottom-->
+<!-- top, bottom 공통 -->
+<!-- 중간 배너 -->
+<div id="banner"></div>
+
+<header id="header">
+<div class="k-header k-type">
+	<div class="header-inner">
+		<div class="k-left">
+			<h1>
+				<a href="javascript:;">
+					<svg width="100" height="20" viewBox="0 0 100 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<g clip-path="url(#yudoLogo)">
+							<path fill-rule="evenodd" clip-rule="evenodd" d="M14.706 19.802v-7.849L23.543 0H16.26l-4.489 6.06L7.286 0H0l8.84 11.953v7.849h5.866zM25.049.017H31v13.016c0 .576.464 1.04 1.04 1.04h9.578c.577 0 1.041-.468 1.041-1.04V.017h5.949v14.996a4.79 4.79 0 0 1-4.789 4.789H29.841a4.79 4.79 0 0 1-4.793-4.789V.017zm25.565 0h18.771a4.79 4.79 0 0 1 4.79 4.793v10.203a4.79 4.79 0 0 1-4.79 4.789H50.614V.017zm5.896 5.9v7.989h10.773c.576 0 1.044-.468 1.044-1.041V6.958a1.04 1.04 0 0 0-1.044-1.04H56.51zM76.386 4.81A4.791 4.791 0 0 1 81.178.017h13.983a4.79 4.79 0 0 1 4.788 4.793v10.203a4.79 4.79 0 0 1-4.788 4.789H81.178a4.79 4.79 0 0 1-4.792-4.789V4.81zm5.878 2.2v5.806c0 .573.465 1.04 1.038 1.04h9.724c.577 0 1.041-.467 1.041-1.04V7.01a1.04 1.04 0 0 0-1.04-1.041h-9.725c-.573 0-1.038.464-1.038 1.04z" fill="#DC0043"/>
+						</g>
+						<defs>
+							<clipPath id="yudoLogo">
+								<path fill="#fff" d="M0 0h100v19.802H0z"/>
+							</clipPath>
+						</defs>
+					</svg>
+				</a>
+			</h1>
+		</div>
+		<div class="k-center">
+			<div class="k-dim"></div>
+			<div class="k-center-inner">
+				<div class="k-gnb k-pc">
+					<div class="gnb-inner">
+					</div>
+				</div>
+				<div class="k-gnb k-mobile">
+					<div class="gnb-inner">
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="k-right">
+			<div class="k-language k-tooltip" >
+				<div class="k-btn">
+					<button>
+						<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<g clip-path="url(#a)" stroke="#191919" stroke-width="2" stroke-miterlimit="10" stroke-linejoin="round">
+								<path d="M27 16c0 6.075-4.925 11-11 11S5 22.075 5 16 9.925 5 16 5s11 4.925 11 11z"/>
+								<path d="M22 16c0 3.169-.751 5.988-1.914 7.981C18.909 26 17.43 27 16 27c-1.43 0-2.909-1-4.086-3.019C10.751 21.988 10 19.168 10 16s.751-5.988 1.914-7.981C13.091 6 14.57 5 16 5c1.43 0 2.909 1 4.086 3.019C21.249 10.012 22 12.832 22 16z"/>
+								<path d="M5 16h22M16 5v22" stroke-linecap="round"/>
+							</g>
+							<defs>
+								<clipPath id="a">
+									<path fill="#fff" d="M0 0h32v32H0z"/>
+								</clipPath>
+							</defs>
+						</svg>
+					</button>
+				</div>
+				<div class="k-list">
+					<div class="list-inner">
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="k-mobile-button">
+			<button onclick="openGnb();">
+				<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M6 8h20M6 16h20M6 24h20" stroke="#191919" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+				</svg>
+			</button>
+		</div>
+		<div class="k-mobile-button-close">
+			<button onclick="closeGnb();">
+				<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M24 8 8 24M24 24 8 8" stroke="#333" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+				</svg>
+			</button>
+		</div>
+	</div>
+</div>
+
+<!-- k-layer-modal modal-inquiry start1 -->
+<div class="k-layer-modal modal-inquiry " id="inquiryStep1">
+	<div class="k-dim"></div>
+	<div class="k-scroll">
+		<div class="layer-inner">
+			<div class="k-layer-header">
+				<button class="k-modal-close" onclick="closeModalAll();">
+					<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M36.086 11.914 11.915 36.086M36.086 36.086 11.915 11.914" stroke="#20232D" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+					</svg>
+				</button>
+			</div>
+			<div class="k-layer-body">
+				<div class="inqu-content">
+					<div class="k-head">
+						<div class="k-text font32 weight700 k-title">Contact us</div>
+					</div>
+					<div class="k-cont">
+						<div class="cont-head">
+							<div class="k-text font18">Please select a region</div>
+						</div>
+						<form id="frmInquiryStep1">
+						<div class="k-form">
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">Region</div>
+								</div>
+								<div class="form-body">
+									<div class="Search form">
+										<div
+											class="k-inner">
+											<!--  -->
+											<div class="k-display height-56">
+												<div class="k-center">
+													<div class="input-wrap">
+														<input type="text" name="inquiryCntrNm" id="inquiryCntrNm" placeholder="Region" data-cnty-id="" readonly />
+													</div>
+												</div>
+												<div class="k-right k-flex-center">
+													<div class="k-btn">
+														<button type="button">
+															<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+																<path d="M6.707 8.293a1 1 0 0 0-1.414 1.414l1.414-1.414zM12 15l-.707.707a1 1 0 0 0 1.414 0L12 15zm6.707-5.293a1 1 0 0 0-1.414-1.414l1.414 1.414zm-13.414 0 6 6 1.414-1.414-6-6-1.414 1.414zm7.414 6 6-6-1.414-1.414-6 6 1.414 1.414z" fill="#191919"/>
+															</svg>
+														</button>
+													</div>
+												</div>
+											</div>
+											<div class="k-list">
+												<div class="list-inner" id="inquiryCountry">
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						</form>
+					</div>
+					<div>
+						<div class="k-answer-confirm">
+							<a href="javascript:void(0);" class="k-text font16 weight700" onclick="openInquiryAnswer();">View the answer</a>
+						</div>
+						<div class="k-btn-wrap">
+							<!-- k-disable -->
+							<div class="k-btn k-fill k-round height-56 k-primary k-inline-block k-disable" id="divBtnInquiryNext1" style="width:158px;">
+								<button class="k-flex-justify-center" name="btnInquiryNext" data-step="2">
+									<div class="k-text font16 k-white">
+										Next
+									</div>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- k-layer-modal modal-inquiry stop1 -->
+<!-- k-layer-modal modal-inquiry start2 -->
+<div class="k-layer-modal modal-inquiry " id="inquiryStep2">
+	<div class="k-dim"></div>
+	<div class="k-scroll">
+		<div class="layer-inner">
+			<div class="k-layer-header">
+				<button class="k-modal-close" onclick="closeModalAll();">
+					<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M36.086 11.914 11.915 36.086M36.086 36.086 11.915 11.914" stroke="#20232D" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+					</svg>
+				</button>
+			</div>
+			<div class="k-layer-body">
+				<div class="inqu-content">
+					<!--  -->
+					<div class="k-head">
+						<div class="k-text font32 weight700 k-title">Contact us</div>
+					</div>
+					<div class="k-cont">
+						<div class="cont-head">
+							<div class="k-text font18">Select the classification of inquiries</div>
+							<input type="hidden" name="inquiryCatCd" id="inquiryCatCd" data-type-code-name/>
+						</div>
+						<div class="img-list">
+							<div class="list-inner" id="inquiryTypes">
+							</div>
+						</div>
+					</div>
+					<!--  -->
+					<div class="k-btn-wrap">
+						<!-- k-disable -->
+						<div class="k-btn k-fill k-round height-56 k-primary k-inline-block k-disable" id="divBtnInquiryNext2" style="width:158px;">
+							<button class="k-flex-justify-center" name="btnInquiryNext" data-step="3">
+								<div class="k-text font16 k-white">
+									Next
+								</div>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- k-layer-modal modal-inquiry stop2 -->
+<!-- k-layer-modal modal-inquiry start3 -->
+<div class="k-layer-modal modal-inquiry " id="inquiryStep3">
+	<div class="k-dim"></div>
+	<div class="k-scroll">
+		<div class="layer-inner">
+			<div class="k-layer-header">
+				<button class="k-modal-close" onclick="closeModalAll();">
+					<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M36.086 11.914 11.915 36.086M36.086 36.086 11.915 11.914" stroke="#20232D" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+					</svg>
+				</button>
+			</div>
+			<div class="k-layer-body">
+				<div class="inqu-content">
+					<!--  -->
+					<div class="k-head">
+						<div class="k-text font32 weight700 k-title">Enter your inquiry</div>
+					</div>
+					<div class="k-cont k-write">
+						<form id="inquiryForm" method="post">
+						<div class="k-form">
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">Name <span class="star">*</span> </div>
+								</div>
+								<div class="form-body">
+									<div class="TextInput" id="divTxtInqrrNm">
+										<div class="text-inner k-round k-outline height-56 k-grey">
+											<div class="k-left">
+												<input type="text" name="inqrrNm" id="txtInqrrNm" class="font16" placeholder="Name" maxlength="100" />
+											</div>
+											<div class="k-right">
+												<button type="button">
+													<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12z" fill="#DBDBDB"/>
+														<path d="m20 12-8 8M20 20l-8-8" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+													</svg>
+												</button>
+											</div>
+										</div>
+										<div class="k-require-wrap">
+											<div class="k-text font14 k-require">Please enter a Name</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">Company <span class="star">*</span> </div>
+								</div>
+								<div class="form-body">
+									<!--  -->
+									<div class="TextInput" id="divTxtCoNm">
+										<div class="text-inner k-round k-outline height-56 k-grey">
+
+											<div class="k-left">
+												<input type="text" name="coNm" id="txtCoNm" class="font16" placeholder="Company" maxlength="100" />
+											</div>
+											<div class="k-right">
+												<button type="button">
+													<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12z" fill="#DBDBDB"/>
+														<path d="m20 12-8 8M20 20l-8-8" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+													</svg>
+												</button>
+											</div>
+										</div>
+										<div class="k-require-wrap">
+											<div class="k-text font14 k-require">Please enter a Company name</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">Address <span class="star">*</span> </div>
+								</div>
+								<div class="form-body">
+									<!--  -->
+									<div class="TextInput" id="divTxtAddr">
+										<div class="text-inner k-round k-outline height-56 k-grey">
+
+											<div class="k-left">
+												<input type="text" name="addr" id="txtAddr" class="font16" placeholder="Address" maxlength="300" />
+											</div>
+											<div class="k-right">
+												<button type="button">
+													<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12z" fill="#DBDBDB"/>
+														<path d="m20 12-8 8M20 20l-8-8" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+													</svg>
+												</button>
+											</div>
+										</div>
+										<div class="k-require-wrap">
+											<div class="k-text font14 k-require">Please enter an Address.</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">Phone number <span class="star">*</span> </div>
+								</div>
+								<div class="form-body">
+									<!--  -->
+									<div class="TextInput" id="divTxtTelNo">
+										<div class="text-inner k-round k-outline height-56 k-grey">
+											<div class="k-left">
+												<input type="text" name="telNo" id="txtTelNo" class="font16" placeholder="Phone number" maxlength="50" />
+											</div>
+											<div class="k-right">
+												<button type="button">
+													<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12z" fill="#DBDBDB"/>
+														<path d="m20 12-8 8M20 20l-8-8" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+													</svg>
+												</button>
+											</div>
+										</div>
+										<div class="k-require-wrap">
+											<div class="k-text font14 k-require">Please enter a Phone number</div>
+										</div>
+									</div>
+									<!--  -->
+								</div>
+							</div>
+							<!--  -->
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">E-mail <span class="star">*</span> </div>
+								</div>
+								<div class="form-body">
+									<!--  -->
+									<div class="TextInput" id="divTxtEmailAddr"><!-- <div class="k-input k-require">  -->
+										<div class="text-inner k-round k-outline height-56 k-grey">
+											<div class="k-left">
+												<input type="text" name="emailAddr" id="txtEmailAddr" class="font16" placeholder="E-mail" maxlength="100" />
+											</div>
+											<div class="k-right">
+												<button type="button">
+													<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12z" fill="#DBDBDB"/>
+														<path d="m20 12-8 8M20 20l-8-8" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+													</svg>
+												</button>
+											</div>
+										</div>
+										<div class="k-require-wrap">
+											<div class="k-text font14 k-require">Please enter a E-mail</div>
+										</div>
+									</div>
+									<!--  -->
+								</div>
+							</div>
+							<!--  -->
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">Message <span class="star">*</span> </div>
+								</div>
+								<div class="form-body">
+									<!--  -->
+									<div class="TextArea" id="divTxtCont"><!-- <div class="k-input k-require">  -->
+										<div class="text-inner k-round k-outline height-56 k-grey" style="min-height:200px;">
+											<textarea name="cont" id="txtCont"></textarea>
+										</div>
+										<div class="k-require-wrap">
+											<div class="k-text font14 k-require">Please enter a Message</div>
+										</div>
+									</div>
+									<div class="k-desc">
+										<div class="k-text font14">Maximum 6,000 bytes are allowed</div>
+									</div>
+									<!--  -->
+								</div>
+							</div>
+							<!--  -->
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">Attach files</div>
+								</div>
+								<div class="form-body">
+									<!--  -->
+									<div class="k-file">
+										<div class="k-left">
+											<div class="TextInput"><!-- <div class="k-input k-require">  -->
+												<div class="text-inner k-round k-outline k-radius-30 height-56 k-grey">
+													<input type="text" id="txtInqFileNm" name="txtInqFileNm"  class="font16" readonly="readonly" >
+												</div>
+											</div>
+										</div>
+										<div class="k-right">
+											<div class="k-btn k-outline k-round height-40 k-grey-1 k-file-button">
+												<button clas="k-flex-justify-center" type="button">
+													<div class="k-text font14 weight700">Upload files</div>
+													<input type="file" id="fileFileNm" name="fileNm"/>
+												</button>
+											</div>
+										</div>
+									</div>
+									<div class="k-desc">
+										<div class="k-text font14">Maximum 10MB, JPG, PNG or PDF are allowed.</div>
+									</div>
+									<!--  -->
+								</div>
+							</div>
+							<!--  -->
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">Password <span class="star">*</span> </div>
+								</div>
+								<div class="form-body">
+									<!--  -->
+									<div class="TextInput" id="divTxtPwd"><!-- <div class="k-input k-require">  -->
+										<div class="text-inner k-round k-outline height-56 k-grey">
+
+											<div class="k-left">
+												<input type="password" name="pwd" id="txtPwd" class="font16" placeholder="Password" maxlength="6" />
+											</div>
+											<div class="k-right">
+												<button type="button">
+													<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12z" fill="#DBDBDB"/>
+														<path d="m20 12-8 8M20 20l-8-8" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+													</svg>
+												</button>
+											</div>
+										</div>
+										<div class="k-require-wrap">
+											<div class="k-text font14 k-require">Please enter a Password </div>
+										</div>
+									</div>
+									<div class="k-desc">
+										<div class="k-text font14">Please enter a password between 4 and 6 numbers. Be sure to remember your password for future use.</div>
+									</div>
+									<!--  -->
+								</div>
+							</div>
+							<!--  -->
+							<div class="form-item">
+
+								<div class="form-body">
+									<!--  -->
+									<div class="Search form toggle">
+										<div
+											class="k-inner">
+											<!--  -->
+											<div class="k-display height-56">
+
+												<div class="k-center">
+													<div class="CheckBox">
+														<input class="k-input" type="checkbox" name="checkbox-item-01" id="chkAgree" >
+														<label class="k-label" for="chkAgree">
+															<span class="k-icon">
+																<svg class="normal" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+																	<path d="M16 5.5a10.5 10.5 0 1 1 0 21 10.5 10.5 0 0 1 0-21zM16 4a12 12 0 1 0 0 24 12 12 0 0 0 0-24z" fill="#E7E7E7"/>
+																	<path d="m22 12-8.175 8L10 16.533" stroke="#E7E7E7" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+																</svg>
+																<svg class="active" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+																	<circle cx="16" cy="16" r="12" fill="#BB1E4D"/>
+																	<path d="m21 12-6.813 8L11 16.533" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+																</svg>
+															</span>
+															<div class="k-text font16 weight500 k-inline-block">I agree with the privacy policy.</div>
+														</label>
+													</div>
+												</div>
+												<div class="k-right k-flex-center">
+													<div class="k-btn">
+														<button type="button">
+															<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+																<path d="M6.707 8.293a1 1 0 0 0-1.414 1.414l1.414-1.414zM12 15l-.707.707a1 1 0 0 0 1.414 0L12 15zm6.707-5.293a1 1 0 0 0-1.414-1.414l1.414 1.414zm-13.414 0 6 6 1.414-1.414-6-6-1.414 1.414zm7.414 6 6-6-1.414-1.414-6 6 1.414 1.414z" fill="#191919"/>
+															</svg>
+														</button>
+													</div>
+												</div>
+											</div>
+											<!--  -->
+											<div class="k-list">
+												<div
+													class="list-inner">
+													<!--  -->
+													<dl>
+														<dt>
+															<div class="k-text font14 weight700">Personal information items collected.</div>
+														</dt>
+														<dd>
+															<div class="k-text font14">The company collects the following personal information for membership, counseling, and service application.</div>
+															<ul>
+																<li class="k-text font14">Collecting Information: name, phone number, e-mail address</li>
+																<li class="k-text font14">Personal information collecting method: Homepage.</li>
+															</ul>
+														</dd>
+													</dl>
+													<!--  -->
+													<dl>
+														<dt>
+															<div class="k-text font14 weight700">Purpose of collecting and using personal information.</div>
+														</dt>
+														<dd>
+															<div class="k-text font14">The company uses the collected personal information for the following purposes.</div>
+															<ul>
+																<li class="k-text font14">Identification to respond to customer inquiries.</li>
+																<li class="k-text font14">Notification of contact with the result of processing</li>
+															</ul>
+														</dd>
+													</dl>
+													<!--  -->
+													<dl>
+														<dt>
+															<div class="k-text font14 weight700">Period of retention and use of personal information.</div>
+														</dt>
+														<dd>
+															<div class="k-text font14">After the purpose of collecting and using personal information has been achieved, the company will fully erase the information without delay without exception.</div>
+														</dd>
+													</dl>
+													<!--  -->
+												</div>
+											</div>
+										</div>
+									</div>
+									<!--  -->
+								</div>
+							</div>
+							<div class="k-end-txt">
+								<div class="k-text font16 weight700">Register your inquiry <strong><span  id="setBindText">[나라명][문의분류]</span></strong></div>
+							</div>
+							<!--  -->
+						</div>
+						</form>
+					</div>
+					<!--  -->
+					<div class="k-btn-wrap">
+						<!-- k-disable -->
+						<div class="k-btn k-fill k-round height-56 k-primary k-inline-block k-disable" id="divBtnInquiryNext3" style="width:158px;">
+							<button class="k-flex-justify-center" name="btnInquiryNext" data-step="4" type="button">
+								<div class="k-text font16 k-white">
+									Submit
+								</div>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- k-layer-modal modal-inquiry stop3 -->
+<!-- k-layer-modal modal-inquiry start4 -->
+<div class="k-layer-modal modal-inquiry " id="inquiryStep4">
+	<div class="k-dim"></div>
+	<div class="k-scroll">
+		<div class="layer-inner">
+			<div class="k-layer-header">
+				<button class="k-modal-close" onclick="closeModalAll();">
+					<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M36.086 11.914 11.915 36.086M36.086 36.086 11.915 11.914" stroke="#20232D" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+					</svg>
+				</button>
+			</div>
+			<div class="k-layer-body">
+				<div class="inqu-content">
+					<!--  -->
+					<div class="k-head">
+						<div class="k-text font32 weight700 k-title">Registration completed</div>
+
+					</div>
+					<div class="k-cont ">
+						<div class="k-complete">
+							<div class="com-inner">
+								<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="m20 42 12 14 28-32" stroke="#BB1E4D" stroke-width="4" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+								<div class="k-text font32 weight700 k-title">
+									Registration is complete.
+								</div>
+								<div class="k-text font18 k-desc">
+									We will reply after checking your inquiry
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--  -->
+					<div class="k-btn-wrap">
+
+						<div class="k-btn k-fill k-round height-56 k-primary k-inline-block" style="width:158px;">
+							<button class="k-flex-justify-center" onclick="closeModalAll();">
+								<div class="k-text font16 k-white">
+									Close
+								</div>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- k-layer-modal modal-inquiry stop4 -->
+<!-- k-layer-modal modal-inquiry start5 -->
+<div class="k-layer-modal modal-inquiry " id="inquiryStep5">
+	<div class="k-dim"></div>
+	<div class="k-scroll">
+		<div class="layer-inner">
+			<div class="k-layer-header">
+				<button class="k-modal-close" onclick="closeModalAll();">
+					<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M36.086 11.914 11.915 36.086M36.086 36.086 11.915 11.914" stroke="#20232D" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+					</svg>
+				</button>
+			</div>
+			<div class="k-layer-body">
+				<div class="inqu-content">
+					<!--  -->
+					<div class="k-head">
+						<div class="k-text font32 weight700 k-title">View the answer</div>
+					</div>
+					<div class="k-cont">
+
+						<div class="cont-head">
+							<div class="k-text font18">Please enter the E-mail and Password registered to us</div>
+						</div>
+						<div class="k-form">
+							<!--  -->
+							<form name="frmInqCheck" id="frmInqCheck">
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">E-mail <span class="star">*</span></div>
+								</div>
+								<div class="form-body">
+									<!--  -->
+									<div class="TextInput" id="divTxtInqAnsEmail">
+										<div class="text-inner k-round k-outline height-56 k-grey">
+
+											<div class="k-left">
+												<input type="text" class="font16" placeholder="E-mail" id="txtInqAnsEmail" name="txtInqAnsEmail" />
+											</div>
+											<div class="k-right">
+												<button type="button">
+													<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12z" fill="#DBDBDB"/>
+														<path d="m20 12-8 8M20 20l-8-8" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+													</svg>
+												</button>
+											</div>
+										</div>
+										<div class="k-require-wrap">
+											<div class="k-text font14 k-require">E-mail</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!--  -->
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">Password<span class="star">*</span></div>
+								</div>
+								<div class="form-body">
+									<!--  -->
+									<div class="TextInput" id="divTxtInqAnsPwd">
+										<div class="text-inner k-round k-outline height-56 k-grey">
+											<div class="k-left">
+												<input type="password" class="font16" placeholder="Password" id="txtInqAnsPwd" name="txtInqAnsPwd" />
+											</div>
+											<div class="k-right">
+												<button type="button">
+													<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12z" fill="#DBDBDB"/>
+														<path d="m20 12-8 8M20 20l-8-8" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+													</svg>
+												</button>
+											</div>
+										</div>
+										<div class="k-require-wrap">
+											<div class="k-text font14 k-require">Please enter a Password </div>
+										</div>
+									</div>
+								</div>
+							</div>
+							</form>
+						</div>
+					</div>
+					<div class="k-btn-wrap">
+						<!-- k-disable -->
+						<div class="k-btn k-fill k-round height-56 k-primary k-inline-block k-disable" id="divBtnInquiryNext6" style="width:158px;">
+							<button class="k-flex-justify-center" name="btnInquiryNext" data-step="6">
+								<div class="k-text font16 k-white">
+									Next
+								</div>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- k-layer-modal modal-inquiry stop5 -->
+<!-- k-layer-modal modal-inquiry stop6 -->
+<div class="k-layer-modal modal-inquiry " id="inquiryStep6">
+	<div class="k-dim"></div>
+	<div class="k-scroll">
+		<div class="layer-inner">
+			<div class="k-layer-header">
+				<button class="k-modal-close" onclick="closeModalAll();">
+					<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M36.086 11.914 11.915 36.086M36.086 36.086 11.915 11.914" stroke="#20232D" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+					</svg>
+				</button>
+			</div>
+			<div class="k-layer-body">
+				<div class="inqu-content">
+					<!--  -->
+					<div class="k-head">
+						<div class="k-text font32 weight700 k-title">View the answer</div>
+					</div>
+					<div class="k-cont">
+						<div class="k-toggle-list">
+							<div class="list-inner" id="divInquiryReply">
+
+							</div>
+						</div>
+					</div>
+					<!--  -->
+					<div class="k-btn-wrap">
+						<!-- k-disable -->
+						<div class="k-btn k-fill k-round height-56 k-primary k-inline-block" style="width:158px;"  onclick="closeModalAll();">
+							<button class="k-flex-justify-center">
+								<div class="k-text font16 k-white">
+									Close
+								</div>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- k-layer-modal modal-inquiry stop6 -->
+
+<script>
+
+/**************************************************************
+ * gnb
+ ***************************************************************/
+$(function (){
+	$(".k-gnb.k-pc").on("mouseenter", ".depth1 > a", function (){
+		if(window.innerWidth > 1024){
+			$(".depth1").removeClass("on");
+			$(".k-header").addClass("hover");
+			$(this).parent().addClass("on");
+			$(".depth2").removeClass("hover");
+			$(this).parent().find(".depth2").eq(0).addClass("hover");
+
+			var noSub = $(this).parent().hasClass("no-sub");
+			if(noSub){
+				$(".k-header").removeClass("hover");
+			}else{
+				$(".k-header").addClass("hover");
+			}
+		}
+	})
+	$(".k-gnb.k-pc").on("mouseenter", ".depth2", function (){
+		$(".depth2").removeClass("hover");
+		$(this).addClass("hover");
+	});
+
+
+	$(".k-gnb.k-mobile").on("click", ".depth1 > a", function (){
+		// 하위메뉴 없을 경우 링크 처리
+		if( $(this).parent().find(".depth2").length == 0 ){
+			return true;
+		}
+
+		if($(this).parent().hasClass("on")){
+			$(".k-header").removeClass("hover");
+			$(this).parent().removeClass("on");
+		}else{
+			$(".k-header").addClass("hover");
+			$(".depth1").removeClass("on");
+			$(this).parent().addClass("on");
+
+		}
+		return false;
+	})
+
+	$(".k-header").mouseenter(function (e){
+		_kglobal.stopWheel = true;
+	}).mouseleave(function (){
+		if( $(".modal-inquiry").hasClass("on")) return;
+		_kglobal.stopWheel = false;
+	});
+
+	//
+	$(".k-header").mouseleave(function (){
+		if(window.innerWidth > 1024){
+			$(".k-header").removeClass("hover");
+			$(".depth1").removeClass("on");
+		}
+	});
+
+	$(".k-language .k-btn").on("mouseenter", function (e){
+		$(".k-language").addClass("on");
+	});
+	$(".k-language .k-btn").on("click", function (e){
+		$(".k-language").addClass("on");
+		e.stopPropagation();
+	});
+})
+//
+function closeGnb(e) {
+	$(".k-header").removeClass("open hover");
+	$("html").removeClass("fixed-layer");
+	_kglobal.stopWheel = false;
+}
+function openGnb(){
+	$(".k-header").addClass("open");
+	$("html").addClass("fixed-layer");
+	_kglobal.stopWheel = true;
+}
+</script>
+
+<script type="text/x-jquery-tmpl" id="langTmpl">
+<a href="javascript:;" class="k-text font16 ${className}">${cdNm}</a>
+</script>
+
+<script type="text/x-jquery-tmpl" id="gnbPcTmpl">
+<div class="depth1 ${className}">
+	<a href="${menuUrl}" class="k-text font16 weight700" target="${menuTarget}">${webMenuNm}</a>
+	{{if menuDepth2List.length > 0}}
+	<div class="k-sub">
+		{{if _.eq(menuCd, "MENU01") }}
+			{{each(index, menuDepth2) menuDepth2List}}
+			<div class="depth2 ${menuDepth2.className} {{if index ==0 }}hover{{/if}}">
+				<a href="${menuDepth2.menuUrl}" class="k-text font16 weight700">${menuDepth2.webMenuNm}</a>
+				{{if !_.isEmpty(menuDepth2.menuDepth3List)}}
+				<div class="k-sub">
+					{{each(index, menuDepth3) menuDepth2.menuDepth3List}}
+					<div class="depth3">
+						<a href="${menuDepth3.menuUrl}" class="k-text font14 k-grey-1">${menuDepth3.webMenuNm}</a>
+					</div>
+					{{/each}}
+				</div>
+				{{/if}}
+				{{if !_.isEmpty(menuDepth2.menuImgFileNm)}}
+				<div class="k-thumb">
+					<div class="k-img k-cover k-center" style="background-image:url('${menuDepth2.menuImgFilePath}')">
+						<img src="${menuDepth2.menuImgFilePath}" alt="">
+					</div>
+				</div>
+				{{/if}}
+			</div>
+			{{/each}}
+			<div class="depth2 depth2-4">
+				<div class="k-btn">
+					<a href="/${lang}/search">
+						<div class="k-text font18 weight700">
+							Find the product
+						</div>
+						<div class="k-icon">
+							<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="m13 11 3 3-3 3" stroke="#505050" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M14 24c5.523 0 10-4.477 10-10S19.523 4 14 4 4 8.477 4 14s4.477 10 10 10z" stroke="#505050" stroke-width="2" stroke-miterlimit="10"/>
+							</svg>
+						</div>
+					</a>
+				</div>
+			</div>
+		{{else}}
+			{{each(index, menuDepth2) menuDepth2List}}
+			<div class="depth2">
+				<a href="${menuDepth2.menuUrl}" class="k-text font16 weight700">
+					<div class="k-text font16 weight700">${menuDepth2.webMenuNm}</div>
+					<div class="k-thumb">
+						<div class="k-img k-cover k-center" style="background-image:url('${menuDepth2.menuImgFilePath}')">
+							<img src="${menuDepth2.menuImgFilePath}" alt="">
+						</div>
+					</div>
+				</a>
+			</div>
+			{{/each}}
+		{{/if}}
+	</div>
+	{{/if}}
+</div>
+</script>
+<script type="text/x-jquery-tmpl" id="gnbMoTmpl">
+<div class="depth1 ${className}">
+	<a href="${menuUrl}" class="k-text font16 weight700" target="${menuTarget}">${moMenuNm}</a>
+	{{if menuDepth2List.length > 0}}
+	<div class="k-sub">
+		{{each(index, menuDepth2) menuDepth2List}}
+		<div class="depth2 ${menuDepth2.className} {{if index ==0 }}hover{{/if}}">
+			<a href="${menuDepth2.menuUrl}" class="k-text font16 weight700">${menuDepth2.moMenuNm}</a>
+			{{if !_.isEmpty(menuDepth2.menuDepth3List)}}
+			<div class="k-sub">
+				{{each(index, menuDepth3) menuDepth2.menuDepth3List}}
+				<div class="depth3">
+					<a href="${menuDepth3.menuUrl}" class="k-text font14 k-grey-1">${menuDepth3.moMenuNm}</a>
+				</div>
+				{{/each}}
+			</div>
+			{{/if}}
+			{{if !_.isEmpty(menuDepth2.menuImgFileNm)}}
+			<div class="k-thumb">
+				<div class="k-img k-cover k-center" style="background-image:url('${menuDepth2.menuImgFilePath}')">
+					<img src="${menuDepth2.menuImgFilePath}" alt="">
+				</div>
+			</div>
+			{{/if}}
+		</div>
+		{{/each}}
+		{{if _.eq(menuCd, "MENU01") }}
+		<div class="depth2 depth2-4">
+			<div class="k-btn">
+				<a href="/${lang}/search">
+					<div class="k-text font18 weight700">
+						Find the product
+					</div>
+					<div class="k-icon">
+						<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="m13 11 3 3-3 3" stroke="#505050" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M14 24c5.523 0 10-4.477 10-10S19.523 4 14 4 4 8.477 4 14s4.477 10 10 10z" stroke="#505050" stroke-width="2" stroke-miterlimit="10"/>
+						</svg>
+					</div>
+				</a>
+			</div>
+		</div>
+		{{/if}}
+	</div>
+	{{/if}}
+</div>
+</script>
+<script type="text/x-jquery-tmpl" id="menuPathTmpl">
+	{{each(idx,menu) menus}}
+		{{if (idx+1) == menus.length }}
+			<div class="k-item font12 k-text weight700 last">${menu}</div>
+		{{else}}
+			<div class="k-item font12">${menu}</div>
+			<span class="k-gap">/</span>
+		{{/if}}
+	{{/each}}
+</script>
+<script type="text/x-jquery-tmpl" id="inquiryCountryTmpl">
+<div class="list-item" data-cnty-id="${cntyId}" data-cnty-nm="${cntyNm}">
+	<div class="k-left">
+		<div class="k-text font18 k-ellipsis">
+			${cntyNm}
+		</div>
+	</div>
+	<div class="k-right">
+		<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path d="m18.8 7-8.72 9.6L6 12.44" stroke="#BB1E4D" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+		</svg>
+	</div>
+</div>
+</script>
+<script type="text/x-jquery-tmpl" id="inquiryCategoryTmpl">
+<div class="img-item">
+	<button class="item-inner" name="btnInquiryType" data-type-code="${cd}" data-type-code-name="${cdNm}" >
+		<div class="k-img k-center k-cover" style="background-image:url('/static/images/inquiry/select_bt_01.jpg')">
+			<img src="/static/images/inquiry/select_bt_01.jpg" alt="">
+		</div>
+		<div class="k-txt">
+			<div class="txt-inner">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="m18.8 7-8.72 9.6L6 12.44" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+				</svg>
+				<div class="k-text font18 weight700 k-white">${cdNm}</div>
+			</div>
+		</div>
+	</button>
+</div>
+</script>
+
+<script type="text/x-jquery-tmpl" id="inquiryReplyTmpl">
+<div class="Search form toggle reply">
+	<div class="k-inner">
+		<div class="k-display ">
+			<div class="k-center">
+				<div class="k-reply-group">
+					<div class="k-head">
+						<div class="k-left">
+							<div class="k-text font18 weight700 ${statusClass}">${statusNm}</div>
+						</div>
+						<div class="k-right">
+							<div class="k-text font18">${tmpTxt}</div>
+						</div>
+					</div>
+					<div class="k-detail">
+						<div class="k-text font16 k-name">${inqrrNm}</div>
+						<div class="k-text font16 k-date k-eng">{{html util.dateFormat(rgstYmdt, 'YYYY-MM-DD')}}</div>
+					</div>
+				</div>
+			</div>
+			<div class="k-right k-flex-center">
+				<div class="k-btn">
+					<button name="btnReply">
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M6.707 8.293a1 1 0 0 0-1.414 1.414l1.414-1.414zM12 15l-.707.707a1 1 0 0 0 1.414 0L12 15zm6.707-5.293a1 1 0 0 0-1.414-1.414l1.414 1.414zm-13.414 0 6 6 1.414-1.414-6-6-1.414 1.414zm7.414 6 6-6-1.414-1.414-6 6 1.414 1.414z" fill="#191919"/>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</div>
+		<div class="k-list">
+			<div
+				class="list-inner">
+				<div class="k-write-wrap">
+					<div class="k-text font16 k-write">
+						${cont}
+					</div>
+				</div>
+				{{if ansCont != '' && expsYn == 'Y' }}
+				<div class="k-answer-wrap">
+					<div class="">
+						<div class="k-detail">
+							<div class="k-text font16 k-name k-primary">Administrator's answer</div>
+							<div class="k-text font16 k-date k-eng">{{html util.dateFormat(ansYmdt, 'YYYY-MM-DD')}}</div>
+						</div>
+						<div class="k-text font16 k-answer">${ansCont}</div>
+					</div>
+				</div>
+				{{/if}}
+			</div>
+		</div>
+	</div>
+</div>
+</script>
+
+<script type="text/x-jquery-tmpl" id="topBottomBannerTmpl">
+<input type="hidden" name="popupSeq" value="${popupSeq}"/>
+<div class="k-global-banner" style="background-color: ${popupLangList[0].bgColr};"><!-- background-color -->
+	<picture>
+		<source media="(max-width:768px)" srcset="${popupLangList[0].moImgFilePath}"><!-- 모바일 이미지-->
+		<img src="${popupLangList[0].imgFilePath}"  /><!-- PC 이미지-->
+	</picture>
+
+	<div class="inner" >
+		<div class="k-cont">
+			<div class="k-left">
+				<div class="k-text font32 k-white k-title bold">${popupLangList[0].ttl}</div>
+				<div class="k-text font16 k-white k-desc">${popupLangList[0].srvTtl}</div>
+				{{if more }}<a href="${tmpUrl}" class="k-text font14 k-white k-more">
+					Learn more
+					<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="m9 4 4 4-4 4M3 8h10" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</a>{{/if}}
+			</div>
+			<div class="k-right">
+				<div class="right-inner">
+					<div class="left" >
+						<span class="k-radio k-today" ><input type="radio" name="today1YN" id="today1YN" value="${clsConfCd}"><label class="k-radio-label" for="today1YN">${clsConfNm}</label></span>
+					</div>
+					<div class="right">
+						<button class="btn-clsConf">
+							<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M24.057 7.943 7.943 24.057M24.057 24.057 7.943 7.943" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+							</svg>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</script>
+
+
+<script type="text/x-jquery-tmpl" id="centerBannerTmpl">
+<input type="hidden" name="popupSeq" value="${popupSeq}"/>
+<div class="k-global-center-banner " >
+	<div class="banner-inner">
+		<a href="${tmpUrl}">
+			<picture>
+				<source media="(max-width:768px)" srcset="${popupLangList[0].imgFilePath}">
+				<img src="${popupLangList[0].imgFilePath}"  />
+			</picture>
+		</a>
+		<div class="inner" >
+			<div class="left" >
+				<span class="k-radio k-today" ><input type="radio" name="today2YN" id="today2YN" value="${clsConfCd}"><label class="k-radio-label" for="today2YN">${clsConfNm}</label></span>
+			</div>
+			<div class="right">
+				<button class="btn-clsConf">
+					<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M24.057 7.943 7.943 24.057M24.057 24.057 7.943 7.943" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+					</svg>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+</script>
+</header>
+		
+	<!-- k-body -->
+	<div class="k-body lang-ko">
+		<div class="k-history k-white">
+			<div class="history-inner menu-path">
+			</div>
+		</div>
+		<div class="k-section global-01">
+			<div class="k-section-inner">
+				<div class="k-keyvisual">
+					<div class="k-img k-cover k-center"
+						style="background-image:url(/static/images/global-network/global_network.jpg)">
+						<img src="/static/images/global-network/global_network.jpg" alt="">
+					</div>
+					<div class="k-txt">
+						<div class="k-text font40 k-white weight700 k-title">
+							Global networks
+						</div>
+						<div class="k-text font24 k-white k-desc">
+							Spread the value of innovation around the world
+						</div>
+						<div class="k-div">
+							<div class="k-left">
+								<div class="k-text font160 weight700 k-white k-no k-eng" id="cntyCnt">40</div>
+								<div class="k-text font32 k-white k-name">Countries</div>
+							</div>
+							<div class="k-right">
+								<div class="k-text font160 weight700 k-white k-no k-eng" id="ntwkCnt">124</div>
+								<div class="k-text font32 k-white k-name">Networks</div>
+							</div>
+						</div>
+						<div class="k-brand">
+							<div class="k-text font16 k-white">
+								<span>The above global network also includes four multi-brand networks (15 countries, 22 networks) </span>
+								Multi-brand _ RUNIPSYS, SINO, HANS, CHERRY
+							</div>
+						</div>
+					</div>
+					<button class="scroll-btn" onclick="autoDownGlobalBtn();">
+						<svg width="40" height="56" viewBox="0 0 40 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="m8 42.002 12 12 12-12M8 30l12 12 12-12M20 42V6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</div>
+		<!--  -->
+		<div class="k-section global-02">
+			<div class="k-section-inner">
+				<div class="k-tab">
+					<div class="tab-inner">
+						<div class="tab-swipe swiper-container">
+							<div class="swiper-wrapper" id="continents">
+								<!--  -->
+								<button class="swiper-slide active" onclick="goMoveTab(0, '001', 'tab');">
+									<div class="tab-item">
+										<div class="k-text font18 k-name k-eng">Asia</div>
+
+									</div>
+								</button>
+								<!--  -->
+								<button class="swiper-slide" onclick="goMoveTab(1, '002', 'tab');">
+									<div class="tab-item">
+										<div class="k-text font18 k-name k-eng">Europe</div>
+
+									</div>
+								</button>
+								<!--  -->
+								<button class="swiper-slide" onclick="goMoveTab(2, '003', 'tab');">
+									<div class="tab-item">
+										<div class="k-text font18 k-name k-eng">North America</div>
+
+									</div>
+								</button>
+								<!--  -->
+								<button class="swiper-slide" onclick="goMoveTab(3, '004', 'tab');">
+									<div class="tab-item">
+										<div class="k-text font18 k-name k-eng">South America</div>
+
+									</div>
+								</button>
+								<!--  -->
+								<button class="swiper-slide" onclick="goMoveTab(4, '005', 'tab');">
+									<div class="tab-item">
+										<div class="k-text font18 k-name k-eng">Oceania</div>
+
+									</div>
+								</button>
+								<!--  -->
+								<button class="swiper-slide" onclick="goMoveTab(5, '006', 'tab');">
+									<div class="tab-item">
+										<div class="k-text font18 k-name k-eng">Africa</div>
+
+									</div>
+								</button>
+							</div>
+						</div>
+						<!--  -->
+					</div>
+				</div>
+				<!--  -->
+				<div class="k-map">
+					<div class="map-inner">
+						<div class="k-bg">
+							<img src="/static/images/global-network/world_map.png" alt="">
+						</div>
+						<div class="map-list">
+							<div class="map-item item-01 on">
+								<svg width="1018" height="600" viewBox="0 0 1018 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<g opacity=".8" fill="#BB1E4D">
+										<path d="M683.9 50.1a1.798 1.798 0 0 0 2.1-1.6l-.4-.6h-.3l-1.5 1.1a.5.5 0 0 0-.2.6c0 .2.2.5.3.5zM687.5 52.4c-.1 0-.2.2-.2.3 0 .1 0 .4.3.4s.4-.1.4-.4c0-.3-.2-.4-.5-.3zM657.9 22.4c-.1.2 0 .3.1.4.1.1.3.2.5.3h.3a1.1 1.1 0 0 1 .8.2l.8.4a2.899 2.899 0 0 0 1.6.4l.3.2c.2.2 0 .3-.3.3l-1.2.2h-.4a1.897 1.897 0 0 0-1.1.7.4.4 0 0 0-.1.3.298.298 0 0 0 .1.2c.095.277.268.52.5.7l.5.5 1.2 1.1.5.4h.2a.402.402 0 0 0 .5.1 2.698 2.698 0 0 0 2.1-3.3c-.1-.4-.4-.7-.2-1l.3-.3h.3c.288.291.525.63.7 1 0 .1.1.1.1.2a.603.603 0 0 1 .1.4.603.603 0 0 1 .1.4v.3c-.1.5-.1 1-.2 1.5-.077.26-.11.53-.1.8v.2c0 .1 0 .1.1.2a1.4 1.4 0 0 0 .9.2h1.3l.4.3h.1c.184.118.325.294.4.5l.2.2.4.6a3.799 3.799 0 0 0 2.6.8c2.091.014 4.173.282 6.2.8a2 2 0 0 0 1.1 0l.6-.3a6.615 6.615 0 0 0 1.7-1.2c0-.1.1-.1.1-.2l.2-.3a1.301 1.301 0 0 0-.1-1.1l-.5-.6-1.2-.9a1 1 0 0 1-.5-1.2 1.394 1.394 0 0 0-.2-1.1 4.287 4.287 0 0 1-.4-.7l-.2-.3a.793.793 0 0 1-.2-.4.298.298 0 0 0-.1-.2 4.203 4.203 0 0 0-1.2-2.3l-.6-.6-.7-.5-.5-.4h-.3l-.3-.2h-.9l-.9.3a1.2 1.2 0 0 1-1.6 0 2 2 0 0 0-2.5.1l-.5.3a2.796 2.796 0 0 0-1.1-2.9 2.998 2.998 0 0 1-1.1-2.6 1.5 1.5 0 0 0-.6-.9h-.4a4.298 4.298 0 0 1-1.7-.6 7.806 7.806 0 0 1-2-1.6l-.6-.5-.9-.5h-.1a1.001 1.001 0 0 0-1.3.4 7.503 7.503 0 0 1-1.1 2.8 4.2 4.2 0 0 0-.4 4.2 7.801 7.801 0 0 1 .4 3.8zM702.9 32.9c0-.1.1-.2.2-.3.1-.1-.2-.6-.4-.6s-1.9.4-2.8-.2c-.9-.6-.2.2-.2.3a.4.4 0 0 0-.1.3 2.5 2.5 0 0 0 3.3.5zM685.2 30.6c.2.3.199.7.099.5-.1-.2-.099 1.3-.099 1.6 0 .3.6 2.7 1 4 .2.986.687 1.89 1.399 2.6a.903.903 0 0 0 .7.1.798.798 0 0 0 .601-.4c1.5-1.9 1.5-1.9 4.1-3.6a10.624 10.624 0 0 0 2-1.7c.39-.46.725-.963 1-1.5.13-.351.165-.73.099-1.1-.3-.6-.699-1.1-.899-1.6a2.702 2.702 0 0 0-1.901-1.7c-1.3-.2-2.299-1.1-3.399-1.5-1.1-.4-2.401-.7-3.301-1.5a2.598 2.598 0 0 0-1.5-.4c-.2-.1-.499.1-.599.3-.1.2-1.1 2.2-.3 3.5.41.766.745 1.57 1 2.4zM669.8 50.5a.202.202 0 0 0-.142.059.202.202 0 0 0-.058.141c-.1.3-.1.6.1.7.2.1.1.1.2.2l.6-.3a.595.595 0 0 0 .07-.523.59.59 0 0 0-.37-.377l-.4.1zM664.5 88.8h-.7c-.7.2-.9 1.6-.4 2.2a1.397 1.397 0 0 0 1.6.5l.6-.5a2.703 2.703 0 0 0-1.1-2.2zM661.2 70.1a.8.8 0 0 0 .7.7c.4.1.7-.2.8-.7a1.794 1.794 0 0 0-.5-.8c-.3-.2-1 .3-1 .8zM659.6 66.4h.3v-.2c-.2-.1-.3 0-.3.2zM659.3 76.9l-.3.2c0 .2 0 .3.1.4l.2.2.2-.2a.397.397 0 0 0-.047-.503.4.4 0 0 0-.153-.097zM662.1 65.7a.414.414 0 0 0-.019-.16.415.415 0 0 0-.081-.14c-.1 0-.2-.1-.3 0-.1.1-.2.3.1.4.3.1.2 0 .3-.1z"/>
+										<path d="M956.4 63.5c-.6-.1-.8-.6-.9-1.1-.1-.257-.1-.543 0-.8a7.662 7.662 0 0 0-.2-1.5 2.5 2.5 0 0 0-1.2-1.3 5.49 5.49 0 0 1-1.2-1.4c-.5-.6-.5-.8 0-1.2a5.103 5.103 0 0 0 1.7-2.9.895.895 0 0 0-.2-1 6.2 6.2 0 0 1-1.4-4.1.597.597 0 0 0-.166-.535.592.592 0 0 0-.534-.165h-.8c-1.3-.3-2.6-.8-3.9-1-1.3-.2-.9-.4-1.4-.6a1.5 1.5 0 0 0-2 .3 5.203 5.203 0 0 1-2.7 1.9c-.2.1-.3.4-.5.5a1.398 1.398 0 0 0-.1 1.4c.6.7 1.2 1.3 1.7 2a1.299 1.299 0 0 1-.4 1.9c-.1 0-.3 0-.3-.1-.9-1.8-2.7-2.9-3.7-4.6-1-1.7-2.7-2.3-4.6-1.9-.72.2-1.48.2-2.2 0a9.598 9.598 0 0 0-3.4-.4 11.097 11.097 0 0 1-4-.6 5.2 5.2 0 0 0-3.7 0 2.2 2.2 0 0 1-2.4-.5 4.301 4.301 0 0 0-2.4-1l-2.4-.4a21.997 21.997 0 0 0-5.7-.5h-1.1a7.2 7.2 0 0 0-4.8.6h-.3a9.699 9.699 0 0 1-3.5 1.2c-1.4.1-2.7.6-4.1.6a5.498 5.498 0 0 0-1.8.2c-.3 0-.4.2-.4.5s1.4 2.2 1.1 3.5l.2.5.5.3a5.1 5.1 0 0 1 2.6 1.4c.8.8 1.5 1.7 2.2 2.5a1.202 1.202 0 0 1-.1 1.4l-1.1 1c-.6.5-1.4.5-1.7-.1a3.903 3.903 0 0 0-3.6-2.2l-.7-.2a1.5 1.5 0 0 1-.9-.6l-.8-1.3c-.1-.3-.1-.5.2-.6a1.595 1.595 0 0 0 .5-1.5 3.581 3.581 0 0 0-.4-.9 2.302 2.302 0 0 0-2.3-.9c-.5.1-1.3.8-1.3 1.3v3a1.4 1.4 0 0 1-1.1 1.3c-1.3.2-2.5.3-3.7.6a3.9 3.9 0 0 1-2.6.2h-.7l-4.2 2.3-.7.4a10.3 10.3 0 0 1-5.7 1.2 1.6 1.6 0 0 1-1.2-.9c0-.1-.1-.2-.1-.4a7.289 7.289 0 0 0-3.1-4.7l-.8-.5-.5-.5c-2.2-1.4-4.5-2.4-7-.9-.4.3-1 .3-1.4.5a23.202 23.202 0 0 0-5.6 3l-2.8 1.8a1.298 1.298 0 0 1-1.9-.5 3.5 3.5 0 0 0-1.8-1.8l-1.7-.8a1.4 1.4 0 0 0-1.7.4c-.6.5-.6.4-1.2 0s-.8-.6-1.3-.4a1.099 1.099 0 0 1-1.1-.2 4.595 4.595 0 0 0-2-.9c-.3 0-.3-.3-.1-.6.2-.3.6-1.6 0-2.2l-.3-.3c-1.4-.8-2.8-1.5-4.6-1l-2.1.5a2.9 2.9 0 0 0-1.3.8c-.8 1-1.6 1.1-2.9.8a14.202 14.202 0 0 0-4.1-.3l-4.9.4-1.3.2a8.5 8.5 0 0 1-3.5-.3c-.3-.1-.7.2-1 .4a.709.709 0 0 0-.227.262.707.707 0 0 0-.073.338c0 .1.1.3.2.3l1.7.7.5.5c.1.2-.2.7-.5.9l-1.1.4a2.1 2.1 0 0 0-1 1.9 1.404 1.404 0 0 0 1.2 1.2c.499.05 1.001.05 1.5 0v.2a2.006 2.006 0 0 0 .2 1.7 8.687 8.687 0 0 0 2.1 2.2.598.598 0 0 1 0 .9c-.2.4-.6.6-.9.4a1.9 1.9 0 0 0-2.4-.1l-1.6 1a2.099 2.099 0 0 1-2 .5 6.1 6.1 0 0 0-1.9-.1c-.9.2-1.7.5-2 1.5-.3 1-.8 1.3-1.9 1.4a5.7 5.7 0 0 1-4.8-1.5l-.3-.2h-.3c-.1 0-.2.2-.2.3a7.19 7.19 0 0 0 .8 3.2 16.38 16.38 0 0 1 1.3 4.3c.1.4-.1.7-.6.6a7.797 7.797 0 0 1-2.2-.4 10.406 10.406 0 0 1-3.2-1.9c-.8-.6-1.5-1.3-2.3-1.8v-.4c-.3-1-.3-1-1.2-.5-.9.5-1.1.5-1.6-.1a3.608 3.608 0 0 1-.5-.9h-.6l-.3-.3h.3v-3.5h-1c-.6-.1-.7-.2-.5-.8.2-.6.3-.9-.1-1.3l-2.9-2.9a12.097 12.097 0 0 0-5.3-1.6l-.7.2a1.7 1.7 0 0 1-1.7.3h-.3a8.6 8.6 0 0 0-4.5-.1 4.206 4.206 0 0 0-1.3.7 1.304 1.304 0 0 0-.708 1.388c.032.184.103.358.208.512.5.8 1 1.7 1.6 2.5.6.8 0 .9-.3 1-.3.1-2.9 1.3-4.4 1.8a2.7 2.7 0 0 1-2.8-.6c-.6-.5-.6-.4-1.3 0-.7.4-3.2.7-3.5-1.1-.1-.3 0-.5-.1-.8a1.202 1.202 0 0 0-.519-.732c-.261-.168-.577-.228-.881-.168l-5.9 1.3-2.1.6a16.42 16.42 0 0 0-2.2 1.4l-2.3-1.1h-.3c-.1.2-.1.4-.2.6a1.701 1.701 0 0 1-2.9.9 8.266 8.266 0 0 1-.8-1.2c-.2-.4-.5-.6-.9-.4a2.5 2.5 0 0 1-1.7.3 1.2 1.2 0 0 0-1.4.9 5.204 5.204 0 0 0-.2 1.1 1.098 1.098 0 0 0 .7 1.2l1.3.4h.1a.895.895 0 0 1 .1-.5l.5-.4v.3a.396.396 0 0 1-.1.3l-.5.3v.2h-.1c-.1.3-.1.7-.3.9a8.692 8.692 0 0 0-1.7 2.1 4.2 4.2 0 0 1-3.6 2.1c-.6.1-.9-.1-.6-.6a4.997 4.997 0 0 0 .5-2.1c.1-.9 1.2-.9 1.4-1.7.218-.293.356-.638.4-1a4.008 4.008 0 0 1 .5-3.2c.243-.46.347-.981.3-1.5a2.306 2.306 0 0 1 .1-1.4 17.61 17.61 0 0 0 1.5-3.5c.122-1.228.391-2.436.8-3.6a4.19 4.19 0 0 0-.2-3.3c0-.1-.1-.2-.1-.3-.626-.954-1.098-2-1.4-3.1-.1-.2-.2-.5-.4-.6-.2-.1-2-1.8-2.9-2.8a.8.8 0 0 0-1 0c-.2.3-.2 1.3-.8.4a8.99 8.99 0 0 0-2.7-2 12.608 12.608 0 0 1-2.6-1.3 1.999 1.999 0 0 0-2.4-.2 22.994 22.994 0 0 1-4.8 2.2c-.3.1-.6.6-.4.9.187.323.354.657.5 1 .091.295.081.613-.028.902-.108.29-.309.535-.572.698a1.001 1.001 0 0 1-1.6-.8 10.945 10.945 0 0 1-.1-1.8l-.3-1.9a1.398 1.398 0 0 0-1.4-.9l-1.5.4h-.7l-1.4-.4c-.6-.3-.9-.6-.8-1.2.1-.6-.5-1.8-1.3-2.4-.8-.6-2.6-.7-4-.7a2.398 2.398 0 0 0-1 .5.998.998 0 0 0-.4.5 12.602 12.602 0 0 0-1.3 6.6c.1 1.4.1 3 1.7 3.9 1.6.9.5 1.3.8 2 .3.7.2.9-.5 1-.856.02-1.702.19-2.5.5a1.002 1.002 0 0 0-.5 1c.1.3.3.7.2 1l-1.2 2-.6.4-1.3.5 1.4 3-2.5-2.6c-.2 0-.3-.1-.3-.4l-1.8-2a.998.998 0 0 0-.4.7c-.2.5-.3.9-.9 1l-1.5.2a2.7 2.7 0 0 0-1.9 1.1c-.6.7-.6 1.1 0 1.9.6.8.3.8 0 1a26.127 26.127 0 0 1-2.8 1.7 5.1 5.1 0 0 0-2.4 1.7c-.6.8-1.5 1.3-1.8 2.3a2.4 2.4 0 0 1-1.5 1.6c-1 .3-.8 1.5-1.5 2a3.792 3.792 0 0 0-.9 1.2 3.599 3.599 0 0 0 .1 2.5c.113.457.4.852.8 1.1.83.748 1.775 1.356 2.8 1.8a7.2 7.2 0 0 1 3.2 1.8c.111.218.179.456.2.7a.794.794 0 0 1-.4.6c-.5.3-.6-.1-.7-.5-.1-.4-.4-.7-.8-.6-.4.1-1.1 0-1.5.3a13.094 13.094 0 0 1-3.9 2 24.087 24.087 0 0 1-4.2 1.6l-1.4.4h-.2a2.005 2.005 0 0 0-1.19 2.095c.038.286.137.56.29.805l.6 1 .5.6a5.59 5.59 0 0 1 1.2 2.3c.035.473.209.926.5 1.3.291.408.666.75 1.1 1a6.1 6.1 0 0 0 3 .3l1.2 1.3 1.2 1c.1.2.4.2.7.3l1.7.7a1.709 1.709 0 0 1 .9 1.2c.255 1.616.87 3.154 1.8 4.5.2.3-.1.7-.4.9l-1.3.7h.1l-.2.3c0-.2.1-.3.1-.5l-.3-.5a3.5 3.5 0 0 1-.5-4.2c.089-.222.123-.462.1-.7a1.499 1.499 0 0 0-1.4-1.5l-1.8.3a3.7 3.7 0 0 1-2.1-.1 2.102 2.102 0 0 1-1-.6 7.987 7.987 0 0 0-1.9-1.3 14.293 14.293 0 0 0-3.4-1.4h-.2l-3.3-1a1.5 1.5 0 0 0-1.1.3 2.902 2.902 0 0 0-.9 2 .794.794 0 0 0 .4.6l1 .3c0-.1 0-.1-.1-.1l.2-.2v.3l.8.6c.346.053.682.154 1 .3.5.1.6.8.4 1.2a.798.798 0 0 1-.9.5l-1.4-.5a1.901 1.901 0 0 0-1-.5 1.402 1.402 0 0 0-1.3.6 1.294 1.294 0 0 0-.2 1 4.994 4.994 0 0 0 3.2 3c.809.272 1.649.44 2.5.5h.1l1 .3c.1 0 .2.2.2.3a.212.212 0 0 1-.3.3l-.9-.3h-1a12.9 12.9 0 0 1-3.4 0 1.897 1.897 0 0 1-1.5-.9l-.3-.7a8.796 8.796 0 0 1-1.7-4.1 5.403 5.403 0 0 0-1.4-3.4 2.71 2.71 0 0 0-.8-.7h-.3c-.1 0-.3.2-.2.3.1.1.6 1.8.9 2.8a2.908 2.908 0 0 1-.3 2.2 2.103 2.103 0 0 0-.4.6 2.395 2.395 0 0 0-.7 2.4c.3.8-.2 1.8.3 2.5a11.385 11.385 0 0 0 1.9 1.9l1.4 1.2a3.202 3.202 0 0 1 1.1 2.3v.4c-.015.868.019 1.736.1 2.6.3 1.9 1.5 3.4 2.2 5.1.7 1.7.8.6 1.3.6a3.607 3.607 0 0 0 2.7-1.2l.4-.4h.1l.4-.2h.3a3 3 0 0 1 1.5.5h.1c.027 0 .052.011.071.029a.103.103 0 0 1 .029.071l-.2.3-1.4 1-.5.4h-.2l-.9.7a2.292 2.292 0 0 0-.8 1.7c.014.508.189.998.5 1.4.429.441.829.909 1.2 1.4h.1l1-.4-.7 1.1a1.994 1.994 0 0 1 .1 1.7 8.613 8.613 0 0 0-.7 3.6 3.698 3.698 0 0 1-.5 1.8 9.397 9.397 0 0 0-1.8 3.6c-.164.16-.374.265-.6.3l-2.7-.3-28.9 50.4-3.9 35.7-38 56.7c.05.632.05 1.268 0 1.9l-.3 1.3c-.24.952-.54 1.887-.9 2.8a17.873 17.873 0 0 0-1.3 3.9 7 7 0 0 1-1.7 3.3 2.201 2.201 0 0 1-1.3.8h-.1c1.4 4.2 6.3 7.3 6.4 12.3l.6.7c1.4 1.8 2.4 3.8 3.7 5.6a8.709 8.709 0 0 1 1.7 3.3 1.798 1.798 0 0 0 1.4 1.6 4.795 4.795 0 0 1 3.1 3.1l.6 1.3c.492.735.705 1.622.6 2.5-.022.37.012.74.1 1.1a6.098 6.098 0 0 0 2.7 4.8c.637.342 1.24.743 1.8 1.2.477.312.914.681 1.3 1.1a6.08 6.08 0 0 1 .9 1.8 8.232 8.232 0 0 0 1.1 2.3l1.2 1.6a20.928 20.928 0 0 1 2.4 2.8 5.008 5.008 0 0 1 1.1 4.2 2 2 0 0 0 .1 1.5c.8 1.7 1 3.6 1.6 5.3.257.718.558 1.419.9 2.1a1.909 1.909 0 0 0 1.5.9l1.9-.2c.483.007.962-.096 1.4-.3.356-.15.667-.392.9-.7a2.801 2.801 0 0 1 3-1.1 5.904 5.904 0 0 0 3.9-1 7.82 7.82 0 0 1 2.4-.9 2.997 2.997 0 0 0 2-1 4.987 4.987 0 0 1 2.2-1.3l4-1.2 2.6-1.2.4-.2a1.6 1.6 0 0 0 .9-1.1 2.905 2.905 0 0 1 2.3-2.3c1.5-.4 3.1-.9 4.7-1.2a2.2 2.2 0 0 0 2.1-1.8c.2-.6.5-1.1 1.2-1.2a3.195 3.195 0 0 0 2.8-2.2 2.1 2.1 0 0 1 1.4-1.2l1.4-.4.2-.2c.191-.195.329-.436.4-.7-.05-.732-.05-1.468 0-2.2a2.595 2.595 0 0 1 .9-1.6 11.294 11.294 0 0 0 3.9-4.8c.7-1.3.5-1.9-.6-3a13.045 13.045 0 0 1-1.8-2.3 2.303 2.303 0 0 0-1.8-1.2l-3-.4a4.198 4.198 0 0 1-1.6-.9 5.298 5.298 0 0 1-1.7-3.3 1.702 1.702 0 0 1-.1-.7c-.1-.9-.3-1.7-.4-2.6-.1-.9-.1-.3-.2-.3a1 1 0 0 0-.7.2c-.8 1-1.8 1.9-2.7 2.9a13.269 13.269 0 0 0-1.4 1.9 4.494 4.494 0 0 1-1.6 1.5 2.999 2.999 0 0 1-2.1.4h-.4a7.395 7.395 0 0 0-3.3.5 1.103 1.103 0 0 1-1.3-.5l-.3-.3a3.102 3.102 0 0 1-.6-1.3l-.3-3.7a2.103 2.103 0 0 0-.3-.7c-.2-.1-.4-.4-.6-.4a.707.707 0 0 0-.6.3 8.263 8.263 0 0 0-.7 1.3c-.3.6-.7.6-1.1 0a3.8 3.8 0 0 1-1-2 7 7 0 0 0-1.7-3.3l-1.9-1.8c-.2-.3-.6-.4-.8-.7a30.525 30.525 0 0 1-2.1-4 1.798 1.798 0 0 1-.2-1c.086-.511.22-1.014.4-1.5 0-.2.3-.4.5-.5l2.2-.2a4.901 4.901 0 0 1 2.1.4c.495.392.875.91 1.1 1.5l2.8 4.4a2.496 2.496 0 0 0 1.7 1.3l1.1.3a2.898 2.898 0 0 1 1.6.7l.6.6c.4.4 1 .7 1.5 1.1a12.506 12.506 0 0 0 4.6 1.5 2.01 2.01 0 0 0 1.7-.2l.9-.4 1.8-.9a1.8 1.8 0 0 1 2.5.9c.408.781.775 1.582 1.1 2.4.11.36.337.673.645.89.308.218.679.327 1.055.31a34.76 34.76 0 0 1 4.5.6l5.9 1c1.22.235 2.469.268 3.7.1 2.1-.2 4.1-.9 6.3-.4.475.027.951-.041 1.4-.2a13.705 13.705 0 0 1 4.5-.3 1.294 1.294 0 0 1 1.2.7 1.812 1.812 0 0 0 1 1.1 2.197 2.197 0 0 1 1.1 1.4 2.402 2.402 0 0 0 2 2.1h.2c.64.135 1.229.447 1.7.9.167.175.302.378.4.6a4.805 4.805 0 0 0 2.2 1.6l.6.2h2.1c-.4.6-.9 1.1-1.6 1h-.9l-.5.2c-.1.2-.1.6.1.7a35.195 35.195 0 0 0 3.3 3.4c2.1 2 3.1 2 5.5.4l.6-.4a3.596 3.596 0 0 0 1.1-2.2c.1.1.3.1.3.2a14.687 14.687 0 0 1 1.1 4.6v.4a4.404 4.404 0 0 0 .2 2.3 47.202 47.202 0 0 1 1.3 5.4c.5 1.8 1.6 3.4 1.6 5.3 0 .4.3.7.5 1.1a32.928 32.928 0 0 0 1.8 3.2 16.887 16.887 0 0 1 1.9 4.1c.323.667.558 1.373.7 2.1a8.398 8.398 0 0 0 2.2 4.1 6.002 6.002 0 0 1 1.4 2.1c.7 1.8 1.7 3.4 1.9 5.3a6.9 6.9 0 0 0 1.4 3 5.73 5.73 0 0 0 1.1 1.1 2.202 2.202 0 0 0 3-.4c.2-.3.3-.7.5-1a2.411 2.411 0 0 1 1.3-1.3c.8-.2 1.1-.9 1.4-1.6a3.305 3.305 0 0 1 1.8-2.2 1.503 1.503 0 0 0 .7-1.6 10.8 10.8 0 0 0-.3-1.9 4.095 4.095 0 0 1 .2-2.2l.3-.6.3-.8a4 4 0 0 0 .1-3.2 5.813 5.813 0 0 1-.4-1.9v-4.1a1.603 1.603 0 0 1 1.4-1.5 2.986 2.986 0 0 0 1-.4 4.697 4.697 0 0 1 2.7-1.8 1.396 1.396 0 0 0 .9-1.1c.2-.6.3-1.3.9-1.6.6-.3 2.5-2.4 3.9-3.4a8.021 8.021 0 0 0 1.5-1.7l1.6-2.1c.417-.443.93-.785 1.5-1a6.3 6.3 0 0 0 3-2.5 5.6 5.6 0 0 0 .5-2.3c0-.7.5-1.1 1.1-1.4a4.903 4.903 0 0 1 2.9-.6 9.802 9.802 0 0 0 6.4-1.8c.8-.5 1.9-.4 2.6-1.2.7-.8.6.2.6.4.308.673.543 1.377.7 2.1a8.7 8.7 0 0 0 4.5 5.6l1 .5c.6.3.7.8.5 1.6-.2.8-.1 1.5 1.1 2a2.8 2.8 0 0 1 1.6 1.4c0 .1.1.2.2.3a.394.394 0 0 0 .1.3 6.6 6.6 0 0 1 .5 4.8 5.29 5.29 0 0 0-.1 1.8 1.702 1.702 0 0 0 1.3 1.3h.5l2.1-6.5-2.1 6.5a6.002 6.002 0 0 0 3.4-.9l2.8-1.9a.802.802 0 0 1 .7 0c.7.7 1.6 1.1 1.8 2.2.186.879.42 1.747.7 2.6.7 2.1 1 4.4 2.3 6.2.26.439.461.909.6 1.4.052.508.152 1.011.3 1.5a9.399 9.399 0 0 1 .1 5.5 2.402 2.402 0 0 0-.2 1.4 7.103 7.103 0 0 1-.2 4.1c-.4 1.2-.4 2.2.5 2.9l.8.4.3.2c1.5 1.9 3 3.7 4.4 5.6 1.4 1.9.6 2.1.8 3.2.013.262.12.51.3.7l.3.9c.087.428.12.864.1 1.3a2.394 2.394 0 0 0 .8 2 5.398 5.398 0 0 1 1.8 2.7c.1.4.4.6.7.9.3.3.9.5 1.1.9a5.997 5.997 0 0 0 2.7 2.1l3.6 1.9.7-.7a.998.998 0 0 0 .4-1.3 11.69 11.69 0 0 0-1.4-3 4.7 4.7 0 0 1-1.1-3.4c-.1-.73-.1-1.47 0-2.2a3.8 3.8 0 0 0-.8-2.4c-1-1.1-2-2.2-3.1-3.2s-2.4-2-4-2.6a2.904 2.904 0 0 1-1.7-2.7 3.201 3.201 0 0 0-.8-2 10.008 10.008 0 0 1-1.7-2.8 2.002 2.002 0 0 1-1.8-2 5.511 5.511 0 0 1 .1-2.2 33.683 33.683 0 0 0 2.1-8.3c0-.1 0-.3.1-.3a.998.998 0 0 1 .7-.4l.6.2a.798.798 0 0 1 .4.6 1.899 1.899 0 0 0 2.3 1.9c.378-.039.76.03 1.1.2 1.3 1 2.8 1.6 3.5 3.2.7 1.6 2.6 3 4.1 4.3 1.5 1.3.7-.5.9-.4.2.1 1.6.8 1.5 1.9a15.12 15.12 0 0 0 .1 3c0 .3.6.5.9.4l.4-.2 3.4-3.3.8-.9c.4-.3.7-.7 1.2-.8 2-.4 3.3-1.7 4.7-2.9a5.8 5.8 0 0 0 1.7-2.9 7.498 7.498 0 0 0-.1-5.1v-.4a19.117 19.117 0 0 0-1.9-5.7l-.3-.6a7.996 7.996 0 0 0-1.5-2.1 31.137 31.137 0 0 0-4.2-3.2 4.007 4.007 0 0 1-2.1-2.5 2.704 2.704 0 0 0-1-1.5l-1.1-1a.998.998 0 0 1-.4-.7c0-1.3-.5-2.7.9-3.7a2.997 2.997 0 0 0 1-2c.108-.486.393-.913.8-1.2 1.4-.8 2.8-1.6 4.3-2.3a1.405 1.405 0 0 1 1.1-.1c.3 0 .7.3 1 .4.3.1 1.6.5 1.8 1.6a3.099 3.099 0 0 0 1.2 1.8 1.205 1.205 0 0 0 1.077.104 1.19 1.19 0 0 0 .723-.804v-1.3h-.1l-.3-.5c0-.2.3-.5.4-.6 1.8-.2 3.3-1.2 5-1.7a5.1 5.1 0 0 0 3.3-2.8c.2-.4.5-.4.9-.2s.7.7 1.3.4a9.013 9.013 0 0 1 3.2-.9c.864-.16 1.704-.429 2.5-.8a2.793 2.793 0 0 0 1.8-1.7c.1-.5.5-.5.8-.7.3-.2 2.5-1.6 3-3.1s.1-.3.2-.3a4.502 4.502 0 0 0 2-2.7c.1-.4.5-.3.9-.5s.8-.6.6-1.1a7.1 7.1 0 0 1-.2-2.9c.1-.6-.2-1.2.5-1.6a3.5 3.5 0 0 0 1.9-3 2.593 2.593 0 0 1 1-2 2.903 2.903 0 0 0 1.1-2.6 3.7 3.7 0 0 1 .4-1.8c.7-1 .2-1.9-.4-2.7l-1.4-1.2a1.902 1.902 0 0 0-1.3-.3 1.3 1.3 0 0 1 .2-.9 8.058 8.058 0 0 1 1.4-1.2 1.102 1.102 0 0 0 .1-1.3 5.204 5.204 0 0 0-1.8-1.8h.7c.8-.5 1-1.2.4-1.9l-.5-.5a3.1 3.1 0 0 0-.9-.7 4.505 4.505 0 0 1-1.9-2.2l-1.9-3.6a4.69 4.69 0 0 0-1.4-1.7l-.4-.2-1.3-.7a2.295 2.295 0 0 1-1.2-2.5 3.203 3.203 0 0 1 .6-2.1 6.509 6.509 0 0 0 1-1.5l.2-.5a6.696 6.696 0 0 1 2.1-2 5.5 5.5 0 0 1 3.1-1c.4 0 .6-.4.7-.8.088-.36.122-.73.1-1.1a1.203 1.203 0 0 0-1-1.3c-.632.05-1.268.05-1.9 0a3.197 3.197 0 0 1-1.4-.2 3.29 3.29 0 0 1-1.3-.7 1.598 1.598 0 0 0-1.5.1 10.396 10.396 0 0 0-2.1 2.1 2.307 2.307 0 0 1-1 .5 1.3 1.3 0 0 1-1.5-.8c-.4-1-.8-1.8-1.9-2.1a5.804 5.804 0 0 1-2.7-2 1.8 1.8 0 0 1-.1-1.6 1.596 1.596 0 0 1 1-.8h1.1a1.899 1.899 0 0 0 1.7-1.3c.4-1.4.6-2.9 2.2-3.6 1.6-.7.6-.8.8-1.2.2-.4.7-1.4 1.1-2 .231-.288.546-.497.9-.6.439-.074.89-.019 1.298.159.409.177.757.47 1.002.841a1.192 1.192 0 0 1 .261 1.31c-.06.146-.149.279-.261.39l-.3.7a2.494 2.494 0 0 0-.2 2.5c.2.3.2.7.4 1 .2.3-.2.9-.5 1.3l-.2.3c.1.2.1.5.2.6a.702.702 0 0 0 .7.2 5.187 5.187 0 0 0 1.9-1.7 7.092 7.092 0 0 1 5.4-3c.4-.1.7.1 1.1.2l1 .3c1.6.5 1.5.5 1.5 2v3.8c.024.602.274 1.174.7 1.6.4.4.8.7 1.3.5l1.1-.3a1.8 1.8 0 0 1 1.7.5c.482.382.918.818 1.3 1.3.4.5.4.8-.2 1.6-.6.8-.6.8-.2 1.2a5.191 5.191 0 0 1 1.5 4.8 7.519 7.519 0 0 0 0 1.5 5.69 5.69 0 0 0 1.1 2.7c0 .1.2.1.3.1a3.196 3.196 0 0 0 1.6-.9 2.697 2.697 0 0 1 2.4-.9h1.1c.9.1 1.3-.4 1.8-1a3.997 3.997 0 0 0 .8-4.2 18.017 18.017 0 0 1-.6-2.2c-.9-2.9-.9-2.9-2.9-5.1a16.474 16.474 0 0 1-1.9-2.7 5 5 0 0 0-2.1-2.2l-1.8-1.3a1.593 1.593 0 0 1-.6-1.3 1.408 1.408 0 0 1 .2-1.1 5.205 5.205 0 0 1 1-1.1 15.3 15.3 0 0 0 1.8-1.8 5.103 5.103 0 0 0 1.3-5.5 3.195 3.195 0 0 1 .5-3.3l.7-.8 1.1-1 1-1.1c.4-.6.4-1.5 1.2-1.8.8-.3 1.5.7 2.3 1.1a3.094 3.094 0 0 0 2.5 0 6.199 6.199 0 0 0 2.1-1.5 15.01 15.01 0 0 0 2.2-3.9c.8-2.3 2.1-4.3 2.5-6.7.096-.474.301-.919.6-1.3 1.5-2 1.7-4.4 1.9-6.7.2-2.3 1-3.9 1-5.9-.009-.388.095-.77.3-1.1.9-1.2.6-2.6.4-4a15.6 15.6 0 0 0-2.2-7 6.99 6.99 0 0 1-.8-2.3v-.5c-.1-2.2-.2-4.3-.2-6.4 0-.2.2-.4.3-.6l.3.2a24.255 24.255 0 0 0 2.5 3.1h.1c.9 1.1.7 2.6 1.4 3.9l.9 1.6a9.609 9.609 0 0 1 1.2 4.3c.082.224.116.462.1.7.5 1.7.6 3.4 1.8 4.9.543.687.857 1.526.9 2.4.12 1.249.458 2.468 1 3.6.444.755.653 1.626.6 2.5-.016.37.017.74.1 1.1a2.599 2.599 0 0 0 1.5 2l.6-.2c.05-.499.05-1.001 0-1.5 0-.8.4-1 1.2-.9.8.1 1.3.7 1.9 1h.4c.1-.2.3-.4.3-.6a2.996 2.996 0 0 0-1.3-2.2c-1.6-.7-1.9-2.6-3.3-3.5-1.4-.9-.8-1.8-1.1-2.7a23.406 23.406 0 0 1-.5-3.7 4.88 4.88 0 0 1-.1-1.2 1.098 1.098 0 0 1 .9-1l1.8-.2a2.504 2.504 0 0 0-.4-1.7c-2.3-3.9-4.3-7.9-7.1-11.4l-.5-.7a5.5 5.5 0 0 1-1-3.1 3 3 0 0 0-.4-1.8l-1.2-2.5a6.406 6.406 0 0 0-1.9-2.5c-.6-.4-.7-1.3-1.1-1.9a2 2 0 0 0-1.8-1.1c-.2 0-.4.2-.6.4-.2.2-.1.2 0 .3.079.21.18.411.3.6 1.3 1.5 1.3 1.5.1 3.4a.91.91 0 0 0-.1.7c0 .2.1.3.1.5.128.32.296.622.5.9a10.404 10.404 0 0 1 1.2 3.9c.1.2-.1.4-.2.6-.1.2-.7 0-.8-.5a3.9 3.9 0 0 0-.8-2.1 1.606 1.606 0 0 1-.6-1.3 2.1 2.1 0 0 0-.3-1.4 3.793 3.793 0 0 0-1.1-1.1 35.805 35.805 0 0 1-4.4-2.8 2.001 2.001 0 0 0-1.1-.2h-1.8c-.7.1-1.2.3-1.3 1a4 4 0 0 1-1.2 2.3h-.3l-1.5-3c-.1-.1-.2-.3-.3-.2a.997.997 0 0 0-.5.4c-.5.4-.4.9-.2 1.4-.079.21-.18.411-.3.6a.392.392 0 0 1-.381.013.395.395 0 0 1-.219-.313c-.4-.9-.7-1.8-1.1-2.8-.4-1-.7-1-1.7-.7a4.506 4.506 0 0 1-1.1.3h-1.1a1.002 1.002 0 0 1-1-1.3c.176-.315.31-.651.4-1l1.8-3.3a8.902 8.902 0 0 0 1.5-3.8c.286-2.47.997-4.872 2.1-7.1a8.303 8.303 0 0 0 1.1-5.1 2.499 2.499 0 0 1 .4-2.1l.2-.2a3.507 3.507 0 0 0 .3-3 1.404 1.404 0 0 1 .3-1.4 3.592 3.592 0 0 1 2.6-1.9 29.945 29.945 0 0 0 4.2-1.5 1.9 1.9 0 0 1 1.8.2c.7.3 1.3.2 1.6-.4a2.099 2.099 0 0 1 2.2-1.2c1.4.3 2.7-.5 4-.6 1.3-.1.5-.2.5-.4s.3-1.3.5-1.9a1.401 1.401 0 0 1 1.4-1l5.2.6c.368.086.711.257 1 .5.124.176.194.385.2.6l-.4.6a1.1 1.1 0 0 0 .2 1.4 1.295 1.295 0 0 0 1.4.4c.9-.6 1.9-1 2.8-1.7.315-.253.586-.557.8-.9.3-.5.7-.5 1.3-.3a1.103 1.103 0 0 0 1.3-.5c.4-.5 1.4-.8 1.2-1.7-.2-.9-1-.9-1.8-1h-.4a1.107 1.107 0 0 1-.8-.7 5.502 5.502 0 0 1-.1-4 6.28 6.28 0 0 1 .2-.7c.256-.466.425-.974.5-1.5v-.4c.083-.428.117-.864.1-1.3-.1-1.1 0-2.1 0-3.2s-.1-.9-.1-1.3a2.204 2.204 0 0 1 1.4-2.3h.1l2.5-1a2.595 2.595 0 0 1 2.4-.3c.6.2 1-.2 1.4-.5.4-.3.8-.1.9.3l.3 2.6a1.397 1.397 0 0 0 .4 1.1c.18.281.419.52.7.7a15.89 15.89 0 0 1 2.2 1.3l.7-.2a3.1 3.1 0 0 0 .5-1l.6-3.1c.1-.4.1-.9.2-1.3a2 2 0 0 1 1.5-1.9c.5-.2.5-.7.6-1.2h-.2c-1.7-1.4-2.2-3.3-2.5-5.3a.394.394 0 0 1 .1-.3 2.197 2.197 0 0 1 2.6-.8c.3.1.6.7.4 1a3.097 3.097 0 0 0 .1 3.2 6.596 6.596 0 0 1 1.5 4.1.8.8 0 0 0 .2.4v.2c.9 1.1.4 2.5.9 3.6a6.392 6.392 0 0 1-1.4 2.2c-.1.1-.2.1-.2.2a3.1 3.1 0 0 0-.7 2.1c0 2 .2 4-.6 5.9-.17.446-.239.924-.2 1.4.016.701-.017 1.403-.1 2.1v3.5a5.384 5.384 0 0 1 0 1.8 5.006 5.006 0 0 1-1.2 2.4c-.2.3-.3.7-.5 1a2.71 2.71 0 0 1-.8.7c-1 .8-1.1.9-.5 1.7a3.504 3.504 0 0 1 .7 3.1 12.667 12.667 0 0 1-.6 1.8 5.698 5.698 0 0 0-.2 2.6c.341 1.46.776 2.896 1.3 4.3 1.3 4.7 4.1 8.7 6.7 12.8l2.2 3.5.7 1.1c.21.375.48.713.8 1a8.299 8.299 0 0 1 1.9 2.7l1.2 3.1c.5 1.2 1.5 1.6 2.4 2.2h.4c.7-.6.8-1.6 1.2-2.3a7.203 7.203 0 0 0 .3-6.1 9.21 9.21 0 0 1-.4-1.3c-.4-1.3-.2-1.9 1.9-2.9l.3-.2c.4-.3.4-.5.2-.9s-.7-1-1-1.6a5.803 5.803 0 0 1-.5-1.4c0-1.1.1-2.2.2-3.4a1.994 1.994 0 0 1 1.4-1.6 7.976 7.976 0 0 0 1.6-.8 1.404 1.404 0 0 0 .4-1.7c-.6-.6-1.1-1.3-1.7-2a6.2 6.2 0 0 1-1.8-5.6v-.2a.796.796 0 0 1 .8-.7l.7.2c.8 0 1.5-.9 1.1-1.5-.4-.6-1.1-1.7-1.5-2.6a1.4 1.4 0 0 0-1.7-.9l-.6-.3c-.5-1-1.1-2-.6-3.2a2.106 2.106 0 0 0-.1-1.7l-.2-.4a3.501 3.501 0 0 0-2-1l-.5.2h-.1a4.718 4.718 0 0 0-.6.9 3.9 3.9 0 0 1-1.5-1.6c0-.2-.1-.3-.1-.4a11.391 11.391 0 0 1-.5-3.7 10.001 10.001 0 0 0-1.2-6.1c-.1-.2-.1-.5-.2-.7a2.103 2.103 0 0 1 1.7-2.8h.7c.8 0 .9-.1 1-.8a2.8 2.8 0 0 1 .7-1.7.6.6 0 0 1 .9 0c.262.554.562 1.089.9 1.6l.6.2c.241-.111.448-.283.6-.5.085-.61.219-1.212.4-1.8a4.304 4.304 0 0 1 1.2-2.3 4.4 4.4 0 0 1 2.9-1.4h.1c.7-.2 1.4.4 2 .8l1.8 1.3.6.4 1.1.2a.8.8 0 0 0 .7-.7c0-.9-.7-1.7-.4-2.6.118-.842.285-1.677.5-2.5.353-1.204.554-2.447.6-3.7.1-.3.1-.7.2-1a11.086 11.086 0 0 1 1.5-4.3 14.026 14.026 0 0 0 1.5-3 12.51 12.51 0 0 1 3-4.2 2.699 2.699 0 0 1 1.7-.6h2.6l1.1-.2c.2-.1.5-.3.5-.5s.1-3.3-1.4-4.4c-1.5-1.1-.5-.9-.8-1.3-.3-.4-.4-.7-.7-.8-.3-.1-2.4-1.7-3.9-2a6.562 6.562 0 0 1-.4-1.3c-.3-1-.8-1.6-1.9-1.5-1.1.1-.5 0-.6-.3l-.3-.7c-.5-1.1-.9-1.4-2-1.1-1.1.3-1.8-.4-2.5-1.2a.498.498 0 0 1-.057-.769.498.498 0 0 1 .257-.131l1.4-.4a3.097 3.097 0 0 0 2.2-2.8c.1-1.5.1-3 .1-4.5a4.304 4.304 0 0 0-.4-1.4 8.316 8.316 0 0 0-.9-1.6 1.996 1.996 0 0 0-1.8-1.6 3.004 3.004 0 0 1-2.1-1.5c-.2-.3-.4-.6-.2-1l.5-1.1c.3-.5.9-.6 1-.1a4.1 4.1 0 0 0 1.8 1.9c2.2 1.1 2.4 1.1 3.5-1.3.1-.3.1-.5.3-.7a2.794 2.794 0 0 1 1.8-1.2 1.498 1.498 0 0 1 1.3.6l1.3 1.4a1.799 1.799 0 0 0 2.4.4 3.5 3.5 0 0 1 2.4-.6h1.9a3.2 3.2 0 0 0 1.4-.3c.255-.038.496-.141.7-.3.142-.213.243-.45.3-.7 0-1.2.1-2.5-1.6-2.7zm-228-14.1h-.1v-.3l.1.3zm-115 282.9-4.7-1.2 4.7 1.2zm66.6-77.8v-.3h.2l-.2.3zm18.4-198.4-.9-.7-.2-.2.3.2.8.6v.2-.1zm4.5-13v-.2.2zm8.2 21.4a19.007 19.007 0 0 0-.5 2.3c-.1.4-.4.5-.8.6-.4.1-.9.8-1 1.4h.1l.7.7.8.7v.2h-.1l-.9-.7-.7-.7v-.2c-.6-.5-1.6-.6-2-1.3a15.153 15.153 0 0 1-.6-2c-.1-.4-.1-.7-.2-1l1.2.7a2.101 2.101 0 0 0 2.3-.1 2.5 2.5 0 0 1 1.6-.6h.2-.1zm4.5-2.9a12.699 12.699 0 0 0-2.7 1.8 1.3 1.3 0 0 1-.9.2h-.3v-.2h.2c.173-.402.41-.773.7-1.1l1.5-1.8c0-.1-.1-.1-.1-.2s-1.5-.1-1.8-1c-.3-.9.2-.4.3-.6.1-.2.3 0 .3.1l.6.5.6 1h.1l1.1.2.4.4a.354.354 0 0 1 .247.102.342.342 0 0 1 .076.381.348.348 0 0 1-.323.216v.001zm5.3-.4-.3-.2h.3v.2zm5.3 14.5h-.1v-.2h.4c-.2.4-.2.4-.3.2zm23 140.3h-.1.1zm15.1-37.1c-.2-.1-.2-.2.2-.2v.2h-.2zm43.4-112.6a1.2 1.2 0 0 1-1.5-.6.302.302 0 0 1 .059-.341.296.296 0 0 1 .341-.059l1.3.2c.1 0 .1.2.2.3.1.1-.2.4-.4.5zm31.2 112h-.3v-.2h.3l.3-.3c0 .1.1.1.1.2l-.4.3z"/>
+										<path d="m928.3 130.8-.9.7a1.601 1.601 0 0 0-.5 1.6c.3.9.5 1.7.8 2.5h.2l.2-.2a10.69 10.69 0 0 1 1.6-2.5 1.603 1.603 0 0 0-.4-2c-.3-.2-.8-.3-1-.1zM915.599 114.7h-.2c.027 0 .052.011.071.029a.1.1 0 0 1 .029.071l.1-.1zM915.8 114.5l-.2.2h.1c0-.1 0-.2.1-.2zM897.6 200.3a.099.099 0 0 1-.1-.1h.1v.1zM898.1 200.9c-.1-.3-.2-.5-.5-.6a.602.602 0 0 0 .5.6zM898.4 201.1h-.3v.2l.3-.2zM897.4 200.2c-.067-.4-.267-.6-.6-.6a.597.597 0 0 0 .6.6zM911.199 222.6l-.7-.2c-.2.1-.3.4-.4.6a4.205 4.205 0 0 0-.6 2.7 5.396 5.396 0 0 0 1.9-2.9l-.2-.2zM894.8 232.5a1.691 1.691 0 0 0-.3 1c-.1 1.2 1 1.6 1.4 2.5.257.718.557 1.419.9 2.1 0 .1.5.3.6.2l2.4-1.7c.3-.2.2-.8 0-1l-2.6-1.5v-.3l1.4-.5c1.4-1 2.7-.7 4 .3a3.696 3.696 0 0 0 2.4 1 .392.392 0 0 0 .381.013.395.395 0 0 0 .219-.313c.2-.7.3-1.5.5-2.2a2.5 2.5 0 0 1 1.5-1.8h.1l2.4-1.1a1.303 1.303 0 0 0 .624-1.404 1.312 1.312 0 0 0-.224-.496l-1.1-1.5a2.598 2.598 0 0 1-.7-1.1c-.2-.7-.4-.7-.8-.5a2.996 2.996 0 0 1-3.5.2 11.19 11.19 0 0 1-4.1-3 10.903 10.903 0 0 0-3-2.3 1.195 1.195 0 0 0-1 .2 1.097 1.097 0 0 0-.3 1.1c.2.5.5 1.1.7 1.7.257.536.426 1.11.5 1.7.199 1.726.299 3.462.3 5.2l-.5.4h-.8c-.7.1-.7.1-.7 1s.1.5 0 .7l-.7 1.4zM913.3 221.4a28.875 28.875 0 0 1 3.5-4.2c.2-.1.1-.5.1-.7l-.3-.2c-.5-.1-.8.5-1.3.6-.5.1-1.3.5-1.6 1.3-.3.8-.7 1.3-1 2a1.686 1.686 0 0 0-.1.7c.097.222.233.425.4.6l.3-.1zM919.3 214.9a2.297 2.297 0 0 0 1.3-2.3c-.1-.1-.1-.3-.2-.3h-.4a3.697 3.697 0 0 0-1.2 2.2s.1.2.2.2l.3.2zM925.9 185.9h-.3c.1.1 0 .2.1.3.1.1.4.1.4-.2l-.2-.1zM928.7 186h-.7a.2.2 0 0 0-.2.2 19.39 19.39 0 0 0-1.3 3c-.1.3.2.7.3 1h.4c.2-.2.4-.2.5-.4a4.993 4.993 0 0 0 1.2-3.7c0 .1-.2-.1-.2-.1zM865.7 276c.1-.3-.3-.6-.6-.6l-.7.2a.701.701 0 0 0-.2.9.9.9 0 0 0 .6.3c.6 0 .9-.3.9-.8zM896.4 255.2l.4-.5-.4-.6-.4.5c0 .2.2.4.4.6z"/>
+										<path d="M893.2 274c.8-1.3 1.6-2.5 2.3-3.8a1.1 1.1 0 0 1 .8-.7h1.9c.8 0 1.2-.7 1.9-1 .7-.3.4.2.6.2.2 0 .9 0 1-.3.1-.3.2-1.8 1-2.3l.3-.3c.1.1.2.2.2.3 0 .1.1.7.2 1 .1.3.6.6.9.4a3.102 3.102 0 0 0 1.7-4 6.092 6.092 0 0 1-.9-3.5 10.309 10.309 0 0 0-.8-5.5 1.5 1.5 0 0 1 .6-1.7 1.597 1.597 0 0 0 .7-1.6c-.05-.599-.05-1.201 0-1.8a9.804 9.804 0 0 0-1.4-5.3c-1.1-1.9-2.6-3.4-3.3-5.5-.1-.3-1-.4-1.3-.1-.3.3-2.5 3.2-1.7 5.3.8 2.1-.5 2 .7 2.7 1.2.7.2.4.2.7.2 2.7.5 5.4-1.1 7.9a6.556 6.556 0 0 0-.4 1.5 4.199 4.199 0 0 1-3.1 2.9.895.895 0 0 1-.9-.5c-.1-.3 0-.5-.1-.8-.1-.3-.3-.8-.6-.7l-.8.6a1.996 1.996 0 0 0 0 1.5c.07.468.036.946-.1 1.4a19.336 19.336 0 0 0-1.2 3.9c0 .3-.3.5-.5.4a10.11 10.11 0 0 0-3 .2c-1.161.44-2.369.742-3.6.9a1.91 1.91 0 0 0-1.6.9l-.6.8c-1.1 1.3-2.2 2.5-3.4 3.7-1.2 1.2-.2.6-.3 1a1.206 1.206 0 0 1-.3 1l-1.8 1.9a2.794 2.794 0 0 0-.6 1.8.298.298 0 0 0 .1.2 2 2 0 0 0 .8 1.3h.1c.032.493.246.956.6 1.3v.2h.1l1.4 3.9c.2.6 1.7 1 2.3.7.6-.3.3-.1.3-.2.429-.449.739-1 .9-1.6.3-1.9.4-3.8.6-5.7v-.2c-.6-1.3-.7-2.9-2.6-3.2 0 0-.1-.2 0-.3.1-.1 0-.3.1-.3.19-.18.438-.287.7-.3.8 0 1.5 0 1.9-.8a.993.993 0 0 1 .9-.6 7.57 7.57 0 0 1 2.1-.3h1.1l-.4.5a1.51 1.51 0 0 1-1.3.6h-.7a1.8 1.8 0 0 0-1.2 2.1c.2.6.5 1.1.7 1.7l.3.3a.993.993 0 0 0 .936.337.995.995 0 0 0 .764-.637c.097-.602.376-1.16.8-1.6.6-.5 1.2-.2 1.8-.1.6.1.3 0 .4 0l.3-.2a2.101 2.101 0 0 0 .6-2.3 15.857 15.857 0 0 1-1.2-1.3.801.801 0 0 1 .3-1l1-.5h.3c.3.1.2.3.1.6a1.289 1.289 0 0 0-.3 1 5.873 5.873 0 0 0 1.1 1.9 5.28 5.28 0 0 0 1.4 1.2 1 1 0 0 0 1.3-.2zM855.3 308.1h-.7c-.55.484-1.053 1.02-1.5 1.6a17.505 17.505 0 0 0-1.1 2.4 5.494 5.494 0 0 0-.6 2.8c0 1.7.3 3.3 1.7 4.4.384.317.721.687 1 1.1.3.2.5.1.6-.2a9.517 9.517 0 0 1 .5-1.8 9.795 9.795 0 0 0 1.1-4.7c.1-1.2.3-2.5.4-3.7a1.998 1.998 0 0 0-1.4-1.9zM859.8 332.8a4.3 4.3 0 0 1-2.5-.3c-1.3-.5-2 .4-2.3 1.3a7.41 7.41 0 0 0-.4 1.4c-.1 1.4-.3 2.8-.4 4.1a1.6 1.6 0 0 1-.6 1.3c-.2.1-.3.5-.3.7a31.658 31.658 0 0 0 1 3.3c0 .1 0 .2.1.2.111.434.337.83.654 1.146a2.49 2.49 0 0 0 1.146.654 2.002 2.002 0 0 0 1.4 2.4l.8.5a.099.099 0 0 0 .1.1h-.1l1.5-.8a.799.799 0 0 1 .9.1l.6.7c.8.4 1.6.7 2.4 0 .3.3.7.4.8.7a1.995 1.995 0 0 0 1.5 1.8c.4.1.3.5-.1.8-.4.3-.9 1.3.2 1.8l1.1.4c.2 0 .6-.2.6-.3a6.892 6.892 0 0 1 .3-2.5 1.803 1.803 0 0 0-.4-1c-.5-.4-1.1-.8-1.1-1.5a2.103 2.103 0 0 0-1.8-2 5.383 5.383 0 0 1-1.2-.9 1.594 1.594 0 0 0-1.5-.2l-.7.3h-.3l-.7-.2c-.3-.2-.3-.5 0-1 .23-.298.4-.637.5-1 0-.2-.3-.2-1-.3-.7-.1-.7-.3-.7-.7a3.197 3.197 0 0 1 .6-2.1l.7-.8c.9-1.5 1.4-3 .5-4.6a4.198 4.198 0 0 1-.5-2.9c.1-.3-.2-.6-.8-.6zM823.699 332.3a6.892 6.892 0 0 0 1.4-3.4c.1-.3-.2-.7-.5-.9a4.812 4.812 0 0 0-1.1-.5h-.7a5.401 5.401 0 0 0-4.5 2.2l-.3.7a3.005 3.005 0 0 0 1.8 3.3 3.694 3.694 0 0 0 3.9-1.4zM874.499 302.8c0-.1-.2-.2-.2-.2a.504.504 0 0 0-.466.134.494.494 0 0 0-.134.466c0 .1.1.2.2.3h.3l.3-.7zM878.1 296.2a.499.499 0 0 1-.1-.3.502.502 0 0 0-.7 0c-.4.3-.4.9 0 .9s.4-.2.6-.3c.2-.1.1-.2.2-.3zM879.7 288.1v.3a.2.2 0 0 0 .2-.2c.1-.4-.1-.4-.2-.1zM733.1 362.8a2.305 2.305 0 0 0-1-.4.404.404 0 0 0-.435.152.401.401 0 0 0-.065.148c.1.4.4.8.2 1.1-.2.3-.6 3.1-.9 4.3-.103 1.951.239 3.9 1 5.7a2.198 2.198 0 0 0 2.2 1.2 3.996 3.996 0 0 0 3.638-3.585 4.01 4.01 0 0 0-.238-1.815 19.01 19.01 0 0 0-4.4-6.8zM774.9 370.8c-.3.1-.4.3-.3.5l.2.2.3-.5-.2-.2zM771.2 351c-.2-.1-.4 0-.4.3-.09.257-.125.529-.1.8 0 .2-.1.4 0 .6.1.2.2.4.4.6.2.2.3-.4.3-.6v-1.4c0-.1-.1-.2-.2-.3zM770.1 359.7h.2c.1.1.3-.1.2-.1a.301.301 0 0 0-.37-.471.302.302 0 0 0-.03.471v.1zM770.2 355.5c-.3.3-.1.9.2.8l.2-.2c0-.2-.1-.4-.1-.6h-.3zM859.4 374.5h-.3l.2.2h.3a.197.197 0 0 0-.059-.141.197.197 0 0 0-.141-.059zM873 361.1c-.1.1-.1.2-.2.4a7.29 7.29 0 0 1-.6 2.1 8.295 8.295 0 0 1-1.7 1.5l-.7.8-.9.7c-.4.4-.6 0-.9-.3-.3-.3-1.3-1.2-2.5 0a7.7 7.7 0 0 1-2.1 1.4 2.402 2.402 0 0 0-1.2 2.3v.2c-.007.248.063.493.2.7a.703.703 0 0 0 .7-.2l1.1-1a8.5 8.5 0 0 0 3.2-.2c.3-.2 1.2.5 1.2.8 0 .3-.1 1-.1 1.5a3.203 3.203 0 0 0 2.6 3.2 5.803 5.803 0 0 0 1.8.4 1.596 1.596 0 0 0 1-.5 1.4 1.4 0 0 0 .3-1.3c-.1-.8-.7-1.4-.4-2.2l.6-.3c.2 0 .3.3.5.5s.5.6 1 .2a2.399 2.399 0 0 0 .8-2.7 23.841 23.841 0 0 1-.9-3.6 4.595 4.595 0 0 0-.9-2 3.4 3.4 0 0 1-1.5-2c-.1-.4-.3-.5-.4-.4zM862 353.6c0-.2-.2-.3-.3-.5l-.4.5.5.3c.1 0 .2-.2.2-.3zM868.4 348.3l-.6.2c-.2.2-.1.8.3.7.4-.1.3-.2.5-.3a.396.396 0 0 0 .047-.349.392.392 0 0 0-.247-.251zM854.2 354.5a.693.693 0 0 0 .3.6c.3.2 1.1-.3 1.1-.8s-.4-.4-.8-.5c-.4-.1-.6.2-.6.7zM847.7 365.3a.185.185 0 0 0-.05.068.196.196 0 0 0 0 .165.19.19 0 0 0 .05.067l.3.2h.3a7.911 7.911 0 0 0 3.1-2.6 10.202 10.202 0 0 1 3-3.2c.5-.2.4-.2 0-.8-.4-.6-1.2-.8-1.7-.2a36.528 36.528 0 0 1-4.7 5.7l-.3.6z"/>
+										<path d="M856.7 349.7c-.2.1-.4.4-.3.5a8.386 8.386 0 0 0 1.6 3.3.9.9 0 0 0 1.5-.1 2.1 2.1 0 0 0 0-2.4l-1-1.4a1.909 1.909 0 0 0-1.8.1zM861.2 350c.1-.1.1-.3.2-.4h-.4l.2.4zM861.399 349.6h.1c0-.1 0-.1-.1-.1v.1zM872.2 353.6a2.202 2.202 0 0 0-2.601-1c-.4.2-.8.8-.6 1.2.2.4.501 1.2.701 1.7a.303.303 0 0 1-.101.2 2.304 2.304 0 0 0-.199 2.8c.435.61.836 1.245 1.199 1.9h.7c.3 0 .601-.5.601-.8a4.463 4.463 0 0 1-.301-1.1c0-.2 0-.6.2-.6s1.2-1.4 1-2.4a5.113 5.113 0 0 0-.599-1.9zM868.7 360.9l-1.2.6c.12.318.328.595.6.8a.795.795 0 0 0 1 .1 1.1 1.1 0 0 0 .6-1.1.099.099 0 0 1-.1-.1.897.897 0 0 0-.9-.3zM868.099 358.9c0-.1 0-.3-.1-.3s-.3-.2-.6 0l-.7.7c-.1-.9-.9-1.1-1.5-1.5h.1a.1.1 0 0 0-.1.1v-.7a1.193 1.193 0 0 0-.2-.7 13.6 13.6 0 0 0-3.3-1.4l-.3.2c.1 1.2.1 2.4.2 3.6.1 1.2.5.5.8.6a1.205 1.205 0 0 0 1.4-.1 2.71 2.71 0 0 1 .7-.8h-.1a.1.1 0 0 1 .1-.1c-.3.9-.2 1.9-.9 2.7-.7.8-.6 1.3.4 2l1.2.8a.401.401 0 0 0 .5 0h.2l.2-.3c.367-.637.54-1.366.5-2.1h.8l.6-1.6c.093-.359.127-.73.1-1.1z"/>
+										<path d="M867.399 361.5a.099.099 0 0 0 .1-.1h-.1v.1zM781.399 385.2h.3l-.1-.2-.2.2zM786.8 389.5h-.4c-.1.2-.4.3-.4.5a1.993 1.993 0 0 0 1.1 1.7c.1 0 .3.1.4 0l.4-.5a1.993 1.993 0 0 0-1.1-1.7zM795.6 403.7h-.3l.3.3.3-.2-.3-.1zM791.2 397.6a.91.91 0 0 0-.7.1c-.3.1-.3.3-.2.6.1.3.5 1.1 1.1 1.3.6.2.4 0 .4-.1a.708.708 0 0 0 .4-.5 1.501 1.501 0 0 0-1-1.4zM818.4 402.3l-.3.3a.898.898 0 0 0-.1 1c.105.219.281.396.498.504.217.109.463.143.702.096l.9-.4c.011-.17.045-.338.1-.5a1.604 1.604 0 0 0-1.8-1zM844.7 405.9c0-.1.1-.2 0-.3a2.499 2.499 0 0 1 .2-2.5 2.8 2.8 0 0 0 .3-1.8 3.191 3.191 0 0 1 .9-2.7 13.91 13.91 0 0 0 2.2-3.9c.3-.7.5-1.4.7-2a1.597 1.597 0 0 1 1.2-.9h1.1l.7-.3a.699.699 0 0 0 .2-.9c-.4-1-1.5-1.3-2.1-2.1a1.203 1.203 0 0 1-.2-1.4 1.201 1.201 0 0 0-.2-1.4c-1.3-1.3-1-2.7-.4-4.1a.1.1 0 0 0 .071-.029.103.103 0 0 0 .029-.071c.188-.419.503-.769.9-1a1.592 1.592 0 0 0 .8-1.2 1.198 1.198 0 0 1 .9-1 1.697 1.697 0 0 0 1.3-.7.401.401 0 0 0 .1-.3v-.4l-2.6-1.4-1.1-.6a1.811 1.811 0 0 1-.645-.633 1.806 1.806 0 0 1-.255-.867c-.5-.5-.9-1.1-1.5-1.6h-1.1a2.095 2.095 0 0 0-1.4 1c-.4.7-.7 1.4-1.1 2a3.408 3.408 0 0 1-.9 1.2 9.803 9.803 0 0 1-2.7 1.8 5.904 5.904 0 0 0-3.3 2.9 15.37 15.37 0 0 1-1.1 1.6l-.2.2-.5.7a5.3 5.3 0 0 1-2.8 1.6 3.302 3.302 0 0 0-2.7 2.4c-.2.4-.3.9-.5 1.4a1.205 1.205 0 0 1-1.3.5l-2.4-.9a1.503 1.503 0 0 0-2 .6l-.6.9a4.798 4.798 0 0 0-.5 3.3c.424 1.07.759 2.174 1 3.3 0 .2.1.4.1.6 0 .2.6 1.7 1.6 1.9 1 .2.4.4.4.6 0 .2.5 1.9.6 2.9a1.698 1.698 0 0 0 1.7 1.6h1.9a1.3 1.3 0 0 1 1.5.8c.3.7.8.8 1.5.6a9.023 9.023 0 0 1 2.2-.6.912.912 0 0 1 .7-.1l3.1 1.1c.3.2.4.7.7.9a1.099 1.099 0 0 0 1.3.5 16.602 16.602 0 0 1 2.1-.6c.3-.1.7.1 1 .2a.895.895 0 0 0 .732-.149.892.892 0 0 0 .368-.651zM812.799 408.2c.028-.879.163-1.752.4-2.6a6.879 6.879 0 0 0 .3-2l1.1.2h.3c.3-.1.6-.7.5-.9-.1-.2-1.5-2.3-2.2-3.4l-.7-.2a2.102 2.102 0 0 0-1.3.7 2.46 2.46 0 0 1-.4.7.695.695 0 0 1-.658.249.702.702 0 0 1-.542-.449c-.3-.6-.5-1.3-.8-2a1.394 1.394 0 0 0-1-1l-1.5-.4a2.092 2.092 0 0 1-.4-.6c.5-.6-.3-1.4.2-2a.795.795 0 0 0 .1-1c-.6-.9-1.8-1.4-2-2.6-.2-1.2-.5-.5-.8-.7l-2.1-.9c-.3-.2-.7-.3-.9-.6-.2-.3-1.3-1.1-1.9-1.6a8.693 8.693 0 0 0-2.6-1.6 2.395 2.395 0 0 1-1.4-1.2 4.894 4.894 0 0 0-1.8-1.7 12.674 12.674 0 0 1-2.9-2.1c-.921-.756-1.7-1.67-2.3-2.7l-.2-.2a2.8 2.8 0 0 0-1.7-.7 15.285 15.285 0 0 1-4.7-1.1c-.3-.1-.7.1-1.1.2-.4.1-.5.8-.3 1.3.164.61.435 1.186.8 1.7l.9.9.9.9 1.6 1a8.21 8.21 0 0 1 2 1.7c.4.7 1 1.1 1.3 1.8a11.912 11.912 0 0 0 2.9 3.4c.355.334.629.745.8 1.2.4.8.6 1.7 1 2.5.196.443.467.849.8 1.2a9.29 9.29 0 0 1 2.9 4.6c.36.811.661 1.646.9 2.5a7.393 7.393 0 0 0 1.4 2.2c1 1.3 2.4 2.2 3.3 3.4a26.906 26.906 0 0 0 3.5 3.3h.1a16.677 16.677 0 0 1 2.8 2.5c.3.4.8.4 1.3.4h.3a11.54 11.54 0 0 1 3.7 0v-1.2c.14-1.027.174-2.066.1-3.1zM864.799 420.3l-.3-.2c-1.1.3-2.1.9-3.3.7l-3.3-.5h-.4a2.5 2.5 0 0 0-2.3.9.503.503 0 0 0-.2.6l3.7.9 4.8-.7c.3 0 .6-.3.9-.5.217-.152.39-.359.5-.6a.411.411 0 0 0 .089-.323.402.402 0 0 0-.189-.277zM870.4 422.7c-.5.3-1.2.3-1.8.6a5.315 5.315 0 0 0-1.4 1.2c-.1.1-.2.2-.2.3l3.6.9h.1a6.5 6.5 0 0 1 3.9-2.1 3.593 3.593 0 0 0 1.7-.7l.3-.2-1.3-1.3a7.702 7.702 0 0 0-4.9 1.3zM862 411.1a.5.5 0 0 1 .1-.3l-.2-.2c-.1.1-.2.1-.2.2s.1.4.3.3zM809.6 395.2c.1 0 .2-.2.2-.2s-.3-.5-.6-.3-.1.3-.2.5h.6z"/>
+										<path d="M808.6 395.8c-.1 0 0 .1 0 .2.093-.155.16-.324.2-.5-.1.1-.2.1-.2.3zM809 395.2h-.1c0 .1-.1.2-.1.3l.2-.2v-.1zM809.1 391c.1-.1.2-.3.1-.3l-.4-.6a2.195 2.195 0 0 0-.8 0h-1.2l1.7 1.1.6-.2zM819.6 381.2h.5a.7.7 0 0 0 .3-.7c-.1-.2-.4-.4-.6-.6a.61.61 0 0 0-.505.308.604.604 0 0 0 .005.592l.3.4zM901.099 411.9l-.3.2a3.5 3.5 0 0 0-.9 2.6c0 .2.2.4.4.6h.3a2.4 2.4 0 0 0 1.1-3 .508.508 0 0 0-.214-.328.503.503 0 0 0-.386-.072zM891.9 417.4c-.2-.1-.5.1-.7.2-.176.315-.31.651-.4 1 0 .2.2.4.4.6h.3a1 1 0 0 0 .7-1.1c-.1-.3-.1-.7-.3-.7zM874.799 404.5a.903.903 0 0 0 .1 1 2.404 2.404 0 0 0 2.6.8l.9-.5c.112-.218.179-.456.2-.7a1.096 1.096 0 0 0-.2-.6 2.498 2.498 0 0 0-3.6 0zM877.399 380.1v.3l.2-.2c0-.4-.1-.4-.2-.1zM864 399.1a1.704 1.704 0 0 1 1.4-.1h1.1c.2-.1.6-.2.6-.4.083-.73.116-1.465.1-2.2 0-.2-.2-.5-.4-.5a3.798 3.798 0 0 0-1.5-.1c-.942.327-1.913.562-2.9.7a3.8 3.8 0 0 0-3 1.3h-.7a3.784 3.784 0 0 1-1.332-1.013 3.781 3.781 0 0 1-.768-1.487 2.297 2.297 0 0 1 1.8-2.4 44.836 44.836 0 0 1 8.2.1 5.3 5.3 0 0 0 5.9-3 .804.804 0 0 0-.2-1c-.3-.3-.8-.4-1-.2-.442.429-.909.829-1.4 1.2a3 3 0 0 1-2.7.9c-1.5-.3-3-.3-4.5-.5s-1.9-.6-2.9-.6-1.7 1.5-2.9 1.5l-.4.2a2.596 2.596 0 0 0-1.2 1.8c-.1.4 0 1-.1 1.4a2.903 2.903 0 0 1-.5 1.4 3.998 3.998 0 0 0-1 2.8c0 .2-.1.5-.1.7a6.424 6.424 0 0 1-.6 1.8c-.2.6-.5 1.1-.7 1.7a2.096 2.096 0 0 0 .5 2.1l.9.6a1.9 1.9 0 0 1 .7 2c-.2.9-.7 1.7-.5 2.6.085.368.257.711.5 1a2.295 2.295 0 0 0 2.4.1c.6-.2.4-.8.4-1.3 0-2.1.5-4.2.7-6.3v-.4c.164-.16.373-.265.6-.3.2-.1.5.2.5.4v1.4a2.69 2.69 0 0 0 1.1 1.9c.3.3.2 1 .4 1.4.2.4.6 1.1 1.7 1.1h.7c.1.7.2 1.4 1.1 1.6l.3.2a.9.9 0 0 0 1 0c.2-.1.5-.3.5-.5.216-.984.283-1.996.2-3a1.804 1.804 0 0 0-.9-1.2l-.9-.5c-.4-.4-.7-.7-.6-1.3a2.009 2.009 0 0 0-.4-1.8l-1.3-1.8a.798.798 0 0 1 .2-1l1.9-1zM870.7 399.5c-.2 0-.4.3-.5.4-.1.1 0 .6.3.6h1.8c.498.05 1.001.05 1.5 0l.4-.3-.3-.2-3.2-.5zM881.2 399a.904.904 0 0 0-.9-.5c-.4.1-.7.6-.5.9a.802.802 0 0 0 .9.3c.2 0 .4-.2.6-.4a.401.401 0 0 1-.1-.3zM882 396.2h-.2c0 .1.1.1.2 0zM888.8 403.9a9.198 9.198 0 0 0-6.5-.8 1.801 1.801 0 0 0-1.3 1.2c-.2.7.3 1.4.9 1.2a8.51 8.51 0 0 1 6.8.6h.4c.3.1.7-.2.8-.7a1.905 1.905 0 0 0-.3-.9 2.707 2.707 0 0 0-.8-.6zM880.2 396.6l.8-.6h.7a8.542 8.542 0 0 1-.4-1.7.7.7 0 0 1 .4-.9h.4c.6-.1 1.1-.3.9-1.2a1.306 1.306 0 0 1 .3-1c.354-.344.568-.807.6-1.3a1.096 1.096 0 0 0-.2-.6h-1.1a.9.9 0 0 1-.9-.5c-.2-.3-.1-.4.5-.8s.5-.2.6-.4a.597.597 0 0 0 0-.6s-.2-.2-.3-.1c-2.6.7-3.2 2.2-3 4.7.017.505.084 1.008.2 1.5l.6 2.5h-.1l-.6.2c-.4.2-.5.5-.3.8a.61.61 0 0 0 .45.203.6.6 0 0 0 .45-.203zM913.7 399.2c-1.8-.8-3.3-1.2-4.5.9l-.2.2a13.4 13.4 0 0 0-3 2.1l-1.3 1.5c-.2.3-1 .3-1.3.1l-2.2-2.1a1.687 1.687 0 0 1-.5-1.3 7.664 7.664 0 0 1 .2-1.5 3.502 3.502 0 0 0-.6-2.5c-.3-.6-1.1-.6-1.7-.7l-2.1-.8a2.613 2.613 0 0 0-1.061-.172c-.361.018-.715.11-1.039.272l-1 .6-1.1 3.3a1.399 1.399 0 0 1 .9.8 2.9 2.9 0 0 0 2.8 1.5h2.2a.694.694 0 0 1 .5.4l-.2.2c-1.4-.1-2.6.9-4 .9a.3.3 0 0 0-.273.352c.01.055.035.107.073.148a8.308 8.308 0 0 1 1.7 3.2c.1.6 1.1.8 1.6.4l.7-.9a.7.7 0 0 1 .9-.3 26.993 26.993 0 0 1 2.9 1.6 6.18 6.18 0 0 0 2 1l3.2 1h.4l2.1.8c.703.375 1.372.81 2 1.3l11.9-8.7a19.36 19.36 0 0 0-4-1.5 30.354 30.354 0 0 1-6-2.1z"/>
+										<path d="M906 399.7h.4a.995.995 0 0 0 1-.4l-.9-.4-.5.2-.2.2c0 .2.1.3.2.4zM906.499 397.3c.1 0 .1-.2.2-.3a.897.897 0 0 0-1-.7c-.1 0-.3.1-.3.2.107.3.278.573.5.8h.6zM852.9 421.5c0-.1-.1-.2-.2-.3l-3.7-.9c-.1.1-.1.2-.2.2l-.3.6c-1.3-.8-2.7.1-4-.4a1.1 1.1 0 0 0-1.2.7c-.2.3-.2.8.1.9l2.2.7 1.3.2a36.284 36.284 0 0 0 5.9-1.1c.3-.1.3-.3.1-.6zM841.199 419.8a4.911 4.911 0 0 1-3.7-1.2h-2.2a1.096 1.096 0 0 1-.899-.5c-.2-.3.099-.5.699-.7h1c.3-.1.5-.2.5-.5s-.6-.4-.9-.5a16.182 16.182 0 0 1-4.4-.7 7.62 7.62 0 0 1-2.1-.8 1.797 1.797 0 0 0-2.2.2c-.2.1-.3.3-.4.4a1.395 1.395 0 0 1-1.3.6l-1.899-.2a3.7 3.7 0 0 1-2.901-1.3 5.106 5.106 0 0 0-3.8-1.3c-1.3 0-2.6-.4-4-.4a5.782 5.782 0 0 1-1.1 2.6.603.603 0 0 0 .4.9c.857.115 1.64.542 2.2 1.2.2.5.7.6 1.3.6a6.9 6.9 0 0 1 2.8.8 4.097 4.097 0 0 0 2.2.2 8.606 8.606 0 0 1 4.7.8 10.708 10.708 0 0 0 4.6 1.1h2.601a8.304 8.304 0 0 1 4.399.9c.5.4 1.101.2 1.601-.3s.699-.2 1.099-.1l1.401.2c.4.1 1-.5 1-1s-.401-1-.701-1zM857.1 425.1c-.8-1.1-2-1.4-3.6-1.4l-.8.2a.707.707 0 0 0-.3.6.602.602 0 0 0 .2.7 20.13 20.13 0 0 1 3.3 1.6 1.406 1.406 0 0 0 1.1 0 .798.798 0 0 0 .5-1.1l-.4-.6zM812.7 412.4c0 .1-.1.1-.1.2h.1c.1-.1.1-.1.1-.2h-.1zM775.9 32.9l1.5 1.9h.3l.5-.6c-.1-.3-.1-.7-.2-1a5.4 5.4 0 0 0-.7-1.3 2.4 2.4 0 0 0-1.3-.8c-.2 0-.4-.2-.6-.4-.2-.2-.5-.1-.6.1-.1.2-.1.1-.1.2v.2l1.2 1.7zM778.1 28.8c.224.618.492 1.22.8 1.8.195.42.43.823.7 1.2a4.304 4.304 0 0 1 1.3 2.6c0 .2.4.5.6.7.026 0 .052.01.07.03a.1.1 0 0 1 .03.07l1.1.6h.1l.8.4.7.2.7.4.8.6a2.194 2.194 0 0 0 2 .7c.6-.1 1.3.1 1.9 0 .32-.115.599-.324.8-.6.3-.6.3-1.2 1-1.5.474-.411.85-.924 1.1-1.5a2.598 2.598 0 0 1 2.9-1.2c.3.1.7-.1 1-.2.315-.213.586-.485.8-.8a.903.903 0 0 0 .3-.6.793.793 0 0 1 .3-.7l.2-.2c.24-.11.447-.283.6-.5.214-.257.352-.569.4-.9h.1V28a.1.1 0 0 0-.03-.07.098.098 0 0 0-.07-.03 8.597 8.597 0 0 0-.6-1.7.895.895 0 0 1 .1-.5c0-.8-.6-1.1-1.4-1.3l-1.3-.3-3.5-.7h-.3c-.3.2-.7.3-.9.6a.802.802 0 0 0 0 .7c.325.502.594 1.039.8 1.6 0 .3.1.6.1.9.087.326.121.664.1 1 0 .3.1.6.1.9a.099.099 0 0 1-.1-.1h-.3l-.3-.5-.3-.4a5.89 5.89 0 0 1-1-2.8 1.501 1.501 0 0 0-1.1-1.4h-.3l-.7-.2-1.5-.3a.798.798 0 0 0-.6.4 3.777 3.777 0 0 0-.6 1.3 14.59 14.59 0 0 0 .1 2.1h-.7a5.29 5.29 0 0 1-1.7-.8l-.5-.4-.6-.5-.4-.3h-.5l-1.1-.4c-.4-.2-1 .2-1.2.7l-.9 2.8a.991.991 0 0 0 0 .9c0-.4 0-.4.1-.4zM803.499 26.7l.7.4 2.3.8 3.3.6 1.6-.2.4-.2.9-.5.4-.5a1.29 1.29 0 0 0 .3-.7 1.387 1.387 0 0 0 0-1.1c0-.1-.1-.2-.2-.3a.993.993 0 0 0-.4-.5 1.597 1.597 0 0 0-.8-.6 2.795 2.795 0 0 0-1.3-.3c-.82.224-1.656.391-2.5.5-.9.1-1.9-.1-2.9-.1a1 1 0 0 0-.7.2 3.698 3.698 0 0 1-1.8.2c-.3 0-.5.5-.3.8.178.588.526 1.11 1 1.5zM798.3 40.5l-1-.7a1.1 1.1 0 0 0-1 .1.998.998 0 0 0-.4.5c0 .2-.1.3 0 .5a.597.597 0 0 0 .1.4c.105.567.428 1.07.9 1.4h.1l.5.3h.2a.698.698 0 0 0 .7-.4 1.6 1.6 0 0 0 .3-.9 2.808 2.808 0 0 0-.4-1.3v.1zM799.9 47.7h.3a7.001 7.001 0 0 1 3.5-.9 28.49 28.49 0 0 0 4.1-.4h.2a.993.993 0 0 0 .445-.637.998.998 0 0 0-.145-.763 12.499 12.499 0 0 0-.9-1.2 4.689 4.689 0 0 0-1.2-.9l-.7-.2-1.3-.5h-2.3a1.903 1.903 0 0 0-1.4 1.1c-.1.7-.2 1.5-.5 3 0-.1-.1.2-.1.6 0 .4-.1.3-.2.5v.3c0-.2.1-.1.2 0zM786.4 45.7c0-.2 0-.3-.1-.4h-.2a.397.397 0 0 0-.53.116.387.387 0 0 0-.07.184c0 .1.2.2.3.2h.7l.3.5a.2.2 0 0 0 .2.2h1.1c.1 0 .2-.2.2-.3 0-.1-.1-.3-.2-.3l-.6-.4h-1.1v.2zM732.8 60.6c-.1.9.5 1.3 1.2 1.6l1.1.2h.4a1.4 1.4 0 0 0 1.5-1.7 4.994 4.994 0 0 0-.8-2 1.3 1.3 0 0 0-1.3-.5l-1.7.8a1 1 0 0 0-.5 1.2.603.603 0 0 1 .1.4zM707.2 40c.3-.1.5-.1.7-.3a.704.704 0 0 0-.3-.9.397.397 0 0 0-.53.116.397.397 0 0 0-.07.184.609.609 0 0 0-.111.497.596.596 0 0 0 .311.403z"/>
+									</g>
+								</svg>
+								<button>
+									<div class="k-text font18 weight700 k-white k-eng">Asia</div>
+								</button>
+							</div>
+							<div class="map-item item-02">
+								<svg width="1018" height="600" viewBox="0 0 1018 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<g opacity=".8" fill="#BB1E4D">
+										<path d="M577.4 33.4a.197.197 0 0 0 .141-.059.194.194 0 0 0 .059-.141.499.499 0 0 0-.3-.6.5.5 0 0 0-.5.5.395.395 0 0 0 .218.313.403.403 0 0 0 .382-.013zM568.199 41.6c.942.305 1.915.506 2.9.6.7.1.6-.5.7-.9.1-.4.1 0 .1.1 1 .2 1 .2.9 1-.1.8-.1.7-.1 1.1a1.613 1.613 0 0 0 .397 1.161 1.612 1.612 0 0 0 1.103.539l1.1.3c.6.1.9-.2 1.3-.6.418-.472.665-1.07.7-1.7.033-.493.247-.956.6-1.3.9-.7 1-2 2-2.7.202-.233.32-.526.338-.833a1.391 1.391 0 0 0-.238-.867l-1.6-2c-.1-.2-.5-.2-.7-.2-.2 0-1.4.6-1.5 1.8a2.298 2.298 0 0 1-1.3 2.1c-.1-.2-.1-.5-.2-.6a5.395 5.395 0 0 0-2.9-1.5 2.2 2.2 0 0 0-1.4.2 10.001 10.001 0 0 0-3 2.8 1.209 1.209 0 0 0 .089.916 1.194 1.194 0 0 0 .711.584zM586.799 38.6l-1.1-.2-.7.2-.4.5c-.1.3.1.5.4.5.893.174 1.764.442 2.6.8v-.9c0-.7-.1-.8-.8-.9zM588.299 41.2l.6-.3c-.2-.1-.4-.3-.6-.3h-.6v.7l.6-.1zM579.899 45.3c.036.226.14.436.3.6a1.502 1.502 0 0 0 1.9-.3.5.5 0 0 0 .1-.3 3.184 3.184 0 0 0-.8-1.2c-.4-.3-.8 0-1.2.2a2.922 2.922 0 0 0-.3 1zM596.1 32.9c-.2.2-.4.4-.4.6a5.808 5.808 0 0 0 .3 3.2c.192.45.55.808 1 1a3.502 3.502 0 0 0 3.1-.8 1.204 1.204 0 0 0 .2-1l-.2-.3-.4-.6c-.3-.4-.4-.6-.2-.8.2-.2.2-.3.3-.5.1-.2.7-1.1.3-1.6a1.398 1.398 0 0 0-1.7-.2l-.9.4h-.1l-1.3.6zM592.399 36.3l.1.3.2-.2-.3-.1zM590.999 27.3c.1.1.2-.1.3-.2.1-.1 0-.4-.3-.5a.198.198 0 0 0-.141.058.198.198 0 0 0-.059.142c-.2.2-.1.4.2.5z"/>
+										<path d="M597.4 32.3c.2-.3.5-.5.6-.8a1.102 1.102 0 0 0-.8-1.5 1.805 1.805 0 0 0-1.4.3l-.2.2a1.102 1.102 0 0 0 .1 1.4 2.2 2.2 0 0 0 1.7.4zM588.4 24h.5c.4 0 .9-.7.7-1.1l-.9-.5a.997.997 0 0 0-.9.6v.3l.6.7zM584.4 42.3a.707.707 0 0 0 .073.338.709.709 0 0 0 .227.262.6.6 0 0 0 .7.1c.766-.48 1.471-1.05 2.1-1.7h-2.3c-.5 0-.8.4-.8 1zM590 39.3c-.1 0-.3.4-.3.6a2.996 2.996 0 0 0 1 2.3c.2.4.9.5 1.3.4.4-.1.9-.6 1.3-.7a1.6 1.6 0 0 0 1.4-1.1c.107-.391.276-.762.5-1.1.4-.8.3-1.2-.3-1.5l-1.3-.6c-.3-.1-.6-.1-.7.1a5.6 5.6 0 0 1-2.9 1.6zM596.699 42.3a1.103 1.103 0 0 0 1 .9 1.2 1.2 0 0 0 1.1-1.2 1 1 0 0 0-1-.8 1.101 1.101 0 0 0-1.1 1.1zM579 42.8c-.2.1-.5.3-.5.4 0 .1.1.8.3.9h1.3l-.5-1.2-.6-.1zM586.3 34.1c.2 0 .3.2.5.3l-1.3.5a.794.794 0 0 0-.4.6.705.705 0 0 0 .4.5c.9.7 2.2.3 3.2 1s.7 0 1-.1a.8.8 0 0 0 .7-.3 4.2 4.2 0 0 1 2.1-2.4c.5-.5.5-.9-.1-1.6-.6-.7-.2-.2-.3-.3 0-.4.1-.9-.3-1.2h-.6c-.3 0-.4.2-.3.5l.5.9h.1l-1.4-.6a.807.807 0 0 1-.4-.6c.4-1.5-.8-2.9-.2-4.4.6-1.5-.2-.4-.4-.5a1.302 1.302 0 0 0-1.969.197 1.292 1.292 0 0 0-.231.703 7.601 7.601 0 0 1-.8 3.6c-.3.3 0 .7.4.9a.198.198 0 0 1 .2.2c.1.2-.1.3-.4.4-.3.1-1.4-.1-1.5.6-.1.7.9.8 1.5 1.1zM597.799 23.9c.5-.1.8-.5.7-.8a.9.9 0 0 0-.8-.5c-.4.1-.7.5-.5.8.153.217.36.39.6.5zM601.699 31.8c.1.1.5-.1.6-.2.1-.1.7-1.8 1.6-2.4.9-.6.2-.5.1-.6a15.635 15.635 0 0 0-1.8-3.1c-.2-.2-.9-.2-1 0-.52.52-.989 1.09-1.4 1.7a3.596 3.596 0 0 0-.2 1 3.205 3.205 0 0 0 2.1 3.6zM503.999 62.6c-.1.2-.3.4-.3.5a4.797 4.797 0 0 0 2.5 3.9l.3-.2v-.3c-.5-1.5-1.6-2.5-2.2-3.8l-.3-.1zM504.9 60.7a3.9 3.9 0 0 0 1.1 2.7 7.01 7.01 0 0 1 1.4 2.1c.9 1 1.6 2.2 2.9 2.7-.05.699-.05 1.4 0 2.1a1 1 0 0 0 .8 1c.6.1 1.2.1 1.4.8.2.7-.9.1-1.2.6a1.703 1.703 0 0 0 0 1.7 7.798 7.798 0 0 0 4.4 3.8 1.702 1.702 0 0 0-.1.7 6.29 6.29 0 0 0 1.6 2.4 1.198 1.198 0 0 0 1.4-.2c.1-.3.3-.5.3-.7-.019-.635.014-1.27.1-1.9.215-.958.382-1.926.5-2.9a4.1 4.1 0 0 1 .8-2.4c.34-.385.519-.886.5-1.4 0-2 1.1-3.9.9-5.9 0-.2.1-.5.1-.7a2.706 2.706 0 0 1 1.7-1.9c.3-.1.6 0 .6.2s-.3 1.1 0 1.5c.3.4 1 2.7 1.7 4.1a2.007 2.007 0 0 1 .2 1.7c-.1.6-.3 1.2-.4 1.9-.1.7.5 1 .9.9l1.7-.7c.6-.3.7-.3.9.6.079.117.115.259.1.4.2.6.6.7 1.1.4a7.301 7.301 0 0 0 2.5-4.4c.1-.2-.1-.5-.3-.6a1.102 1.102 0 0 0-.7-.3c-1.2 0-1.7-.5-1.8-1.8-.1-1.3-.4-1.3-1.8-1-1.4.3-.7.2-.6-.5l.3-1.1a.996.996 0 0 0-.046-.903 1 1 0 0 0-.754-.497c-.6-.3-1.3-.4-1.8-1.2-.5-.8-1.4-1.2-1.6-2.3-.2-1.1-.4-.4-.6-.5a6.993 6.993 0 0 1-1.4-.3 2.8 2.8 0 0 1-2.1-2 3.308 3.308 0 0 0-1.6-2.4c-.3-.1-.5-.5-.7-.8a2.702 2.702 0 0 0-1.6-1.4l-1.3-.7a.8.8 0 0 0-1 .2c-.1.1-.1.2-.2.4s-.3 1.6-.5 2.4a.6.6 0 0 1-.6 0 2.5 2.5 0 0 0-2.5 0v-.2c-.3-1-.8-1.4-1.5-1.1-.942.327-1.913.562-2.9.7a1.4 1.4 0 0 0-1.3 1.1l-.4 1a2.999 2.999 0 0 0 .8 3.7c.3.3.6.5.6.9zM536 49.3v.2c.1-.1.2-.2 0-.2zM522.599 44.5c0-.1-.2-.2-.3-.2h-.6c.075.206.216.382.4.5.3.2.5 0 .5-.3z"/>
+										<path d="m521.7 44.3-.2-.2v.3a.112.112 0 0 0 .206-.015.115.115 0 0 0-.006-.085zM517.699 51.8c.5 1.8 1 2.3 2.8 2.4l1.6-.2-.6.7c-.4.4-.5.9 0 1.2l1.9 1.1a2.201 2.201 0 0 0 2.1.4 1.9 1.9 0 0 1 2.3.7c.8.9 1.5.8 2.5-.1s.7-.8 1.2-.8a1.898 1.898 0 0 0 2.3-1.9 4.497 4.497 0 0 1 1.1-1.9 5.196 5.196 0 0 0 1-3.8 8.393 8.393 0 0 0-2-.8 12.506 12.506 0 0 1-3.9-1.1 1.5 1.5 0 0 0-1.7.4c-.6.5-.7.4-1-.4a6.31 6.31 0 0 1-.2-.7.8.8 0 0 0-1-.3 1.202 1.202 0 0 0-.5.5c-.1.3-.1.7-.2 1.1-.1.4 0 .8-.2 1-.2.2-.6-.2-.8-.3l-.4-.2a3.002 3.002 0 0 1-2.8-1.5l-.6-.4a.598.598 0 0 0-.736-.093.603.603 0 0 0-.264.693c-.1.2 0 .5 0 .7 0 .2-.2.6-.4.6s-.4-.1-.6-.2c-.2-.1-.5-.1-.6.1a2.103 2.103 0 0 0-.6 1.7l.3 1.4zM536 62.1l.3.6c0-.1.2-.2.2-.2a.6.6 0 0 0-.2-.7c-.1.1-.3.2-.3.3zM448.2 150.9l-1.2-.8c-.7-.4-.3-1.2-.5-1.7a13.106 13.106 0 0 0-.8-1.7.403.403 0 0 0-.6-.2 1.103 1.103 0 0 1-1.4-.3 1.208 1.208 0 0 0-.975-.418 1.198 1.198 0 0 0-.925.518 3.4 3.4 0 0 1-3.7.9c-.5-.1-1.1.2-1.5 0a1.792 1.792 0 0 0-1.441.026 1.806 1.806 0 0 0-.959 1.074h-.6c-.3-.2-.4-.5-.7-.8-.3-.3-.8-.2-1 .1a2.595 2.595 0 0 0-.2 1.5c.2.7-.3 1.1-.9 1.4l-.6.2a2.1 2.1 0 0 1-.5-1.9 2.105 2.105 0 0 0-.8-1.9l-.9-.7c-.8-.8-1.2-.8-2.4 0a2.397 2.397 0 0 0-1.6.7c-.7.9-1.3 1.9-1.9 2.8-.6.9.3 1.1.8 1.1.345.031.692-.038 1-.2a2.794 2.794 0 0 1 2.5.3c.3.1.4.3.2.6s-.5 1.1-1.3 1.2c-.847.036-1.686.17-2.5.4a.691.691 0 0 0-.3.6c.035.226.139.436.3.6h.1l1.8.4c.346.063.663.239.9.5a8.598 8.598 0 0 1 1 1.6 1.41 1.41 0 0 1-.2.6l-.7.4c-.6 0-.8.4-.8 1s.4 1 1.2 1.1h1.1c1.3-.1 2.5-.1 3.4.9l3.6 1.1c.465.113.955.078 1.4-.1 1.9-.7 3.6-1.8 5.5-2.4l.9-.6.7-.6a6.193 6.193 0 0 1 2.5-1.1 2.306 2.306 0 0 0 1.2-.9l1.3-1.4c.111-.182.179-.388.2-.6a2.597 2.597 0 0 1 .5-2.8.399.399 0 0 0 .1-.3c-.1 0-.2-.2-.3-.2zM599.599 124.8c-.033.405-.1.806-.2 1.2 0 .2.1.3.1.4l.3 1.3a1.5 1.5 0 0 0 1.6.8h.3c1.5-.4 2.1-1.6 2.5-3a1.092 1.092 0 0 0-.3-.7 3.692 3.692 0 0 0-3-1.2 1.6 1.6 0 0 0-1.3 1.2zM464.7 190.4h-.1v.2h.2l-.1-.2zM466.399 189c.1-.2.1-.4.2-.6.1-.2 0-.4-.3-.6h-.3a2.007 2.007 0 0 0-1.3 1.2v1.4l.6-.2a2.106 2.106 0 0 0 1.1-1.2zM474.2 185.2c-.1-.4-.2-.4-.4-.1l.2.3.2-.2zM466.099 192.6a3.197 3.197 0 0 1 .7 3.1.802.802 0 0 0 .5.9l.4.5c-.02.276-.087.547-.2.8-.204.278-.372.58-.5.9l.4.5.3.7c.5.9.6.9 1.6 0s.1-.2.2-.2c.127.212.196.453.2.7l-.3 1.8c-.1.7.3 1.1 1 1.2h.4a6.115 6.115 0 0 1 1.9 0c.6.2.3 1.1.7 1.6l.6.8a1.6 1.6 0 0 1 .6 1.7c-.3 1.2-.5 1.8-1.3 1.9h-1.9c-.3 0-.5.1-.5.4 0 .3-.2 2 .7 2.8a1.002 1.002 0 0 1-.2 1.3l-1.2.9a4.982 4.982 0 0 0-.8.7.895.895 0 0 0-.1.7c0 .2.2.5.4.5 1.467.288 2.883.793 4.2 1.5l.3.3c-.2 0-.4.2-.6.1a2.804 2.804 0 0 0-2.8 1.4c-.8 1.2-1.9 2-2.7 3-.8 1 0 .3 0 .4 0 .1.2.3.3.2.1-.1.8.1 1.1-.1.3-.2 1.3-.8 2-.6a2.598 2.598 0 0 0 2.9-1.2 2.303 2.303 0 0 1 1.4-.4c1.236.136 2.486.068 3.7-.2a33.283 33.283 0 0 1 4.4-.6 4.704 4.704 0 0 0 1.7-.4 6.208 6.208 0 0 0 1.9-1.4.896.896 0 0 0-.1-1l-.7-.4c-.4-.333-.5-.633-.3-.9a17.034 17.034 0 0 0 1.5-2.2 2.392 2.392 0 0 0 .048-2.327 2.406 2.406 0 0 0-1.948-1.273h-2v-.2a3.369 3.369 0 0 0-.1-1 14.684 14.684 0 0 1-1.5-3.4 2.996 2.996 0 0 0-1.4-1.7 4.903 4.903 0 0 1-2.2-2.9 5.395 5.395 0 0 0-2-3l-1.4-.8c-.3-.1-.4-.2-.2-.5.129-.604.366-1.18.7-1.7a10.712 10.712 0 0 0 1.4-3.5 1.198 1.198 0 0 0-1-1.3l-.7-.2h-2.6a.694.694 0 0 1-.5-.4.5.5 0 0 1 .1-.3l1.3-1.8c.2-.2.1-.5.1-.7 0-.2-.4-.6-.8-.6l-3 .2a1.296 1.296 0 0 0-1.1.8l-1.8 3.3c-.1.3-.3.2-.6.2s-1.3.7-.6 1.4zM532 193.7c.1.2.6-.1.9-.4a4.009 4.009 0 0 0 .7-3.5 1.903 1.903 0 0 0-1.6.6 2.298 2.298 0 0 0-.7 2c.1.3.1.5.2.8l.5.5z"/>
+										<path d="M663.532 125.837a5.105 5.105 0 0 1-.6-2.9 1.495 1.495 0 0 0-.7-1.6l-1.6-1.1a4.1 4.1 0 0 1-1.5-2.1l-.9-2.6c-.7-1.9-1.4-3.9-2-5.9h-.1a7 7 0 0 0-2.8-4.1 2.509 2.509 0 0 1-1.1-2.2v-1.4a31.192 31.192 0 0 0-1-6 1.599 1.599 0 0 0-1-1.1c-1.9-.7-3.8-1.2-5.8-.5-.4.2-1-.1-1.5 0l-.3.2a.795.795 0 0 0-.4.6 10.945 10.945 0 0 0-.1 1.8l.3 6a3.699 3.699 0 0 1-.9 2.8 4.105 4.105 0 0 0-.9 3 2.206 2.206 0 0 0 .8 2 2.6 2.6 0 0 1 1.4 1.7c.2 1 1 2 .4 3.2v.7c.6 1 1.1 2 1.7 2.9h.6c.7-.4 1.2-.5 1.7.1a8.502 8.502 0 0 0 3.5 2.7c.2 0 .3.4.3.6.051.632.051 1.268 0 1.9a.498.498 0 0 1-.8.4l-2.2-1.5-1.6-1-2.8-1-2.4-1.1a1.397 1.397 0 0 1-1.5-.5l-1.1-.8a10.1 10.1 0 0 0-5.4-.9h-.8c-2.1 0-4.2-.2-5.9-1.7l-2.8-1.9c-.2-.2-.8 0-1 .3-.2.3-.1.2-.1.3a2.304 2.304 0 0 0 .8 2.7c1 .8 2.4.8 3.2 1.9.8 1.1.4.2.7.3a1.495 1.495 0 0 1 1.2.7l2.1 2.7a.913.913 0 0 1 .184.312.916.916 0 0 1-.055.708.885.885 0 0 1-.229.28c-.8.6-1.7 1.1-1.9 2.2h-.3c-.2-.1-.5-.2-.5-.4s-.2-1-.4-1.4a1.498 1.498 0 0 0-1.6-.8 4.896 4.896 0 0 1-2.7 1c-.1 0-.3.1-.3.2a1.8 1.8 0 0 1-2.1 1.1 3.207 3.207 0 0 0-2.4.9c-.7.9-1.7 1-2.5 1.6-.8.6-.7.1-1 .1-.3 0-.1-.5 0-.7a2.79 2.79 0 0 0-.9-2.6c-.8-.1-1.5.1-1.7 1a.695.695 0 0 1-.5.4c-.8 0-.9.8-1.5 1a5.299 5.299 0 0 1-1.8.5 4.104 4.104 0 0 0-2.1 1.4 15.32 15.32 0 0 1-1.7 1.9 11.587 11.587 0 0 1-2.9 2.5 1.903 1.903 0 0 0-.7 1.2l-.3 1.9a2.072 2.072 0 0 1-.4.6c-1 1-3 1.1-3.7.2l-1.6-1.6a.995.995 0 0 1-.4-.8 1.006 1.006 0 0 1 .4-.8l1.9-1.3c.4-.2.4-.9.1-1.3l-1.5-1.7a3 3 0 0 0-3.2-1.3 9.4 9.4 0 0 1-2.9 0 .196.196 0 0 0-.174-.023.203.203 0 0 0-.126.123c-.2.2-.2.5 0 .6a5.296 5.296 0 0 1 2 5.3c0 .5-.1 1-.1 1.5a1.51 1.51 0 0 0 .7 1.3 2.099 2.099 0 0 1 1.2 2.1 7.534 7.534 0 0 1-.1 1.5.895.895 0 0 1-.647.771.894.894 0 0 1-.353.029l-2.2-.4a2.2 2.2 0 0 0-2.7.8c-.209.375-.48.713-.8 1l-.4.3a6.51 6.51 0 0 0-1.8 1.9c-1.1 1.6-1.8 2.2.1 4.2.167.176.303.379.4.6a1.694 1.694 0 0 1-.2 1.4 1.1 1.1 0 0 1-1.3.5c-1.8-.9-3.8-1.3-5.4-2.6-1.6-1.3-.7-.2-1-.3a.803.803 0 0 0-.9.5l-.6 1.3a1.202 1.202 0 0 0 .3 1.4 3.504 3.504 0 0 0 2.8 1.7l.7.2c.4.2.4.6.4 1a1.09 1.09 0 0 1-.356.816 1.111 1.111 0 0 1-.844.284c-1.2-.2-2.5-.4-3.3-1.5a3.096 3.096 0 0 0-2-.9 1.409 1.409 0 0 1-1-1 8.486 8.486 0 0 0-1.3-3.1 3.302 3.302 0 0 1-.3-2.2c.2-1.8-.3-2.8-2-3.5a4.501 4.501 0 0 1-1.9-1.1l-.6-.6a2.2 2.2 0 0 1-1.1-1.2h-.1v-.2a1 1 0 0 1-.5-.4h-.2v-.2h.1v.2a.693.693 0 0 1 .5.4h.2a8.407 8.407 0 0 1 3.1.8l1.4.5c2.21.798 4.485 1.4 6.8 1.8 2.111.313 4.266 0 6.2-.9.294-.071.567-.208.8-.4l-12.9-.5 12.9.5.2-.2a7.797 7.797 0 0 0 2.3-4.5 1.998 1.998 0 0 0-.3-1.5c-.7-1.1-1.3-2.4-2.7-3a4.905 4.905 0 0 1-1.4-1.1 3.496 3.496 0 0 0-1.9-1 6.702 6.702 0 0 1-3.4-1.6 23.903 23.903 0 0 0-3.1-2.1c-3-1.8-3.9-2-7.4-2l-1.5.2-1.8-.2c-.5-.1-.3-.5-.2-.9a.378.378 0 0 0 .081-.14.377.377 0 0 0 .019-.16.797.797 0 0 0-.4-.7 4.715 4.715 0 0 0-1.2-.7 1.2 1.2 0 0 0-1.4.2 1.696 1.696 0 0 1-2 .6 4.102 4.102 0 0 0-2.2-.1c-.3.1-.7-.2-.9-.4-.2-.2-.3-.4-.4-.6-.1-.2.2-.4.5-.4a2.696 2.696 0 0 0 1.7-.6l1.4-1.2c.3-.2.2-.7-.1-.9a28.296 28.296 0 0 0-5.2-2.1c-.3-.1-.7.2-1 .4a2.12 2.12 0 0 0-.4.6c-.2.3-.4.4-.5.2-.1-.2-.2-.2-.2-.3 0-.1.1-.7.1-1.1a1.597 1.597 0 0 0-1.1-1.4 1.598 1.598 0 0 0-1.3.4 2.201 2.201 0 0 0-.8 1.3 1.889 1.889 0 0 1-.3 1 .898.898 0 0 1-.6.4l-.2-.3c-.1-.6-.3-1.1-1.2-1.1-.9 0-.4-.4-.5-.8-.1-.4-1-1.1-1.3-.6-.3.5-2 1-2.6 2-.6 1-1.7 1-2.6 1.3h-.5v-.2h.1a1.285 1.285 0 0 0-.1-.6h-.3c-1.6 0-1.7.2-1.4 1.6.082.224.117.462.1.7-1.5-.1-2.7.7-4 1.3-1.3.6-.1.4-.1.6 0 .2.2.6.2.9v.2c-.1.4-.6.2-1 .3l-1.7.5c.05-.365.05-.735 0-1.1 0-.4-.4-.6-.8-.6a.694.694 0 0 0-.5.4l.6 1.3a2.204 2.204 0 0 0-2.3 1.3c0 .1.3.4 0 .1h-1a1.304 1.304 0 0 0-1.4 1 1.5 1.5 0 0 0 .4 2l.6.4a.691.691 0 0 1 .117.543.704.704 0 0 1-.317.457 1.393 1.393 0 0 1-1.4.4h-1.8a.499.499 0 0 1-.6-.7c.191-.583.425-1.152.7-1.7l-.3-.3h-.3l-2.5 2.7c-.3.3 0 .7.2 1 .2.3.2.9-.2 1.3l-.3.5c.432.05.869.05 1.3 0a24.602 24.602 0 0 1 2.6-.6h1.4l.3.2-.3.2-.9.5-.4.2-.7.2c-.7.1-.7.5-.6 1 .1.5-.9.5-1 .9-.1.4 0 .9 0 1.4-.155.22-.288.455-.4.7-.2.3-.6.6-.5.9.064.317.007.647-.16.924-.166.278-.43.483-.74.576a2.105 2.105 0 0 0-1.4 1.6c-.1.7-.7 1.3-.8 2 .023.238-.011.478-.1.7a1.286 1.286 0 0 1-.7.8c-.4.1-.5.5-.4.9a3.697 3.697 0 0 1 0 2.1 17.457 17.457 0 0 0-.5 2.2 1.296 1.296 0 0 1-1 1l-1 .4a.804.804 0 0 0-.4.6 1.59 1.59 0 0 1-.7 1.5 6.81 6.81 0 0 0-2.7 3.5 4.157 4.157 0 0 1-.4 1 1.594 1.594 0 0 1-1.3.7l-1.4-.2-.4.2a.505.505 0 0 0 .1.6l.2.3c.2.4.1.9-.1.9s-1.8 1.4-3.1 1.3l-2.3 1.7a.602.602 0 0 0-.1.4c.08.117.115.259.1.4-.1.5-.5.7-1.1.8h-.2l-1.8 1.2a7.818 7.818 0 0 0-.2 1.5c-.2 1.3.3 2.7-.3 4-.6 1.3.1.2.1.4s1 1.6 1.4 2.5a6.09 6.09 0 0 1 .7 1.7 1.205 1.205 0 0 1-.2 1c-.3.5-.7.8-.9 1.2a.805.805 0 0 0 .2 1l1 .4c.4.2.6.6.3.8l-.9 1.2a1.4 1.4 0 0 0 .2 1.4 12.511 12.511 0 0 0 4.4 2.7.902.902 0 0 0 .7.1c1.5-.5 3.2-.7 4.1-2.3a8.021 8.021 0 0 1 1.5-1.7c.9-.7 2.3-.9 2.9-2.2.6-1.3.2-.1.3 0 .1.1.8.6 1 1 .2.4.2 1.5.4 2.2.2.7.1.3.2.5.277.607.478 1.245.6 1.9a7.313 7.313 0 0 0 1.2 3.3l.3.5a21.508 21.508 0 0 0 2 3.2c.3.3.1.6 0 1l-.3 1h.1v.2h-.1a4.705 4.705 0 0 0-3.3 1.4 1.204 1.204 0 0 0-.1 1.4c.289.419.556.853.8 1.3.1.1 0 .5-.1.6h-.6l-.4-.2c-.7-.6-1-1.7-1.9-2.2l-1 2.3c.866.246 1.704.581 2.5 1l.4.3a1.707 1.707 0 0 0 2.246-.029c.203-.184.359-.414.454-.671h.1a7.992 7.992 0 0 0 1-4.8c.202.243.371.512.5.8.9 2.5 1.4 1.8 3.4 1.5 2-.3.9-.5 1-1 .1-.5.7-1.2 1.5-1.4h1.2a2.304 2.304 0 0 0 2.5-1.3c1.7.3 1.6-1 1.8-2 .083-.258.117-.529.1-.8a.594.594 0 0 0-.278-.444.607.607 0 0 0-.522-.056h-.3c-.1 0-.2-.2-.2-.3a11.607 11.607 0 0 1 .3-3.7c.196-.58.298-1.188.3-1.8a2.699 2.699 0 0 1 1.4-2.4l1.9-1.3c.334-.279.599-.632.772-1.032.174-.399.252-.833.228-1.268 0-.4.2-.9.2-1.4a3.486 3.486 0 0 0-.3-1.1 7.701 7.701 0 0 0-3.2-3 2.104 2.104 0 0 1-1.1-1.9c.1-2 .1-3.9.2-5.9.027-.397.166-.779.4-1.1a13.615 13.615 0 0 1 3.9-4.4 12.98 12.98 0 0 0 2.2-1.9 6.696 6.696 0 0 0 2.2-3.4 2.792 2.792 0 0 0 .2-1.8 7.01 7.01 0 0 1 .6-4.3c.6-1.1 1.4-2.1 2.9-1.7a6.018 6.018 0 0 1 2.3-.1c.932.194 1.839.496 2.7.9.5.3.8 1.4.4 1.7a1.309 1.309 0 0 0-.6.4 1.01 1.01 0 0 0-.4.9 3.392 3.392 0 0 1-.5 1.4 48.494 48.494 0 0 1-3.7 5.2 4.918 4.918 0 0 0-1 1.5 1.5 1.5 0 0 1-1.7 1.1c-.5-.1-.8.2-.7.6a4.09 4.09 0 0 1-.2 1.9c-.1.461-.1.939 0 1.4.1.5.4 1 .5 1.4.4 2 1 3.9.7 5.9-.065.369-.03.749.1 1.1a1.502 1.502 0 0 0 1 1.4c.468.207.905.476 1.3.8h.2l-.2.2c.3.1.6.4.9.4a1.6 1.6 0 0 1 1.8.9 1.5 1.5 0 0 0 1.9.7l2.1-.9a15.905 15.905 0 0 1 7.1-1.8 20.614 20.614 0 0 0 2.6-.3l.7.2c.4 1.2 1.7.9 2.4 1.4l.4.2c0 .1.1.3 0 .3l-1.2.8a4 4 0 0 0-1.9 1.1c-.8 1.4-1.9 1.4-3.2.9a18.302 18.302 0 0 0-2.5-.6h-1.1c-1.2.294-2.371.696-3.5 1.2a3.003 3.003 0 0 0-2.2 2.7 1.393 1.393 0 0 1-1.1 1.3l-1.5.4c-.9.3-1 .9-.4 2l.2.2a3.896 3.896 0 0 0 2.5-1.4c.6-.4.8-.4 1.3 0 .392.356.829.659 1.3.9.3.2.6.5.6.8a14.89 14.89 0 0 1 0 3 1.2 1.2 0 0 1-.9 1.1 1.192 1.192 0 0 1-1-.3l-1.5-1.7a1.198 1.198 0 0 0-1.6-.4 3.107 3.107 0 0 0-2.2 1.8 17.753 17.753 0 0 1-.8 2.1 6.108 6.108 0 0 0-.2 3c.3 1 .4 2 .6 3v.7c.1.2-.1.5-.3.6l-1.7.7a1.405 1.405 0 0 0-1.1 1.3c-.2 1.2-2.4 1.4-3.1.5l-.3-.6a1.398 1.398 0 0 0-1.6-.8 7.598 7.598 0 0 0-3.5 1.1 40.71 40.71 0 0 1-4.6 2.5c-.5.3-.8.9-1.3 1.3a2.2 2.2 0 0 1-1.1.1 15.482 15.482 0 0 1-1.7-1.9c-.2-.2 0-.7-.1-1.1-.1-.4-.6-.6-.8-.4a3.501 3.501 0 0 1-2 1 7.209 7.209 0 0 0-2.4 1l-.6.4c-.1.1-.5 0-.6-.1-.1-.1-.8-1-1.5-1.1-.7-.1-1.3-.2-1.7-.6a2.204 2.204 0 0 1-.5-.8l-.3-.2v-.7l.2-.6h.4l1-2.3-.3-.2c-.1-.1-.1-.5-.1-.7a2.608 2.608 0 0 1 1.5-2c.3-.1.2-.4 0-.6l-.2-.3a2.001 2.001 0 0 1-.9-.6 2.106 2.106 0 0 1-.1-2.2 3.39 3.39 0 0 0 .3-1.8.996.996 0 0 0-.8-.7l-.7.2c-1.4.8-2.4 2.2-4 2.7-.16.164-.264.374-.3.6 0 1.5-1.1 2.8-.4 4.3.7 1.5-.1.5-.2.7a1.202 1.202 0 0 0 .3 1.4c.2.3.6.6.6.9 0 .3.3.9.4 1.4.344 1.069.546 2.179.6 3.3.1.9-1.1 2.1-1.9 1.9a3.392 3.392 0 0 0-2.8.3 7.484 7.484 0 0 1-2.5.9 16.404 16.404 0 0 0-3 1.4 2.908 2.908 0 0 0-1.8 2.2c-1.1 3.3-1.1 3.3-3.7 5.4l-1.9 1.1a1.6 1.6 0 0 0-.7.9c-.2.4-.2.9-.4 1.4a2.095 2.095 0 0 1-1.5 1.5l-1.1.3a2.395 2.395 0 0 0-1.4 1.2c-.4.8-1.1.8-1.9.7a3.294 3.294 0 0 1-1.7-.7 1.703 1.703 0 0 0-1-.3c-.4 0-.8.5-.7.7.108.746.276 1.481.5 2.2.1.5-.3.9-.9 1a5.3 5.3 0 0 1-2.5-.4 2.603 2.603 0 0 0-1.5-.2c-.951.24-1.887.54-2.8.9a.803.803 0 0 0-.6.8c.2 1.3.3 2.5 2.1 2.6 1.8.1 1.3.6 2.1.8a3.2 3.2 0 0 1 2.4 2.1 4.404 4.404 0 0 0 2 2.6 1.699 1.699 0 0 1 .9 1.9c.017.901-.016 1.803-.1 2.7-.1 1.1-.1 2.1-.2 3.2a7.85 7.85 0 0 1-.6 2.2c-.2.6-1.1 1.3-1.8 1-.7-.3-2.7.2-4-.4a1.4 1.4 0 0 0-1.1-.1 6.297 6.297 0 0 1-3.6-.1 7.207 7.207 0 0 0-4.1-.3h-1.1c-1.5-.5-2.9-.5-4 .9s-.7.2-1 .4a1.507 1.507 0 0 0-.7.3c-.4.2-.8.9-.6 1.2a5.398 5.398 0 0 1 .8 3.9v.4c0 .2.1.4.1.6a11.995 11.995 0 0 1-1.3 7.4 11.991 11.991 0 0 0-.8 2 1.408 1.408 0 0 0 .2 1.5 5.494 5.494 0 0 1 1.4 4.4 2.21 2.21 0 0 0 .1.8c.1.2.2.5.4.5a5.596 5.596 0 0 0 2.9.6 3.9 3.9 0 0 1 1.5-.2 1.704 1.704 0 0 1 1.6.7l1.4 2.2a1.9 1.9 0 0 0 2.3.6l1.6-1a6.002 6.002 0 0 1 4.3-1.1l3.3-.2a1.897 1.897 0 0 0 1.6-.8c.39-.647.99-1.142 1.7-1.4a1.893 1.893 0 0 0 1.6-1.6 7.219 7.219 0 0 1 1.4-2.4l.4-.4a1.005 1.005 0 0 0 .39-.658.986.986 0 0 0-.19-.742c-1.4-1.7-.7-3.2.6-4.6a5.178 5.178 0 0 0 1-1.1c1-1.1 1.9-2.4 3.5-2.5 1.6-.1 3-1.8 3-3.9l.3-2.2c.019-.374.086-.743.2-1.1a2.205 2.205 0 0 1 2.3-1.5c1.7.3 3.4.3 5 1.4a1.597 1.597 0 0 0 2-.4 7.01 7.01 0 0 1 3.6-2.5c.434-.251.81-.592 1.1-1a2.606 2.606 0 0 1 1.3-.8h.4c.483.003.959.105 1.4.3a4.299 4.299 0 0 1 2.5 2.1c.206.562.475 1.098.8 1.6.125.384.293.753.5 1.1a60.5 60.5 0 0 1 4.5 4.3 6.2 6.2 0 0 0 3.7 2.4c1.7.5 2.9 1.8 4.4 2.7a4.601 4.601 0 0 0 2.2 1.9c.309.19.553.469.7.8.394.911.728 1.846 1 2.8a.897.897 0 0 1 0 .7c-.3 1.1-.6 2-2.1 2.3l-2.6.4a17.913 17.913 0 0 1-4 .2 2.004 2.004 0 0 0-1.1.3c-.2.1-.3.4-.4.6-.1.2 0 .6.2.7l2.2 1.3 4.7 2.3c.2.2.8-.1.9-.4.147-.352.247-.722.3-1.1 0-.5-.2-1-.2-1.5a1.413 1.413 0 0 1 .48-.962 1.413 1.413 0 0 1 1.02-.338h.7c.24-.019.469-.103.663-.245.195-.141.346-.333.437-.555l1.8-3.3a2.003 2.003 0 0 0-.1-2.1 2.102 2.102 0 0 1-.5-2.4 1.201 1.201 0 0 1 1.8-.7l1.7 1.4a.595.595 0 0 0 .7-.2 1.5 1.5 0 0 0-.1-2c-2-1.1-3.6-2.8-5.8-3.4-2.2-.6-.9-.7-1-1.3a.803.803 0 0 0-.4-.6 3.205 3.205 0 0 0-1.4-.3 3.497 3.497 0 0 1-2.9-1.5 9.105 9.105 0 0 1-1.5-2.1 9.696 9.696 0 0 0-2.8-3.5l-1.6-1.1a2.406 2.406 0 0 1-.8-1.9v-1.2c.082-.224.117-.462.1-.7a1.103 1.103 0 0 1 .6-.9l.9-.4.8-.3.6.3c.2.6.2 1.3.4 1.8s.6 1 1.1.9c.5-.1 1.3.6 2.1.5a1.102 1.102 0 0 1 1.2.8 6.6 6.6 0 0 0 3 3.6c1.1.7 2.2 1.7 3.6 1.7a4.501 4.501 0 0 0 1.9 1.1 4.202 4.202 0 0 1 2.2 1.4l2 2.2a1.395 1.395 0 0 1 .5 1.3v2.3a3.304 3.304 0 0 0 1.3 3.3c.1 0 .2.2.2.3 0 .1.4 1.5 1.1 2a12.035 12.035 0 0 1 1.6 1.6c.2 1.1 1.4 1.7 1.5 2.8.1 1.1.3.4 0 .7v.9a4.09 4.09 0 0 1 2.1 2.7c.185.338.462.616.8.8l.6.2 1.6.4h.7c.5 0 .8-.2.6-.6-.2-.4.8-2 .7-3.1l.3-.2c.9.4 1.6-.4 2.4-.6a.403.403 0 0 0 .264-.431.401.401 0 0 0-.064-.169 3.69 3.69 0 0 0-1.5-2.5c-.4-.2-1-.4-1.2-.8a46.916 46.916 0 0 1-2.7-4c-.2-.2-.1-.5-.1-.8v-.3c.2-.3.4-.3.7-.1.3.2.3.3.5.5s2.1.7 2.6-.7a6.94 6.94 0 0 1 .5-1.3c.1-.2.5-.3.6-.3a1.402 1.402 0 0 0 1.4 0 2.303 2.303 0 0 1 2.1-.4 2.001 2.001 0 0 1 1.9 2 16.357 16.357 0 0 1-.4 4.4c-.1.3.3.7.7.7h1.5a.2.2 0 0 1 .2.2c0 .3.1.6 0 .7-.1.1-1.3.7-2 1-.7.3-.2.2-.2.3 0 .1-.1.5.2.6l1.3.7c.367.139.705.342 1 .6.4.3-.5.8-.1 1.1a3.295 3.295 0 0 1 1.6 1.5c.402.651.95 1.199 1.6 1.6a1.195 1.195 0 0 0 1.3.4 2.398 2.398 0 0 1 2.7.9c.234.308.544.55.9.7l.7.2c1.2-.2 2.5-.2 3.3-1.4a2.002 2.002 0 0 1 2.3-.6 4.1 4.1 0 0 1 2.3 1.3 3.701 3.701 0 0 0 3.5.8l.6-.2a5.49 5.49 0 0 0 2.9-1.9 1.197 1.197 0 0 1 1.3-.3 9.182 9.182 0 0 0 2.9.3h.1v.2h-.1a7.807 7.807 0 0 0-.1 4c.024.169.057.336.1.5l38-56.7 3.9-35.7 28.9-50.1-1.8-.2-.6-.3a2.015 2.015 0 0 1 0-1.1h-.1c-.3 0-.3-.1-.1-.2l.2.2.9.5a1.906 1.906 0 0 0 1.607.081 1.9 1.9 0 0 0 1.093-1.181 31.765 31.765 0 0 0 1.8-6.9 1.8 1.8 0 0 0-.2-1.5zm-154 36.7v-.2.2zm48.1 25.8v-.2h.2l.2.3-.4-.1zm45.6 67.3-1.3.8a2.991 2.991 0 0 1-2.5.4 5.003 5.003 0 0 0-3.2.1 3.296 3.296 0 0 1-2.2 0l-4.3-1.4a4.718 4.718 0 0 1-.9-.6c-.2-.2-.4-.5-.6-.5a27.92 27.92 0 0 1-3.9-1 15.109 15.109 0 0 0-7.3 1 5.306 5.306 0 0 0-2.4 1.8 1.398 1.398 0 0 1-1.6.5c-1.4-.4-2.8-.1-4.1-.2h-.6a4.1 4.1 0 0 1-3.6-2.6c-.2-.5-.6-1.1-.8-1.7-.1-.326-.1-.674 0-1 0-.2.1-.3.1-.5a3.403 3.403 0 0 1 .9-1.9 2.89 2.89 0 0 0 1-2.3c.018-.737.084-1.472.2-2.2a1.301 1.301 0 0 1 .9-1.1c.44-.113.829-.373 1.101-.737.273-.363.414-.809.399-1.263.015-.508.19-.998.5-1.4.7-1.1 1.6-2.2 2.4-3.3a1.505 1.505 0 0 1 1.7-.3h.3a6.602 6.602 0 0 0 4.4 1.7.499.499 0 0 1 .4.8l-1.1 1.1a.704.704 0 0 0 .2.9l.7.3a2.094 2.094 0 0 1 1.3 1.7 1.4 1.4 0 0 0 1.9 1.1l1-.5 2-1a5.103 5.103 0 0 1 2.9-.8l.6-.3a.903.903 0 0 0 .367-.433.903.903 0 0 0 .033-.567c-.1-.4-.4-.7-.8-.6h-.4c-2.7.3-2.8.3-4.4-1.9h-.2v-.2a.1.1 0 0 0 .03.071.097.097 0 0 0 .07.029 5.903 5.903 0 0 1 3.7-2.2 4.492 4.492 0 0 0 2.3-1.1 5.502 5.502 0 0 1 4.4-1.2h.7l.2-.2v.3h-.2a13.787 13.787 0 0 0-1.7 1.7 1.002 1.002 0 0 0-.2 1.4 1.202 1.202 0 0 1 0 1 6.987 6.987 0 0 1-2.2 2.9.797.797 0 0 0-.1.7 4.695 4.695 0 0 0 2.9 2.2 9.297 9.297 0 0 1 4.1 2.5 16.31 16.31 0 0 0 4.9 3.3 4.9 4.9 0 0 1 2.9 4.5 2.197 2.197 0 0 1-.9 2.2zm48.3-142.6h.1-.1zM459.099 216.8l2.1-.9a7.113 7.113 0 0 1 3.4-1.3 2.2 2.2 0 0 0 1.2-.9 5.69 5.69 0 0 0 .9-4.6c-.1-.4-.1-.7-.2-1.1a1.806 1.806 0 0 1 .4-1.4l.5-.5a1.501 1.501 0 0 0 .6-1 2.093 2.093 0 0 0-.3-1.8 7.415 7.415 0 0 0-.7-1.2 2.782 2.782 0 0 0-.9-.7l-2.9-.4h-.8a2.405 2.405 0 0 0-2 1.5l-.6 1.7c-.1.2-.4.3-.6.4h-2.3a.698.698 0 0 0-.7.6c-.012.77-.079 1.539-.2 2.3a1.906 1.906 0 0 0 .6 1.6c.265.276.429.634.466 1.015.036.381-.058.764-.266 1.085a9.39 9.39 0 0 1-1.2 1.8l-.5.5a1.814 1.814 0 0 0-.32 1.41 1.806 1.806 0 0 0 .82 1.19 3.7 3.7 0 0 0 3.5.7zM471 205.9c-.1 0-.1-.2-.2-.2h-.3c-.2.1-.1.3.2.3l.3-.1zM466.2 198.8l-.2.3a.395.395 0 0 0 .411.355.403.403 0 0 0 .189-.055c.124-.176.193-.385.2-.6h-.6z"/>
+										<path d="M511.2 260.4v-1.1c-.2-1.2-1.4-2.7-2.9-1.6l-1.3.8a.802.802 0 0 0-.3.9c.413 1.428.582 2.915.5 4.4.031.479.132.95.3 1.4.3.8 1.1 1 2.2.4l.7-.3a2 2 0 0 0 .8-1.2v-2.2h.1c0-.5-.1-1-.1-1.5zM510.4 251.8a.807.807 0 0 0-.37-.634.806.806 0 0 0-.73-.066l-1.3.7a1.706 1.706 0 0 0-.6 1.6c.033.782.275 1.542.7 2.2l2.4-3c0-.2 0-.3-.1-.4v-.4zM642.899 92.9c.9.7 2.6 0 3.1-1.1v-.4a3.798 3.798 0 0 0-1.6-1.9.897.897 0 0 0-.7-.1c-1.466.266-1.966 1.166-1.5 2.7.2.3.4.7.7.8zM605.099 96.9c-1 1.1-.8 2.6-1.5 3.8-.7 1.2-.2 1.1.3 1.6l.7.9a1.702 1.702 0 0 1-.6 2.3c-.6.3-1.2.5-1.3 1.2a2.815 2.815 0 0 0 .2 2.2c.107.3.278.573.5.8a2.4 2.4 0 0 0 .9.8 1.306 1.306 0 0 0 1 .3l1.5-.3a1.803 1.803 0 0 1 1.9.8c.341.393.551.882.6 1.4.2 1.2.9 1.6 2 1.9.586.139 1.156.34 1.7.6a3 3 0 0 0 1.8.4h1.5c.733.05 1.468.05 2.2 0a.791.791 0 0 0 .6-.4c.16-.348.261-.719.3-1.1a1.095 1.095 0 0 0-.4-1.3c-.8-.5-1.6-.8-2.3-1.3a11.1 11.1 0 0 1-4.1-5.7 30.11 30.11 0 0 1-.8-3.2c-.4-1.6.1-3.2.1-4.9 0-1.7.5-1.3.9-2 .236-.431.373-.91.4-1.4.4-2.1.7-4.1.9-6.2a2.804 2.804 0 0 1 1.2-2.3 5.396 5.396 0 0 0 2.2-2.8 29.152 29.152 0 0 1 2.5-4.2 15.39 15.39 0 0 1 2.9-3.4 32.17 32.17 0 0 1 4.1-3.2c.64-.376 1.242-.811 1.8-1.3l.6-.5-1.6-2.9 1.6 2.9a2.802 2.802 0 0 0 .6-3.1 1.907 1.907 0 0 1-.3-1 1.603 1.603 0 0 0-.9-1.2l-.8-.7a2.301 2.301 0 0 0-2.2-.5l-.6.3c-1.4.7-2.6 1.6-2.8 3.3a3.101 3.101 0 0 1-1.7 2.3 7.798 7.798 0 0 1-3.8 1.5c-2.3 0-3.6 1.4-4.8 3.1l-.2.3a2.205 2.205 0 0 1-1.4 1.1 1.296 1.296 0 0 0-.9 1c-.19.616-.423 1.218-.7 1.8a2.504 2.504 0 0 0-.3 1.7c.1.2-.1.4-.2.6a.497.497 0 0 1-.4.2c-.6.2-.9.8-1.3 1.3s-.8.5-1.3.5-.6.6-.4.9c.533.653.94 1.399 1.2 2.2a15.146 15.146 0 0 1-.2 3 3.293 3.293 0 0 1-.4 1.7l-1.3 2.3a1.301 1.301 0 0 0 .4 1.7c.9 1 1.1 1.5.4 2.2z"/>
+										<path d="m607.199 111-.6.3a.602.602 0 0 0 .1.4l1 .9h.6c.3-.1.4-.6.1-1a1.402 1.402 0 0 0-1.2-.6zM535.199 178.6h.3a.795.795 0 0 0 .2-1c-.1-.3-.4-.5-.6-.7l-.4.2a.9.9 0 0 0-.3 1 .994.994 0 0 0 .8.5zM543.599 184.5c0-.1.1-.2.1-.3a.7.7 0 0 0-.9-.3c-.2.1-.4.3-.3.5a.7.7 0 0 0 .3.5c.4.2.6-.1.8-.4zM544.199 270.4h.3l.3-.4c-.2.1-.5 0-.6.4zM544.299 268.3l-.2-.2c-.3-.2-.5-.3-.7-.1-.2.2-.3.5-.2.7a.694.694 0 0 0 .4.5h1.3v-.7l-.6-.2zM512.699 250.9h.2l.4-.3c-.2 0-.5 0-.6.3zM565.399 276.2l.3.2h.3c.2-.1.3-.3.5-.5l-.5-.4c-.4 0-.7.3-.6.7zM582.199 278.2a6.71 6.71 0 0 0-2.3 1 1.204 1.204 0 0 0-.3 1.2l3 .6 1.2-.6a2.405 2.405 0 0 0 1.3-1.5l-.7-1-2.2.3zM557.3 262a.408.408 0 0 0 .012-.382.398.398 0 0 0-.312-.218h-.3a.305.305 0 0 0-.135.25c0 .049.013.098.036.142a.293.293 0 0 0 .099.108.396.396 0 0 0 .448.179.41.41 0 0 0 .152-.079zM509.8 256.1c.225-.3.395-.639.5-1 .106-.629.172-1.263.2-1.9v-.6l-2.4 3 .4.5a.905.905 0 0 0 .65.277.895.895 0 0 0 .65-.277zM557.7 278.1a12.22 12.22 0 0 1-3.3-.2l-.7.2-.4.6c0 .2.1.6.3.6.2 0 2.4.6 3.6.9a.1.1 0 0 0 .029.071.103.103 0 0 0 .071.029.105.105 0 0 0 .071-.029.105.105 0 0 0 .029-.071l3-.4.3-.2a1.104 1.104 0 0 0-.2-.6 4.099 4.099 0 0 0-2.8-.9zM494.4 262c-.3.1-.2.3.1.4h.3v-.4c-.1 0-.3-.1-.4 0zM491.699 263c-.4.1-.7.5-.5.7l.3.2a.302.302 0 0 0 .4 0c.1 0 .3-.3.3-.5l-.5-.4zM523.6 202.1l-.3-.6a.399.399 0 0 0-.6.1c-.015.205.019.411.1.6h.8v-.1zM516.099 136.7h.3l.6-.7-.8.2c-.3 0-.3.3-.1.5z"/>
+									</g>
+								</svg>
+								<button>
+									<div class="k-text font18 weight700 k-white k-eng">Europe</div>
+								</button>
+							</div>
+							<div class="map-item item-03">
+								<svg width="1018" height="600" viewBox="0 0 1018 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<g opacity=".8" fill="#BB1E4D">
+										<path d="M217.1 39.5a9.99 9.99 0 0 1 2.6 1 5.481 5.481 0 0 1 1.4 1.2 1.212 1.212 0 0 0 .808.456 1.2 1.2 0 0 0 .892-.256l1.6-1.2h.2a.603.603 0 0 1 .6 0c.4.1.8.1 1-.2l1.7-2.5 2.1-2.1.6-.2c.3 0 .4.5 0 1l-1.5 2.6a1.398 1.398 0 0 0 0 1.4.9.9 0 0 0 1.2.5c.341-.176.646-.413.9-.7a2.3 2.3 0 0 1 2-1.4l1.1-.4c.3-.2.7-.3.9-.6.2-.3 2.1-2.1 2.3-3.7.2-1.6.5-.6.8-.8l1-.4a1.3 1.3 0 0 0 .6-1v-1.5c-.1-.6-.5-1.3-.8-1.2a2.507 2.507 0 0 0-.9.4c-.5.5-1 .8-1.3.5-.3-.3-2.2-.7-3.1-.9a2.898 2.898 0 0 0-2.2.4 24.8 24.8 0 0 1-8.2 4.3 16.61 16.61 0 0 1-2 .8h-.4a10.298 10.298 0 0 0-3 1.4 2.907 2.907 0 0 0-1.3 2.5.705.705 0 0 0 .4.6zM271.9 60.8c0-.1.1-.1.1-.2h-.1v.2zM268 47.6a.506.506 0 0 0-.299-.3 2.402 2.402 0 0 0-2 .4.597.597 0 0 0 0 .6l.899.5 1.3-.9a.5.5 0 0 0 .1-.3zM264.1 67.2l-.1-.2-.2.2h.3zM275.8 58.4c-.4-.1-.799.4-.699.9a.506.506 0 0 0 .299.3.702.702 0 0 0 .701-1l-.301-.2zM252.2 59.2a1.701 1.701 0 0 0 1.5-.7 1.702 1.702 0 0 0 0-1.7c-.2-.2-.3-.4-.6-.3a2.906 2.906 0 0 0-1.8 1.6c-.1.4.4 1 .9 1.1z"/>
+										<path d="M269.3 63.7a1.608 1.608 0 0 0-.488 1.15A1.614 1.614 0 0 0 269.3 66l2.8 2.4.7.3a1.303 1.303 0 0 0 1.508-.246c.128-.129.227-.284.292-.454.393-.91.727-1.846 1-2.8.205-.438.307-.917.3-1.4a3.703 3.703 0 0 0-1.1-2.7 2.8 2.8 0 0 0-1.8-.4h-1.1a14.198 14.198 0 0 1-2.6 3zM261.8 42.1a.703.703 0 0 0 1-.1c.8-1.2.7-2.6 1-4 .3-1.4 0-.6-.1-1a1.197 1.197 0 0 0-.5-.5l-.6.3-1.3 3a2.603 2.603 0 0 0-.1 1.5c.142.306.346.578.6.8zM268.9 60.1c0-.1 0-.1-.1-.1a.1.1 0 0 1-.1.1h.2z"/>
+										<path d="M259 46.4a5.196 5.196 0 0 0-.6 1.3 5.305 5.305 0 0 1-.8 2.4.694.694 0 0 0-.2.7c.1 1.2.6 2.4.1 3.6-.5 1.2.3.3.5.4l.5.5c-.3 1.3.6 1.5 1.5 1.6l3.3.4c.1 0 .3.2.2.2-.1 0-.1.5-.3.6l-1.4.4a1.599 1.599 0 0 0-1.1 1.4 7.663 7.663 0 0 0-.2 1.5 1.196 1.196 0 0 0 .8 1.1l2.8.8a2.3 2.3 0 0 0 2.5-1.2c.111-.218.179-.456.2-.7a2.103 2.103 0 0 1 2-1.4c.257-.75.557-1.485.9-2.2.442-.74.944-1.442 1.5-2.1.1-.1.2-.1.2-.2s1.2-2.2 1.7-3.3a.914.914 0 0 0 0-.7l-.6-1.3a.803.803 0 0 0-.9-.5c-.9.3-1.5-.2-2-.9a6.5 6.5 0 0 0-3.1 0 2.893 2.893 0 0 0-.7 2v2.6c0 .1-.1.2-.2.3-.1.1-.3 0-.4-.3l-1-2.7c-.1-.2-.5-.3-.7-.3a.704.704 0 0 0-.6.3l-1.5 3.3a1.996 1.996 0 0 1-.4-2c.2-.3.4-.8.3-1a7.293 7.293 0 0 1-.4-2.9 1.702 1.702 0 0 0-.1-.7 9.134 9.134 0 0 1-.5-1 .899.899 0 0 0-1.3 0zM251.7 26a3.204 3.204 0 0 1 2.4 1.4c1 0 1.4 1 2.2 1.4a2.504 2.504 0 0 0 2.844-.142 2.52 2.52 0 0 0 .656-.758c.1-.2.1-.5.2-.7.1-.2.1-1 .1-1.5s.1-.2.1-.3c0-.1-.6-1.9-1.8-1.8a10.8 10.8 0 0 1-1.9.3 3.3 3.3 0 0 1-1.4 0l-2.5.3c-.384.102-.73.31-1 .6a.495.495 0 0 0-.2.6c0 .2.1.6.3.6zM271 60.9l.8-.2a3.297 3.297 0 0 0-2.9-.6c.5 1.4.6 1.4 2.1.8zM269.3 68.4a.996.996 0 0 0 .1-.3h-.2c-.2.2-.1.3.1.3zM239.301 50.7c.7-1.1 0-2.2.2-3.2s-.1-1.8-.2-2.7c-.1-.9-.7-1.2-1.5-1.4-.8-.2-.7-.3-.7-1s-.4-1.7-1.3-1.8a2.402 2.402 0 0 0-2.2.2c-1 .9-2.2 1.1-3.2 1.8a5.156 5.156 0 0 0-1 1.1c.1 1-.5 1.2-1.2 1.5a1.995 1.995 0 0 0-.7.6c-.282.18-.521.419-.7.7-.2.2-.2.5 0 .6l1.3.8c.3.2.3.4.2.5-.1.1-.3.2-.4.1a20.62 20.62 0 0 0-2.6-.3c-.8 0-1.4.7-1.7 1.7a1.302 1.302 0 0 0 .5 1.6l1.5 1.1c1.2.9 2.4 1.8 4 1a.797.797 0 0 1 .7 0 4.896 4.896 0 0 0 2.3.6h.9l-.3.2h-.3l-4.5.8a1.1 1.1 0 0 0-.9 1 2.298 2.298 0 0 0 1.2 2.5l1.4.5h2.3a6.501 6.501 0 0 0 3.1-.5l.8-.4a3.79 3.79 0 0 1 1.3-.6c1.15-.012 2.294-.18 3.4-.5a.897.897 0 0 1 .7.1l2.4.9.6.3a2.4 2.4 0 0 0 1.2 0l1.5-.3a3.002 3.002 0 0 0 1.9-1c1.2-1.1 2.2-2.4 3.4-3.4a2.91 2.91 0 0 0 .8-1.3 2.303 2.303 0 0 0-.9-2.9h-.7a1.4 1.4 0 0 0-1.1.9c-.2.3-.4.4-.6.2-.2-.2-1.5-.7-1.1-1.8.4-1.1-.8-.9-.2-1.6.325-.354.503-.82.5-1.3a5.392 5.392 0 0 1 .7-3.3 1.009 1.009 0 0 0-.3-1 1.103 1.103 0 0 0-1.4 0l-2 1.5-1 .7a1.5 1.5 0 0 0-.6 1.6c.009.375.076.746.2 1.1a1.203 1.203 0 0 1-.7 1.5l-.3.3c-.7.3-.7.9-.5 1.6.127.212.196.453.2.7.1.5-.3 1.1-.8 1l-3.3-.7c-.1.2-.3-.2-.3-.3zM239 37.9c.013.262.12.51.3.7a1.005 1.005 0 0 0 .9.4.7.7 0 0 0 .7-.6c-.1-.3-.1-.6-.3-.6a1.9 1.9 0 0 0-1-.3.807.807 0 0 0-.6.4zM227.7 42.9a.603.603 0 0 0 .1-.4c0-.1-.1-.2-.1-.3l-.7-.2-1.5.4c-1.368.5-2.65 1.208-3.8 2.1a.993.993 0 0 0-.199.82.994.994 0 0 0 .499.68 1.2 1.2 0 0 0 1.4.2l3-2.3 1.3-1zM246.4 30.8c-.2.4-.3.9-.5 1.4a1.702 1.702 0 0 0 .2 1.7l1.1 1.5a1.7 1.7 0 0 0 1.3.7l1.4.2a3.502 3.502 0 0 0 2.4-1 3.801 3.801 0 0 0 1-2 1.505 1.505 0 0 1 .9-1l1.6-1c.2-.1.2-.4 0-.6a1.508 1.508 0 0 0-.5-.6 18.607 18.607 0 0 0-4.7-.9 6.597 6.597 0 0 0-2.8.4l-.7.5c-.1-.8-.1-1.5-.2-2.2a1.1 1.1 0 0 0-1.2-.6 1.499 1.499 0 0 0-1 .9 2.293 2.293 0 0 0 .1 1.8 2.1 2.1 0 0 0 1.6.8zM334.101 58.4l.3-.2-.5-.3c-.1 0-.3.1-.3.2s.3.4.5.3zM309.9 66.3c-.3.4-.2.9.1.9.3 0 .6-.1.6-.2.159-.272.229-.587.2-.9a1.003 1.003 0 0 0-.9.2zM311.101 65.6c-.2 0-.3.2-.2.4l.4-.2c0-.1-.1-.3-.2-.2zM330.9 57.7l-.3.2c0 .1-.1.2 0 .3a.7.7 0 0 0 .8.5c.2 0 .4-.2.6-.3.2-.1 0-.3-.1-.4a.9.9 0 0 0-1-.3zM271.5 33.7c.4-.1.3-.3.3-.6l-.4.4c-.1 0 0 .2.1.2zM269.601 38.3a2.297 2.297 0 0 0 2 1.5 1.2 1.2 0 0 0 1.1-1.2 2.103 2.103 0 0 0-2-1.8 1.303 1.303 0 0 0-1.083.985c-.04.169-.046.344-.017.515z"/>
+										<path d="M269.801 32.4a4.704 4.704 0 0 1 2 .6.1.1 0 0 1 .007-.038.106.106 0 0 1 .054-.055.1.1 0 0 1 .039-.007l1 .9c1.5 1.1 2.3 2.5 1.3 4.4a1.302 1.302 0 0 0 .5 1.6 1.898 1.898 0 0 0 2.1.3 4.404 4.404 0 0 0 1.9-2.7 5.496 5.496 0 0 1 2-3.9c.291-.363.527-.768.7-1.2a2.401 2.401 0 0 0-.3-2.8.996.996 0 0 1-.4-1.3c.082-.224.116-.462.1-.7 0-1.7-.7-2.4-2.3-1.7l-.7.3c.152-.69.219-1.395.2-2.1a2.1 2.1 0 0 0-2.1-2.1c-.764.1-1.537.1-2.3 0l-.6.3c-.7.7-1.4 1.4-1.1 2.6.068.336.033.684-.1 1-.2.8-.2.8.8 1.3s.2.9.2 1.4a3.838 3.838 0 0 1-.3 1c-.2.5-.5.7-.9.5l-1.3-.7a1.003 1.003 0 0 0-1 .3c-.279.24-.487.55-.6.9a1.405 1.405 0 0 0 .09 1.216 1.405 1.405 0 0 0 1.01.684zM286.501 47.3a2.401 2.401 0 0 0 1.6-.9c.2-.2.3-.8.1-.9a8.505 8.505 0 0 0-5.1-2.7 1.802 1.802 0 0 0-2 1.3 1.198 1.198 0 0 0 .3 1.3 14.193 14.193 0 0 0 4.8 1.9h.3zM288.9 39.8a.597.597 0 0 0-.1-.4l-.4-.3v.5c.1.3.3.4.5.2z"/>
+										<path d="M281.6 40.5a1.204 1.204 0 0 0 1 .9 9 9 0 0 0 4 .2 1.6 1.6 0 0 0 .9-.7c.4-.6.3-1.4.8-1.9a.099.099 0 0 1 .1.1v-.2h-.1a2.1 2.1 0 0 0 .1-2.8 14.506 14.506 0 0 1-1.8-3.2 3.295 3.295 0 0 0-.6-1 1.095 1.095 0 0 0-1.204-.413c-.145.043-.28.116-.396.213-1.4 1.3-2.5 2.8-2.4 4.8.1 2-.4 1.4-.6 2.1-.2.7.1 1.3.2 1.9zM301.501 42.8v-.3l-.4-.4c.1.3.1.6.4.7z"/>
+										<path d="M294.8 42.1a1.797 1.797 0 0 0 1.3.5 3.5 3.5 0 0 1 2.5.5 1.4 1.4 0 0 0 1.4-.2l1.1-.9a7.8 7.8 0 0 0 2.4-1.6 7.7 7.7 0 0 1 2.1-1.4.1.1 0 0 0-.1.1h.1a5.5 5.5 0 0 1-2.3 3.1 2.997 2.997 0 0 0-1.2 2.2 1.295 1.295 0 0 0 .8 1.1h.7c1.2.1 1.5.5 1.5 1.6s.1.9.1 1.4a2.498 2.498 0 0 1-.8 1.6h-.6c-.2-.8-.3-1.7-.5-2.5a2.4 2.4 0 0 0-1-1 2.798 2.798 0 0 0-2.5-.1 1.203 1.203 0 0 0-.5.5 2.296 2.296 0 0 0-.3 1.1c.018 1.414.186 2.821.5 4.2a1.7 1.7 0 0 1-1 .1 8.6 8.6 0 0 0-6 1.4h-.3l-.9.8c-.5.4-.6-.1-.9-.3-.3-.2-1-.5-1.2-.1-.2.4-.4 2 .2 2.4a11.202 11.202 0 0 0 3.7 2.4 21.397 21.397 0 0 1 4.3 2.1l1 .5a1.004 1.004 0 0 0 .9.1c.3-.1.6-.2.7-.6l.4-.5a2.299 2.299 0 0 1 1.8.1 5.003 5.003 0 0 0 4.1 1.1l.7.2c.7.1.9.4 1 1.3.1.9-.1.2 0 .3.1.1.5 1 .9.9l2.5-.7c.6-.2 1.1-.6 1.8-.5.7.1 2.2-.9 3.1-1.8.9-.9.1-.2.1-.3 0-.1.4-1.8-.8-2.3-1.2-.5-.7-.3-.7-.7a1.79 1.79 0 0 1 .4-1.4 2.8 2.8 0 0 1 .9-.6l2.3-1.2a3.8 3.8 0 0 0 1.9-2.2c.127-.212.196-.453.2-.7l.2-.3c.2-.6.6-.9 1.2-.7.6.2 2.4.2 3.6.2 1.2 0 .9-.7.7-1.4l-.3-.6a2.4 2.4 0 0 0 2.7-1.1c.345-.51.748-.98 1.2-1.4a7.63 7.63 0 0 0 1.1-1.4 1.398 1.398 0 0 0 0-2 2 2 0 0 1-.5-1.5l1.6.6a1.002 1.002 0 0 0 1.3-.9 1.5 1.5 0 0 0-.6-1.6l-1.4-.5-.3-.2c.113-.213.287-.387.5-.5a1.295 1.295 0 0 1 1-.3 9.2 9.2 0 0 0 3.3.1 1.1 1.1 0 0 0 1.3-1c.1-.222.168-.458.2-.7l.6.3.6.4a2.803 2.803 0 0 0 3.9-.8 15.803 15.803 0 0 1 3.8-3.5l.5-.3a7.008 7.008 0 0 0 2.4-1.7 2.6 2.6 0 0 1 1.6-.9c1.9-.6 3.5-1.9 5.6-2.1l5.1-3c.211-.297.348-.64.4-1 .1-.4-.1-.6-1-.9l-1.3-.5c.2-.4.3-.8 1-.8l5.5-.5 5.2-2.7.7-.3c.452-.431.825-.94 1.1-1.5a7.83 7.83 0 0 0 .3-2.2 1.701 1.701 0 0 0-1.1-1.7.903.903 0 0 1-.805-.718.897.897 0 0 1 .005-.382c.133-.826.166-1.666.1-2.5a1.1 1.1 0 0 0-.3-.6l-2.5-.8a2.6 2.6 0 0 0-2.1.3l-.8.2 1.1-1c.5-.5.6-.6 0-1.1l-.6-.5h-.4c-1-.1-1.7-.9-2.7-1.1a1.502 1.502 0 0 1-1.3-1.2 1.3 1.3 0 0 0-1.1-.9 27.97 27.97 0 0 1-2.8-.6 3 3 0 0 0-2.9.3c-.6.4-1 0-1-.9s.1-.6-.2-.6l-4-1h-1.5a1.1 1.1 0 0 0-.9 1l-.3 2.6-.3.2a.299.299 0 0 1-.494-.104.3.3 0 0 1-.006-.196 4.517 4.517 0 0 1-.1-1.1v-.4c-.2-.2-.4-.4-.6-.4-.2 0-1.5-.6-2.1-1.3a1.398 1.398 0 0 0-1.7-.2 1.202 1.202 0 0 0-.9.8c-.08.19-.115.395-.1.6.017.505.084 1.008.2 1.5 0 .1-.1.2-.2.3h-.4l-1-2c-.4-.7-1.3-.5-1.7.2-.4.7-.5.8-1 .6h-.4c-.7-.2-1.3.2-1.2.8.1.6-.1 1.5-.8 2.1-.7.6-.4.9-.7 1.3a1.005 1.005 0 0 1-.825.351 1.004 1.004 0 0 1-.775-.451 5.957 5.957 0 0 0-.4-.8 9.068 9.068 0 0 0-1.1-2.2c-.2-.3-.8-.4-1.3-.6-.5-.2-.9.3-1 .9-.1.6-.4 1.2-1.1 1.3a.8.8 0 0 0-.7.2.794.794 0 0 0-.4.6c.3.9.7 1.8 1.1 2.7a1.603 1.603 0 0 1-1.5-.7 1.101 1.101 0 0 0-1.3-.5c-.4.2-.7 0-1-.2l-.6-.9c-.4-.5-.9-.6-1.3-.2l-1.1 1c-.2.3-.4.2-.6 0a1.603 1.603 0 0 0-1.7-.5 10.402 10.402 0 0 0-3.8 1.5l-.9.7a1.298 1.298 0 0 0 .4 1.9l.6.2c.052.476.152.945.3 1.4.3.8.3.8 0 1.1l-.8.8a1.414 1.414 0 0 0-.238.574 1.413 1.413 0 0 0 .333 1.164c.139.157.312.28.505.362l.5.3h-1a1.2 1.2 0 0 0-.9 1.4c.167.947.621 1.82 1.3 2.5a2.6 2.6 0 0 0 2.3.8c.139.428.341.832.6 1.2a5.6 5.6 0 0 0 3.5 1.7.1.1 0 0 0 .1.1 4.299 4.299 0 0 0 2.5-.7c.2.4.1.9.5 1.2a6 6 0 0 0 4.5 1c1.6-.4 3.4-.7 4.4-2.3a1.4 1.4 0 0 1 1.1-.7l-.3.6c0 .1-.1.2-.1.3a.902.902 0 0 0 .5 1.1c.7.3 1.5.2 2.1.8-2.6-.2-5.1-.2-7.5 1.1a4.7 4.7 0 0 1-3.3.1l-2.2-.4a1.502 1.502 0 0 0-1.1.8c0 1-.1 2-.2 3s-.1.5-.3.4c-.2-.1-.2-.2-.2-.3a6.698 6.698 0 0 0-1.7-3.7 6.596 6.596 0 0 0-2.3-1.7l-.3-.2a1.301 1.301 0 0 0-1.7.2l-2.3 2.3c0 .1 0 .1-.1.1a7 7 0 0 1 0-2.5 3.698 3.698 0 0 0 .4-1.8c0-.9-1.1-.9-1.5-1.4a5.498 5.498 0 0 0-1.8-1.3 1.193 1.193 0 0 1-.5-.9c-.066-1-.033-2.006.1-3 .1-.9.3-1.7.4-2.6.1-.9-.6-2.3-1.5-3.2a2.995 2.995 0 0 0-2.4-.6 1.305 1.305 0 0 0-1 1c-.067.4.133.7.6.9l1.4.5a.598.598 0 0 1 .1.7l-.3.2h-1.8l-1.8.5a1.9 1.9 0 0 0-1.1 1.8c.1.4.4.9.5 1.3.1.4-.1.5-.2.7-.1.2-.3.1-.4 0-.1-.1-1-.7-1.6-.2a2.6 2.6 0 0 1-2.1.6c-.8-.1-1 .6-.8 1.3.124.593.399 1.145.8 1.6a2.593 2.593 0 0 1 .9 1.8 3.6 3.6 0 0 1-1.9-.8.8.8 0 0 0-1 .2c-1.1 2-1.5 4.2-2.5 6.2s0 1.4.6 2c.578.449 1.271.726 2 .8.376.063.724.237 1 .5.2.1.2.4.2.7a.704.704 0 0 1-.4.5c-.2.1-.5 0-.7 0-1.8-.3-2.7.3-3.2 1.7a15.09 15.09 0 0 0-.7 3.7 4.005 4.005 0 0 0 2 4.1zM289.4 22.2c.1.3.7.3.9 0a4.589 4.589 0 0 0 1.4-2.2c.1-.2-.1-.5-.2-.6a1.393 1.393 0 0 0-1.3-.6c-1.1.2-2.1 1.2-1.3 2.4.187.323.354.657.5 1z"/>
+										<path d="M290.6 50.4c0 .1.1.2.2.3a1.501 1.501 0 0 0 1.7.1 1.8 1.8 0 0 0 1-1.3 1.796 1.796 0 0 0-1.6-1.8l-.6.3a3.596 3.596 0 0 0-.7 2.4zM354.9 31.4h.2c.1 0 .1 0 .1-.1l-.3.1zM415.6 11.7c-.1.1 0 .2.2.3v-.2c0-.1-.2-.1-.2-.1zM402.5 16.3l.8.2a1.2 1.2 0 0 0 .6-.6.994.994 0 0 0-.012-.869 1.009 1.009 0 0 0-.688-.531c-.4-.1-.8.1-1.1.7a.803.803 0 0 0 .132.914c.076.08.167.143.268.186zM396.7 21.1c.1-.1.3-.1.3-.2s-.1-1-.6-1.1h-.3c-.3.2-.3.6 0 1l.6.3zM399.1 16.2c.3 0 .4-.2.3-.5-.1-.3-.3-.4-.5-.5h-.3c-.3.1-.3.3-.1.6.2.3.4.4.6.4z"/>
+										<path d="m459.7 36.6-.4-.6a6.901 6.901 0 0 0-3.1-2 7.5 7.5 0 0 0-2.6-.4 11.5 11.5 0 0 0-3.6.7 1.5 1.5 0 0 0-.5.6 3.84 3.84 0 0 0-.3 1c-.2.5-.7.6-1.3.5a2.199 2.199 0 0 1-1.3-.6.5.5 0 0 0-.9.2l-.7 1a10.397 10.397 0 0 1-4.6 2.8 8.909 8.909 0 0 0-3.3 1.4 1.305 1.305 0 0 1 .2-.9 6.605 6.605 0 0 1 2.9-2.3 4.397 4.397 0 0 0 2.7-2.9l.4-.7a.4.4 0 0 1 .1-.3c1.1-2.9-.3-3.5-2.5-3.3h-.4c-.2.1-.5.2-.5.4s-.4 1.2-.7 1.8a1.7 1.7 0 0 1-1.7 1.1h-.4c-1.3-.5-2.7-.1-4-.1a.198.198 0 0 1-.141-.059.198.198 0 0 1-.059-.141c0-.1 0-.3.1-.3l2.1-.8a2.002 2.002 0 0 0 1.2-1.3 1.003 1.003 0 0 0-.026-.777.994.994 0 0 0-.574-.523l-2.5-.6c-3.8-.7-5.1-.6-8.7.9a8.42 8.42 0 0 0-1.4.6c-.686.246-1.387.446-2.1.6-.2.1-.4-.2-.5-.4-.1-.2 0-.3.1-.3a4.21 4.21 0 0 1 1.3-.7c1.3-.5 2.6-.9 3.9-1.5a9.2 9.2 0 0 1 6.9-.5 11.2 11.2 0 0 0 4.8.3l1.8-.2c.86-.15 1.728-.25 2.6-.3a8.399 8.399 0 0 0 4.3-2.2 1.591 1.591 0 0 0 .538-1.129 1.593 1.593 0 0 0-.438-1.171 18.888 18.888 0 0 0-2.7-2c-1.5-1-3.1-1.6-4.9-.7a.8.8 0 0 1-.7 0l-.3-.2s.1-.2.2-.2l1-.5a1.897 1.897 0 0 0 .6-2.6c-.3-.4-.9-.8-1.3-.6a9.4 9.4 0 0 1-6.6-.1h-.3a5.302 5.302 0 0 0-2.2-.3l-2.6.5a7.4 7.4 0 0 1-3.6.3 3.204 3.204 0 0 0-2.5.6l-1.1.2-.3-.2c-.1-.1 0-.3 0-.3s.9-.6 1.3-.6a27.678 27.678 0 0 0 3-.3 25.906 25.906 0 0 1 5.5-.7c.73-.1 1.47-.1 2.2 0a6.2 6.2 0 0 1 2.3.4c1.4.5 2.7-.1 3.9-.8a.806.806 0 0 0 .1-.7 5.389 5.389 0 0 0-3.5-2.6c-2.2-.5-4.3-1.3-6.5-2l-1.3-.4a24.09 24.09 0 0 0-3.7-.7c-1.4-.3-2.7.5-4 .4a5.9 5.9 0 0 0-2.3 2.4l-.2.2c.016.238-.018.476-.1.7a3.3 3.3 0 0 1-2.3-.9c-.2-.2-.4-.2-.6.1-.2.3-.1.3-.1.4l.3 1c.1.3.1.5-.1.6l-.7.2a10.8 10.8 0 0 1-3-1.6 1.6 1.6 0 0 0-2 0l-.8.5c-.383.254-.844.36-1.3.3a.8.8 0 0 0-.7.7 23.508 23.508 0 0 0-.1 2.6c0 .1-.1.1-.1.2a1.095 1.095 0 0 1-.5.9h-.2c-.4.3-.6.8-1 1.1-.4.3-.5.2-.6.1a7.3 7.3 0 0 0-2.5-.8c-.2 0-.8.3-.8.6s-.1.8-.1 1.1c0 .3.5 2.7.8 4.1l.3 1.1a13.195 13.195 0 0 0 1 3.9.506.506 0 0 1-.133.466.504.504 0 0 1-.467.134c-.6 0-1.3.2-1.5-.7a1.5 1.5 0 0 0-.6-.9l-.6-.4c-.2-.1-.1-.2.2-.4.3-.2.7-1.1.1-1.5a3.203 3.203 0 0 1-1.4-1.6 34.477 34.477 0 0 0-1.4-3.4 4.102 4.102 0 0 0-1.6-1.6 1.1 1.1 0 0 0-1.6.5l-.3.7a10.805 10.805 0 0 0-.3 4.4 3.698 3.698 0 0 1-.4 1.8c-.3.5-.8.4-1.3.3h-.8l-.6.4c-.3.2-.6-.1-.7-.5-.1-.4.7-1.1.5-1.7-.2-.6-.2-2.5-.3-3.7a2.099 2.099 0 0 0-.4-1c0-.1-.1-.3-.2-.3s-.5.1-.6.3c-.1.2-.4 1.1-.5 1.7.101.63.101 1.27 0 1.9a6.715 6.715 0 0 1-1.1 1.4c-.1.1-.2.2-.2.3a2.097 2.097 0 0 1-.3-1.3c.36-.81.661-1.646.9-2.5a4.595 4.595 0 0 0 .1-2.6c-.1-.4-.7-.9-1.1-.8-.612.12-1.214.287-1.8.5a13.5 13.5 0 0 1-3.6.8l-3.7.4h-1.5a1.399 1.399 0 0 0-1.1 1.3c0 .4.1.7.1 1.1 0 .4-.2.2-.2.2s-.3 0-.4-.1c-.1-.1-.5-.8-.9-1.1-.4-.3-1.2.1-1.8.3A2 2 0 0 0 368 23c-.1.4-.1.7-.2 1.1a7.757 7.757 0 0 1-.3 2.2A7.505 7.505 0 0 1 366 28a6.23 6.23 0 0 0-.4.6c-.4.4-1 .6-1.3.2a2.8 2.8 0 0 0-2.8-.6 4.802 4.802 0 0 0-3.1 1.7 4.598 4.598 0 0 1-3.3 1.6l-.7.7a9.598 9.598 0 0 0-2.7 3.3 1.3 1.3 0 0 0 .7 2.1l2.7.8c.1.2.1.4.2.6a.798.798 0 0 1-.2 1c-.6.4-1 .7-1.1 1.4-.132.48-.371.925-.7 1.3a27.257 27.257 0 0 1-2.3 2.5 1.3 1.3 0 0 1-1.3.3 4.906 4.906 0 0 0-1.6-.5c-1-.1-2.1 0-3.2 0a2.6 2.6 0 0 0-1.7.5 5.397 5.397 0 0 1-2.4.9l-5.2 1a4.194 4.194 0 0 0-3 2.4 1.701 1.701 0 0 0 .1 2.4c.9.9 1.1 2.3 2.1 3.3.239.692.54 1.362.9 2a1.8 1.8 0 0 0 1.9 1c.6-.1 1.1-.5 1.8-.3a4.099 4.099 0 0 0 2.2.1c.2-.1.5.1.7.2a1.1 1.1 0 0 1 .3.6.805.805 0 0 1-.4.6h-1.1a4.999 4.999 0 0 0-4.3 0 4.1 4.1 0 0 1-1.9.2 2.698 2.698 0 0 0-2.1.4c-1 .5-1.5 2.1-.8 2.8a9.193 9.193 0 0 0 2.5 2.3c.4.2.4.3-.1.6l-1.3.8c-.2.3-.4.8-.3 1a8.597 8.597 0 0 0 2.3 3.3l.7.4c.9.7 1.4.6 2-.4.4-.6.5-.6 1.2-.4l.9.5.3.3c.1.2.4.4.6.3.2-.1 3.2.5 4.6-.5h.6a23.186 23.186 0 0 1 4.1 2.2l1.1.8 2.2 1.7 1 1.1c.114.322.181.659.2 1a3.904 3.904 0 0 1-.6 1.8 2.198 2.198 0 0 0 .4 2.7c.268.424.439.902.5 1.4a1.595 1.595 0 0 1-.5 1.7c-.3.2-.3.4 0 .5l1 .4c.4.2.6.5.4.9a2.103 2.103 0 0 1-.4.6.997.997 0 0 0-.294 1.247c.069.139.17.26.294.353.2.1.2.4.2.6 0 .2-.5.7-.5 1 0 .3.5.9.6 1.4.017.737.084 1.472.2 2.2a2.585 2.585 0 0 1-.3 2.1.896.896 0 0 0 0 .7l.6.5c.4.6.3 1.1-.5 1.2a1.901 1.901 0 0 0-1.3.5c-.2.3-.2.5 0 .7.2.2 1.3.2.2.8-1.1.6-.9 1.3-.9 2.2h-.3a.4.4 0 0 0 .2.5h.1a5.004 5.004 0 0 1-1.3 2.5 1.497 1.497 0 0 0 .2 1.7c1.3 1.5 2.4 1.5 3.7.2.178-.311.416-.583.7-.8a1.1 1.1 0 0 1 1.3-.2.902.902 0 0 1 .5.3h-.6c-.2 0-.3.2-.5.3-.2.1.3.3.5.3h.7l-1.2 1.7c-.2.4-.2.8.2.9l.2.2.8.3a.998.998 0 0 1 .4 1.2l-.5.9a6.796 6.796 0 0 1-2.8-.7h-.1l-1.7-.4a1.301 1.301 0 0 0-1.4 1.4.393.393 0 0 1 .1.3c.102.256.169.525.2.8v.3c-.1.2-.6.4-.9.5a1.598 1.598 0 0 0-1 1.1 7.808 7.808 0 0 0-.4 2.2c.035.674.224 1.332.553 1.922.33.589.791 1.095 1.347 1.478h.3a6.207 6.207 0 0 0 4-.5 1.503 1.503 0 0 0 .5-1.9 2.985 2.985 0 0 0-.8-.8 2.704 2.704 0 0 1-.8-1.9c1.6.8 3.2 1.8 5 1.8a.499.499 0 0 1 .4.8l-.9 1-.6 1.4c-.2.3-.1.6 0 1s.1.8-.6.9c-.7.1-.8 0-.9.5-.1.5-1.1 2.3-2.9 2a5.497 5.497 0 0 0-1.7.3c.024.726.194 1.441.5 2.1l-.9-.2c-.8-.1-.8-.1-1.1.6l-.5 1c-.391.377-.758.777-1.1 1.2l-.3.4a6.774 6.774 0 0 1-.7 2 3.305 3.305 0 0 0-.4 1.4 1.498 1.498 0 0 0 .5 1.3l.8.6c-.5.5-1.1 1-1.5 1.5a1.997 1.997 0 0 0-.5.9 1.4 1.4 0 0 0 .3 1.5c.405.472.619 1.078.6 1.7a2.603 2.603 0 0 0 .2 1.5c.637 1.62.877 3.368.7 5.1-.1.2 0 .5 0 .7 0 .2.5.7.8.7l2.3-.7a4.102 4.102 0 0 1-1.6 1.6 2.103 2.103 0 0 0-.9 2.2c.3 1.2.4 2.6 1.2 3.6a3.1 3.1 0 0 0 .7.9 1.104 1.104 0 0 1 .561.71 1.091 1.091 0 0 1-.161.89c-.1.3-.3.8 0 1.1.3.3.7 1.8 1.1 2.7a2.3 2.3 0 0 1 0 1.8c-.1.2-.2.5-.1.6l1.5 1.7c1.2.1 1.7.8 1.6 2-.1 1.2.4.3.6.2l2.2-.4 1.1-.3c.7-.2 1.3 0 1.4.7a3.304 3.304 0 0 0 1.1 2.6c.3.2.3.5.5.8h.1a1.294 1.294 0 0 0 .9.6c.9-.2 1.7.4 2.5.4a1.804 1.804 0 0 0 1.6-.8 8.406 8.406 0 0 0 .9-2.8c.191-.551.425-1.086.7-1.6.073-.482.207-.953.4-1.4a5.388 5.388 0 0 1 1-1.6 4.9 4.9 0 0 0 1.1-2.3 15.91 15.91 0 0 1 .5-2.1c.7-.4 1.3-.7 1.6-1.5a6.203 6.203 0 0 1 2.4-3.2 2.998 2.998 0 0 0 .9-3.7c-.2-.6.1-.9.5-1.2l.7-.4a.902.902 0 0 0 .3-1l-.3-.6c-.5-.9-.5-1 .6-1.1 1.1-.1 1.3-.3 1.5-.9a1.597 1.597 0 0 1 .674-1.053A1.604 1.604 0 0 1 384 147.3a6.593 6.593 0 0 0 2.4-.3h1.7a.602.602 0 0 0 .7-.2l.3-.2c.2-.2.5-.6.8-.6a8.5 8.5 0 0 0 5.1-2.2l.7-.2a4.4 4.4 0 0 0 2.6-2c.7-1.6 2.1-2.5 2.9-3.9.8-1.4 2.7-1.8 3.6-3.1.9-1.3 1.7 0 2.6-.2l1.4-.5c.3-.1.7-.3 1-.2a2.805 2.805 0 0 0 2.2-.3 16.089 16.089 0 0 1 3.9-1.2 13.009 13.009 0 0 0 6.2-2.5c2.3-1.9 4.8-3.5 7.2-5.3.1-.1.1-.5.1-.7l-.3-.2c-1.4-.5-3-.2-4.3-1.1a3.292 3.292 0 0 0-3.2-.1h-.8l-.2-.3c-.2-.2-.2-.5.1-.6l1.7-.6a1.603 1.603 0 0 0 1.1-1.8c-.1-.7-.3-1.4-.4-2.2a1.092 1.092 0 0 1 .8-.7c.2.1.5.2.6.4a16.532 16.532 0 0 0 1.8 4.1 2.707 2.707 0 0 0 2.5 1.3h1.5c1.3.1 1.5-.1 1.6-1.3.1-1.2 0-2.2.1-3.3.1-1.1-1-2-.6-3.2a2.392 2.392 0 0 0-.5-1 7.794 7.794 0 0 0-2.9-3.3l-1.5-1.2a4.718 4.718 0 0 1-.6-.9 23.556 23.556 0 0 1-.4-2.6.791.791 0 0 1 .4-.6c.1-.1.5 0 .6.1.146.318.247.654.3 1a3.502 3.502 0 0 0 1.7 3.2c.7.4 1.2 1.2 2.1 1.4.9.2.9-.1.9-.5.048-.61.255-1.196.6-1.7-.3-.6.1-1.1.4-1.6a1.203 1.203 0 0 0-.2-1.4l-2.5-1.7c-.2-.2-.2-.5-.3-.8l.9.4a2.003 2.003 0 0 0 2.4 0 5.793 5.793 0 0 1 2.8-.9l.5-.3.3-.4c.256-.466.425-.974.5-1.5.1-.5-.2-1.1-.6-1.1l-1.9-.7-.9-.5c0-.1-.1-.3 0-.4.1-.1.2-.3.4-.3h.2c1.1.6 2.2 1 3.4-.1 1.2-1.1.7-.1 1.1-.1.4 0 1.9-2.2 1-2.9a2.904 2.904 0 0 1-1.1-1.9c0-.3-.3-.6-.6-.8-.3-.2-.4-.3-.3-.6.1-.3.3-.3.6-.3.365.05.735.05 1.1 0 .5-.2.6-.7.7-1.2.113-.863.179-1.73.2-2.6a2.102 2.102 0 0 0-.7-1.7c-.8-.6-.2-.9.2-1.4a.69.69 0 0 0 .116-.543.697.697 0 0 0-.316-.457c-.6-.4-1.4-.2-1.9-.9h.1c.5-.7.5-.8 0-1.3l-.8-.9h-.1l.8-.8a9.432 9.432 0 0 1 1-1 1.402 1.402 0 0 1 1.4-.1l.3.2a4.501 4.501 0 0 1 1.5 1.9c.088.291.122.596.1.9a5.9 5.9 0 0 0 .5 3.2c0 .1.2.1.2.1.146-.353.247-.722.3-1.1a5.303 5.303 0 0 1 .2-2.8c.12-.405.325-.78.6-1.1a6.2 6.2 0 0 0 .7-3.3 1.697 1.697 0 0 0-1-1.4l-1.5-.3-.9-.6a.194.194 0 0 1-.076-.049.185.185 0 0 1-.047-.077.197.197 0 0 1 .023-.174c.075-.206.216-.382.4-.5 1.4-.2 1.5-.4 1-1.4a4.401 4.401 0 0 0-1.2-1.5 9.413 9.413 0 0 1-1-1 .603.603 0 0 1 .1-.4c.1 0 .2-.2.3-.1.1.1 1.7 0 2-1 .3-1 1.1-2.5 1.1-3.9a14.101 14.101 0 0 1 3.6-8.9c.6-.7 1.2-1.6 1.8-2.4.6-.8.1-.6.1-1s-.2-1 .6-1.2A2.799 2.799 0 0 0 452 48l-.9-1.5h-.5l-1.5-.2c-.1 0-.2-.2-.2-.2l.4-.6h1.1l.7.3a3.3 3.3 0 0 0 2.9-.3l1-.5c.4-.2.4-.6.4-1a1.905 1.905 0 0 0-.2-.7.701.701 0 0 1 .7-.8 2.3 2.3 0 0 0 2.3-.7 5.197 5.197 0 0 1 1.1-1c1.9-1.6 2-2.4.4-4.2z"/>
+										<path d="M448.7 34.5a.5.5 0 0 0-.1-.3l-.4-.3c0 .1.1.3.1.4 0 .1.2.5.4.2zM448.201 33.9v-.2h-.1a.11.11 0 0 1 .085-.006c.028.01.051.03.065.056a.115.115 0 0 1 .006.085.116.116 0 0 1-.056.065z"/>
+										<path d="m448.101 33.7.4-1a1.42 1.42 0 0 0-.2-.6.604.604 0 0 0-.522.056.596.596 0 0 0-.278.444.898.898 0 0 0 .6 1.1zM190.801 73.4c-.1 1-.1 2-.1 2.9a1 1 0 0 0 .7.8 7.904 7.904 0 0 0 3-.8l.9-.5a1.894 1.894 0 0 0 1.5.9 2.602 2.602 0 0 0 1.7-.5l1-1.1c.375-.64.811-1.242 1.3-1.8a3.492 3.492 0 0 1 2.7-1.6 3.305 3.305 0 0 0 1.6-.9c.6-.4 1-1.1 1.6-1.5.359-.35.81-.592 1.3-.7a27.421 27.421 0 0 0 3.9-.9 3.596 3.596 0 0 1 1.4-.2l-.4.4a33.26 33.26 0 0 1-5.1 2.3c-.8.4-1.6.8-1.7 1.8-.1 1-.4.6-.7.8l-1.6.9c-.7.6-1.5 1.1-1.5 2.1s.3 1.1.5 1.7l.2.3a.996.996 0 0 0 1 .9l3.4.4.2.3a.401.401 0 0 1-.4.4l-3.7.3a3.898 3.898 0 0 0-2.1.8 1.797 1.797 0 0 0-.6.9c0 .5.1 1 .1 1.5s.3 1.7 2 2.1c2.041.632 4.163.969 6.3 1 .386.006.764.11 1.1.3.206.075.381.215.5.4a8.007 8.007 0 0 1 3.1 3.2c.1.3.2.5 0 .6h-.4a17.296 17.296 0 0 1-5.3-1.7l-1-.5-1-.3h-5.3a1.8 1.8 0 0 0-1.6 1.3 6.282 6.282 0 0 0-.4 3c.1.4.1.8.2 1.1a4.093 4.093 0 0 0 2.6 2.5 12.12 12.12 0 0 1 2.5.8 1.004 1.004 0 0 1 .4.9 13.13 13.13 0 0 1-.8 1.7.307.307 0 0 1-.1.2c-.077.259-.111.529-.1.8.108.745.275 1.481.5 2.2a.692.692 0 0 0 .5.4h2.8c1.207-.05 2.417.051 3.6.3a3.392 3.392 0 0 0 2.8-.2l1.7-.9a4.294 4.294 0 0 1 2.5-.5 3.398 3.398 0 0 0 2.8-.7l1.3-.7c.3-.2.5-.1.7.2.2.3.1.2.1.3 0 .1.8 1 1.3 1.3.5.3.5 1.4 1 1.9l.3.2 3.6 1.1a7.797 7.797 0 0 0 3.7-.1 1.805 1.805 0 0 0 1.3-1.1 3.2 3.2 0 0 0-.4-3.4l.6-.9c.3-.2.8-.3 1-.1.2.2 1.5.8 1.9 1.6a2.703 2.703 0 0 0 2.1-1.6v-.2a2.406 2.406 0 0 0-.1-2.2 5.21 5.21 0 0 0-1-1.1 3.2 3.2 0 0 1-1-2 2.701 2.701 0 0 0-1.3-2.1c-.8-.7-.9-1.8-1.2-2.7a1.397 1.397 0 0 1 .3-1.7 5.104 5.104 0 0 0 1.5-4.1 3.885 3.885 0 0 1 .4-1.8c.6-1.7 1.3-3.5 2-5.2a2.384 2.384 0 0 1 1.2-1.4 22.735 22.735 0 0 0 3.5-2.6l.6-.6c.254-.201.43-.484.5-.8a.912.912 0 0 0 .1-.5c.1-1.2-.2-1.9-1.2-2.3l-.5-.2-2-.5h-.1a2.496 2.496 0 0 0-2.1.8h-.2a1.501 1.501 0 0 0-.2 1.7 9.72 9.72 0 0 1 .2 2.4l-.3-.5a1.802 1.802 0 0 0-1.2-1.3l-1-.4a1.407 1.407 0 0 0-1.285-.23 1.398 1.398 0 0 0-.915.93 12.775 12.775 0 0 0-.9 1.6c-.5 1.3-.8 2.7-1.4 3.9l-.3.7c-.8 1.4-.9 3.1-1.5 4.6-.6 1.5-.1.2-.1.3l-.2.3a.8.8 0 0 1-.9.5c-.3-.2-.7-.6-.6-.9.1-.3.7-2.7 1.2-3.9.111-.182.18-.388.2-.6a7.503 7.503 0 0 0 .1-4.9 2.82 2.82 0 0 0-.7-.9.802.802 0 0 0-1.2.3c-.2.8-.3 1.7-.5 2.5s-.4.8-.7.6a12.707 12.707 0 0 0-3.4-.3c-.3 0-.5-.1-.3-.2s.2-.1.3-.2l1.6-.9a1.101 1.101 0 0 0 .3-.9 7.11 7.11 0 0 0-1.9-2.3c-.8-.8-1.5-.9-2.3-.2a4.97 4.97 0 0 0-1.1 1 1.208 1.208 0 0 1-1 .3c-.4-.1-.3-.2.1-.9a22.091 22.091 0 0 0 1.7-2.5c.4-.5.1-1.4-.5-1.9l-.7-.4a29.229 29.229 0 0 0 0-5.9 3.902 3.902 0 0 0-1.4-2.5 2.304 2.304 0 0 0-1.8-.6 3.5 3.5 0 0 1-2.7-1 5.485 5.485 0 0 1-1.4-1.2 3.004 3.004 0 0 0-3.5-1.5c-1.1.1-2.2 0-3.4 0-.608.051-1.21.151-1.8.3a1.297 1.297 0 0 0-1 1 14.164 14.164 0 0 0-.4 2.2 2.412 2.412 0 0 1-1 1.9l-3.5 2.8a2.39 2.39 0 0 0-1.1 1.9c0 .2-.2.4-.3.6a14.892 14.892 0 0 0-3.2 2.4l-2.4 1.9a3.591 3.591 0 0 0-1.1 1c-.3.7.5 1 .8 1.6.425.731.665 1.555.7 2.4zM146.001 77.1c.1 0 .1-.2.1-.2s-.5-.2-.6-.1l-.4.4h.6l.3-.1zM242.3 95.5l.2-.3-.2-.2h-.2c-.1.4 0 .5.2.5z"/>
+										<path d="M236.6 68.8h.2c0-.1 0-.2-.1-.2s-.3 0-.1.2zM262.1 74.9a1.102 1.102 0 0 0 .5-1.3 1.404 1.404 0 0 0-1.1-.9c-.9-.2-1.8-.1-2.6-.3a3.297 3.297 0 0 1-1.3-.4l-.6-.6c-.1 0-.1-.1-.2-.2s-.6-.4-1-.3a5.797 5.797 0 0 0-1.8.4l-.4.2c-.2.1-.4.3-.4.4a3.903 3.903 0 0 1-1.7 1.9c-.4.2-.4.6-.3 1 .072.386.207.758.4 1.1.8 1.2.4 2.3-.3 3.5a.599.599 0 0 1-.9.1 7.19 7.19 0 0 1-1.2-2.3 1.203 1.203 0 0 0-1.2-.7 2.406 2.406 0 0 0-1.727.632 2.409 2.409 0 0 0-.773 1.668v.8a14.935 14.935 0 0 0-.2 2.1.993.993 0 0 0 .6.9l.4.2a3.003 3.003 0 0 1 1.2 1.7c.5 1.6 1.2 3 1.1 4.7a2.999 2.999 0 0 0 1.1 2.3 1 1 0 0 0 1.3.2c.6-.5 1.1-1.1 1.7-1.5l2.1-.7 2-1c.308-.19.552-.469.7-.8a8.804 8.804 0 0 1 1.9-3.2 2.498 2.498 0 0 0 .5-2.4 12.799 12.799 0 0 0-.6-1.8 2.302 2.302 0 0 0-1.4-1.6c-.3-.2-.3-.4.1-.6l2-.8a1.598 1.598 0 0 0 1-1.1c0-.8.6-.9 1.1-1.3z"/>
+										<path d="M260.4 78.8c-.2.2-.5.2-.5.4s0 .5.2.6c.2.1.7-.1.7-.5l-.4-.5zM260.801 72.2c.45-.133.862-.373 1.2-.7.1 0 .1-.1.2-.2v-.4a.2.2 0 0 0-.2-.2 6.1 6.1 0 0 0-3-.1c-.6 0-.9.4-1.2.8-.02.213-.089.418-.2.6a6.998 6.998 0 0 0 3.2.2zM307.201 70.6A2.304 2.304 0 0 0 306 68.2a3.408 3.408 0 0 1-.9-1.2 1.698 1.698 0 0 0-1.8-1 5.6 5.6 0 0 1-3.3-.6h-1.1l-1.699.2-3.101.4c-1 .1-1.9.6-2.5-.7a2.197 2.197 0 0 0-1.3-.6l-.9-.4a3.702 3.702 0 0 1-2.199-2.5c0-.1-.101-.2-.101-.3a.996.996 0 0 0-.399-.5 2.008 2.008 0 0 0-.801-.4c-.4-.1-.4-.1 0-.3a.1.1 0 0 1 .03-.07.1.1 0 0 1 .07-.03l.9-.8a5.5 5.5 0 0 0 2.2.1c.3-.1.6-.7.4-1l-.4-.6a2.405 2.405 0 0 1-.8-2.3c.1-.6-.7-1.4-1.3-1.5h-1.9c-.5-.1-1-.3-1.1-.8l-.5-1.5a2.972 2.972 0 0 0-.4-1 16.561 16.561 0 0 0-3-2.2 2.6 2.6 0 0 0-2.8.3l-.3.3a1.5 1.5 0 0 0-.4 1.4c.454 1.397.755 2.838.9 4.3a.803.803 0 0 0 .4.6l3.1 1.2c1 .4 1.1.5 1 1.3v2a2.199 2.199 0 0 1-1 2.2 5.912 5.912 0 0 0-1.5 1.7 7.41 7.41 0 0 0-1.1 5c.1 1.1 1.5 1.1 2.1 1.9l.3.3a2.102 2.102 0 0 0 2.7.3l.701-.3c.3-.1.399.1.399.4a2.01 2.01 0 0 0-.2 1.1 1.303 1.303 0 0 0 1.1.9c1.164.409 2.373.677 3.6.8h.101c2.4 0 4.499 1.2 6.899 1.1.4 0 .9.4 1.3.6a4.8 4.8 0 0 0 2.9.7h2.2a1.498 1.498 0 0 0 1-.4 10.111 10.111 0 0 1 2.1-1.5.896.896 0 0 0 .663-.83.919.919 0 0 0-.062-.37 2.194 2.194 0 0 1 .5-1.4 3.01 3.01 0 0 0 .5-1.6zM446.9 59.6c.187-.225.293-.507.3-.8-.1-.4-.3-.5-.6-.4a1.002 1.002 0 0 0-.5.9c0 .1.1.3.2.3a.6.6 0 0 0 .6 0zM445.5 71.3c.1 0 0-.2-.1-.3-.1-.1-.3.3-.4.4-.1.1.1.2.1.3l.4-.4zM37.9 124.9a2.102 2.102 0 0 0 1.2-2.1 1.5 1.5 0 0 0-1.3-.9l-3 .5c-.1 0-.2.4-.2.6a1.602 1.602 0 0 0 .6 1.3 3.21 3.21 0 0 0 2.7.6zM35.3 97.1a1.8 1.8 0 0 0 1 .4 1.6 1.6 0 0 1 1.7 1.1c.223.716.49 1.417.8 2.1a.805.805 0 0 0 .9.4l2.1-.7.3-.2v-.4a9.099 9.099 0 0 1-1.3-2.6 2.5 2.5 0 0 0-2.3-2c-.6 0-1-.6-1.6-.9-.6-.3-.5 0-.6.1a5.8 5.8 0 0 0-1.4 1.7c0 .3.1.9.4 1zM90.7 134.5c-.1 0-.2.2-.2.3 0 .1.1.8.5.7l.3-.3c0-.4-.3-.8-.6-.7zM292.5 123.6l-.6.9c-.174.28-.308.583-.4.9a.393.393 0 0 0-.1.3 1.499 1.499 0 0 0 1.5 2h.2a4.498 4.498 0 0 0 4.3-2.7c.105-.455.274-.892.5-1.3 0-.2.1-.3.1-.5s-.1-1-.5-1.4l-.2-.2a2.401 2.401 0 0 0-2.8 0 8.021 8.021 0 0 0-1.7 1.5l-.3.5zM238.2 105.6l-1.3.6c-.19.151-.33.356-.402.588-.071.232-.07.48.002.712.1.3.3.5.6.3.358-.184.676-.438.933-.748.258-.309.451-.667.567-1.052 0-.1-.1-.3-.2-.3s-.2-.1-.2-.1zM231.1 107.9l.3.3c.3 0 .5-.1.5-.4 0-.3-.2-.4-.5-.4s-.4.3-.3.5zM237.2 102.9c0-.108.035-.214.1-.3a4.423 4.423 0 0 0-.1-.5l-.3.4c-.2.4 0 .5.3.4zM294 112.6c-.1-.2-.3-.2-.5 0a.2.2 0 0 0-.2.2l.5.3c.3-.1.4-.3.2-.5zM296.5 115.3c0-.1-.3-.3-.5-.3s-.7.3-.7.7c0 .4.2.5.3.8.1.3.7-.1.8-.3.082-.293.116-.597.1-.9zM292 114.6l-.7.4c-.5.4-1.4.4-1.8 1.1a1.702 1.702 0 0 0-.1.7l.3.2h1.1l1.7-1.4a.798.798 0 0 0 .1-1c-.2-.1-.4-.2-.6 0zM289.5 120.8v-.2l-.1.2h.1zM272.901 105.8c-.2.3.1.7.5.8a1.2 1.2 0 0 0 1.4-.8l-1.3-.3-.6.3zM360.2 120.5a.395.395 0 0 0-.411-.355.392.392 0 0 0-.189.055l-.2.3c0 .2-.1.5 0 .6l.9.4v-.6c0-.1-.1-.2-.1-.4zM356.4 111.2c0-.2-.1-.4-.1-.6 0-.2-.5.1-.6.3-.1.2-.1.5.2.6.048.048.11.078.176.087a.301.301 0 0 0 .324-.387zM448.201 150.9l-1.2-.8c-.7-.4-.3-1.2-.5-1.7a13.106 13.106 0 0 0-.8-1.7.403.403 0 0 0-.6-.2 1.103 1.103 0 0 1-1.4-.3 1.208 1.208 0 0 0-.975-.418 1.198 1.198 0 0 0-.926.518 3.395 3.395 0 0 1-3.699.9c-.5-.1-1.1.2-1.5 0a1.792 1.792 0 0 0-1.441.026 1.806 1.806 0 0 0-.959 1.074h-.6c-.3-.2-.4-.5-.7-.8a.612.612 0 0 0-.473-.155.594.594 0 0 0-.427.255 2.09 2.09 0 0 0-.3 1.5c.2.7-.301 1.1-.901 1.4l-.599.2a2.1 2.1 0 0 1-.5-1.9 2.105 2.105 0 0 0-.8-1.9l-.9-.7c-.8-.8-1.2-.8-2.4 0a2.397 2.397 0 0 0-1.6.7c-.7.9-1.3 1.9-1.9 2.8-.6.9.3 1.1.8 1.1.345.031.692-.038 1-.2a2.794 2.794 0 0 1 2.5.3c.3.1.4.3.2.6s-.501 1.1-1.301 1.2c-.846.036-1.685.17-2.5.4a.697.697 0 0 0-.299.6 1.1 1.1 0 0 0 .299.6h.101l1.8.4c.346.063.663.239.9.5a8.598 8.598 0 0 1 1 1.6 1.423 1.423 0 0 1-.2.6l-.7.4c-.6 0-.8.4-.8 1s.4 1 1.2 1.1h1.1c1.3-.1 2.5-.1 3.4.9l3.6 1.1c.465.113.955.078 1.4-.1 1.9-.7 3.6-1.8 5.5-2.4l.9-.6.7-.6a6.193 6.193 0 0 1 2.5-1.1 2.306 2.306 0 0 0 1.2-.9l1.3-1.4c.111-.182.179-.388.2-.6a2.597 2.597 0 0 1 .5-2.8.399.399 0 0 0 .1-.3c-.1 0-.2-.2-.3-.2zM444.001 91.8c.1 0 .1-.2.2-.2s.1-.3.1-.4l-.9-2a1.206 1.206 0 0 0-.975-.418 1.197 1.197 0 0 0-.925.518l-.3 1a1.496 1.496 0 0 0 .7 1.6 1.997 1.997 0 0 0 2.1-.1zM17 162.2a.894.894 0 0 0-.7.1l-2.7 3c0 .108.036.213.1.3l.2.2a6.002 6.002 0 0 0 3.7-1.6c.174-.28.31-.583.4-.9-.1-.5-.6-1.1-1-1.1zM11.6 164.4a1.4 1.4 0 0 0-1.1.1c-1.01.71-1.89 1.59-2.6 2.6-.2.3-.2.5.1.6h.3a9.003 9.003 0 0 0 3.6-2.5c.1-.1 0-.3.1-.4.1-.1-.3-.4-.4-.4zM38.4 159.3v-.2c-.2.1-.2.2 0 .2zM19.3 161.9v.3l.2-.3v-.3l-.2.3zM122.101 192.5l.4.2c0-.2.1-.5-.4-.2zM67.9 142.8c-.6.6-1.4 1-1.6 1.9.805.28 1.675.315 2.5.1l.6-.4a1.4 1.4 0 0 0-.2-1.4 1.001 1.001 0 0 0-1.3-.2zM66.3 144.8l-.3.2c-.42.253-.913.359-1.4.3a1.095 1.095 0 0 0-1.279.291 1.096 1.096 0 0 0-.221.409l-.5.5h-.4c-2.5.4-3.1 1-3.2 3.5a1.102 1.102 0 0 0 .5.9c.3.3.3.7.6 1 .3.3.5.2.6.1a12.987 12.987 0 0 1 4.3-2.7c.8-.3 1.3-1.1 2.1-1.5.8-.4.3-.2.4-.4.173-.375.242-.79.2-1.2a1.397 1.397 0 0 0-.7-.8c-.3-.1-.5-.4-.7-.6zM114.2 175.2l.3-.5c-.1-.5-.4-.8-.6-.7-.2.1-.4.5-.2.9l.5.3zM111.9 160.6v-.3a.894.894 0 0 0-.1-.5l-.2.4c-.1.3 0 .5.3.4zM113.3 178.6a1.303 1.303 0 0 0-1.3.4 3.003 3.003 0 0 0-.6 1.8c.022.737.089 1.471.2 2.2h-.1c.116.593.183 1.195.2 1.8a7.912 7.912 0 0 0 1 4l.2.2.5.5h.4c.1-.1.2-.2.2-.3a5.414 5.414 0 0 1-.3-2.5c.137-1.118.372-2.223.7-3.3.4-1.1.8-2.1 1.1-3.2.3-1.1 0-.5-.2-.6a12.325 12.325 0 0 0-2-1zM279.9 149.2c-.4.2-.3.9.2 1.6.113.213.287.387.5.5a.904.904 0 0 0 1 .1c.3-.2.4-.5.6-.7.2-.2-.2-1.1-.6-1.3-.4-.2-1.1-.6-1.7-.2zM273.9 154.4a2.904 2.904 0 0 0-1.3 3.4c.1.3.5.5.7.7l.7-.2 1.3-1.8.3-.7a1.297 1.297 0 0 0-.3-1.3 1.195 1.195 0 0 0-1.4-.1zM283.6 148.4a.398.398 0 0 0-.355.411.41.41 0 0 0 .055.189 1.396 1.396 0 0 0 1 1c.2.1.5-.2.8-.3v-.5a1.297 1.297 0 0 0-1.5-.8zM269.7 152.1c.2-.1.2-.5.1-.7l-.5-.5h-2.6a2.288 2.288 0 0 0-1 .4c-.581.447-1.116.95-1.6 1.5a.795.795 0 0 0-.1 1c.1.4.3.8.7.8.495.1 1.005.1 1.5 0a6.704 6.704 0 0 0 3.5-2.5zM270.8 132.4l-.4.4c-.016.238.018.476.1.7l.9 1.1h.4a.599.599 0 0 0 .3-.6 2.697 2.697 0 0 0-1.3-1.6zM312.9 162.2l-.5.2c-.3.3-.6.6-.6.9 0 .3.1.6.3.9.2.3.5.3.6.2.1-.1.4-.5.6-.7.2-.2-.1-.8-.2-1.2-.1-.4-.1-.3-.2-.3zM302.9 167.7a2.685 2.685 0 0 0-.7.8.3.3 0 0 0 0 .4l.6.4.9-.6c.082-.224.117-.462.1-.7a.7.7 0 0 0-.9-.3zM299.7 155.3c-.2 0-.4.3-.4.4a.902.902 0 0 0 .3.5c.3.2.5 0 .6-.2.082-.224.116-.462.1-.7-.2 0-.4-.1-.6 0zM300.9 125.6c.2-.1.3-.3.5-.5s-.1-.5-.2-.7c-.1-.2-.2-.3-.4-.4a1.996 1.996 0 0 0-1.1-.3 1.096 1.096 0 0 0-.6.2.5.5 0 0 0-.2.4c-.2.4 0 .7.3 1a2 2 0 0 0 1.7.3zM256.2 200.9c-.309.19-.553.469-.7.8-.1.1.1.5.2.6l1.4.5h.7l.6-.3a.9.9 0 0 0 0-1 1.797 1.797 0 0 0-2.2-.6z"/>
+										<path d="M316.3 217.1a8.294 8.294 0 0 0 1.8-1.3c.281-.26.517-.564.7-.9a3.6 3.6 0 0 1 2.2-1.3l1.9-.2a9.203 9.203 0 0 0 4.7-2.1 1.899 1.899 0 0 0 .8-2.3 1.692 1.692 0 0 1-.1-1.7c.195-.456.362-.924.5-1.4.039-.378-.03-.76-.2-1.1a2.401 2.401 0 0 0-2.6-1.5c-.1-.4-.1-.8-.2-1.1a1.702 1.702 0 0 0-1.3-1.3h-1.4a.796.796 0 0 1 .4-.4l1-.4a.798.798 0 0 0 .2-1.3c-.3-.5-.7-1-1.4-.9-.7.1-.6.1-.8-.1-.2-.2-2.2-1.5-3.4-2.1a1.205 1.205 0 0 1-.5-.5 3.196 3.196 0 0 0-1-1.8l-1.2-1.1-1.2-1.5a.893.893 0 0 1 0-1.3l1.3-1.4a.902.902 0 0 0 .1-1.3 4 4 0 0 1-.7-2.8c.1-.3-.2-.7-.5-.9-.3-.2-.1-1.2-.8-1.6-.7-.4 0-.9-.2-1.4-.2-.5 0-1.2-.2-1.8a7.917 7.917 0 0 0-.5-2.2 21.004 21.004 0 0 1-1.1-5.1l-.3-1.4-.6-.3h-.3c-.9 1.5-2.1 2.7-2.8 4.3-.7 1.6-1.7 3.1-3.5 3.8-1.8.7-.7.6-1.2.9l-1.6.8c-.7.3-1.2 0-1.8-.4a2.5 2.5 0 0 1-.8-1.2 2.4 2.4 0 0 0-1.3-1.3c-.8-.4-.8-1.2-.8-2s.9-2.3.3-3.6c-.6-1.3.2-.7.4-1 .335-1.199.84-2.344 1.5-3.4.2-.3 0-.9-.4-.9s-1.8-1.3-3-1.3-.9-.4-1.3-.6a.904.904 0 0 1-.5-.9c0-.4.1-.8-.2-1.1a10.39 10.39 0 0 1-1.5-2.5 3.575 3.575 0 0 0-.4-.9l-.6-.7a1.897 1.897 0 0 0-2.5-.9 2.603 2.603 0 0 1-1.5.2c-1.4-.4-2.9-.3-4.2-1.3a5.106 5.106 0 0 0-1.7-.7 3.103 3.103 0 0 0-3.6 1.9 2.702 2.702 0 0 0 .1 2.6 1.499 1.499 0 0 1 0 1.7 13.678 13.678 0 0 0-1.8 2.4c-.4 1.1.5 2.1.3 3.3a2.7 2.7 0 0 0 .2 1.5c.3.9-.2 1.4-.9 1.8-.7.4-.8.3-.9.6-.1.3-2.1 2.5-3.1 3.7a1.404 1.404 0 0 0-.1 2c.43.475.831.976 1.2 1.5.281.391.484.832.6 1.3.3 1.4.4 2.8.6 4.1.2 1.3-.7 2.9-.2 4.4a.8.8 0 0 1-.4.6 8.252 8.252 0 0 0-1.5 1.1l-.6.6a16.887 16.887 0 0 1-4.7 2.7l-2.8 1.1a1.497 1.497 0 0 0-1 1.5 17.034 17.034 0 0 1 0 4.5 14.275 14.275 0 0 0-.3 2.9c-.017.934.017 1.869.1 2.8v.2c.025.377-.044.755-.2 1.1a17.455 17.455 0 0 1-1 1.9c-.1.2-.4.4-.6.3-.2-.1-1.4.5-1.9 1a1.202 1.202 0 0 1-1.4-.3 4.199 4.199 0 0 0-.4-1 3.4 3.4 0 0 0-.8-1.7c-1.3-1.1-1.6-2.7-2.5-4.1a1.397 1.397 0 0 1 .1-1.4 11.204 11.204 0 0 0 1.5-5.3c.12-.612.287-1.214.5-1.8.1-.222.168-.458.2-.7.177-.349.311-.719.4-1.1 0-.3-.3-.9-.5-.9l-1.1-.2a25.342 25.342 0 0 0-4.8-.8 1.593 1.593 0 0 1-1.3-.6 10.42 10.42 0 0 0-2.4-2.3l-1-.6a5.702 5.702 0 0 1-2.9-2.8 8.397 8.397 0 0 0-3.1-3.1l-3.6-2.1a2.32 2.32 0 0 0-.879-.285 2.312 2.312 0 0 0-.921.085 9.095 9.095 0 0 1-3.2.6 4.397 4.397 0 0 0 .9-3.1c-.1-1.3 0-2.7-.1-4.1a5.863 5.863 0 0 0-.2-1.4c-.1-.2-.4-.3-.5-.4H230a1.098 1.098 0 0 1-1-.9 1.705 1.705 0 0 1-.1-1c.173-.719.407-1.421.7-2.1.7-3.1 1.8-5.9 4.4-8a12.74 12.74 0 0 0 1.4-1.7c1.3-1.8 2.5-3.7 4.8-4.4 2.3-.7 2.2-1.6 2.6-3.1a.698.698 0 0 1 .8-.5h.4l1.1.2a2.087 2.087 0 0 0 2.002-1.204c.118-.25.185-.52.198-.796a10.941 10.941 0 0 0-.1-1.8c1.7.1 3.1-.3 3.8-2.1.1-.3.6-.4.9-.3l1.7.7a1.9 1.9 0 0 0 1.8-.2l5.6-5.4a.604.604 0 0 0 .2-.7 1.407 1.407 0 0 1 .6-1.2l2.6-2.1c-.2.7-.5 1.4-.7 2.1-.7 2.3-2.1 4.3-2.6 6.6-.192.45-.55.808-1 1a3 3 0 0 0-.8.8 1.099 1.099 0 0 0-.029 1.286c.086.127.199.234.329.314l.7.2a1.199 1.199 0 0 1 .8 1.1c0 .3-.1.5-.1.8 0 .3.6 1.3 1.5 1.1.9-.2 1.1-.2 1.3-.5.2-.3 3.3-1.9 4.1-3.8 0-.1.5-.2.6-.1l.9.6a1.594 1.594 0 0 1 .7 1.3 1.108 1.108 0 0 0 .5.9l2.8 1a.793.793 0 0 0 .7-.1c.514-.38.983-.816 1.4-1.3.4-.4.1-1.3-.4-1.6h-.4a1.501 1.501 0 0 1-1.2-1.6 3.503 3.503 0 0 0-.5-1.8c-.1-.4-.4-.6-.6-.9a4.2 4.2 0 0 1-1.2-1.5c-.6-1.4-2.2-1.9-2.9-3.3-.7-1.4-.4-.2-.7-.3-.3-.1-.7-.3-.2-.8l1.2-1.4c.1-.1 0-.5-.1-.7-.1-.2-.3-.3-.6-.1a1.607 1.607 0 0 1-1.4.2h-1.4l.2-.3.3-.2c.9-.9.9-.9.3-2.2l-.2-.3c-.1-.3 0-.6.3-.6s2.3-.2 2.7 1.2l.3.2 1.1.4a5.898 5.898 0 0 0 4.3-.3 15.181 15.181 0 0 0 3.4-2.2h.1c.318-.302.692-.54 1.1-.7 1-.2 1.4-1 1.9-1.7a2.31 2.31 0 0 0 .2-1.8 5.69 5.69 0 0 0-.4-1.4 2.395 2.395 0 0 1-.1-2.2c.182-.69.315-1.392.4-2.1l1.4.2c.4-.1.8-.1 1-.3.2-.2.9-.8.9-1.8.014-.478.19-.936.5-1.3.6-.7.1-1.3-.2-1.9a2.2 2.2 0 0 1-1.5-2.2c0-.8-.3-1.3-1.3-1.3s-.9-.5-1-1.1c.4 0 .8-.2 1.1-.1.3.1 2.6 1.4 4.2 1.1l.4.2.6.4 1.7 1.4c.316.133.664.168 1 .1.3-.1.5-.4.7-.6l1.8-.4a1.698 1.698 0 0 0 1.428-1.395c.04-.234.031-.474-.028-.705a6.226 6.226 0 0 0-.1-1.3l2.2 1.1c.2 0 .3.3.4.6.1.3-.1.2-.1.3a6.392 6.392 0 0 0-.6 1.8c.1.5.7 1 .9 1.6a6.695 6.695 0 0 0 1.7 3.2.596.596 0 0 1 .071.523.6.6 0 0 1-.371.377l-1 .4a1.185 1.185 0 0 0-.351.394 1.183 1.183 0 0 0-.149.506c-.1.2.1.6.3.6.2 0 2-.5 2.9 0l.3.2c.2.3.1.5-.1.6l-1 .5a.803.803 0 0 0-.1 1l.5.3h.1l.7-.2c1-.2 1.8 0 2 1.1l.4.6c.8.3 1.1.8 1.1 1.3.05.398.05.802 0 1.2-.2 1.2-.2 2.4-.3 3.7a1.101 1.101 0 0 1-.8 1.1 3.498 3.498 0 0 0-1.9 1.2 8.096 8.096 0 0 1-2.8 2.4c-2 1.5-2.7 1.6-1.4 4.6.1.1-.1.6-.2.6-1.09.044-2.168.247-3.2.6l-.4.2a4.092 4.092 0 0 1-3.6-.4l-2-1-.7.2a13.9 13.9 0 0 1-2.1 2.1c-.4.293-.683.718-.8 1.2a1.798 1.798 0 0 0 .3 2.1c1.1 1.3 2.5 2 4.3 1.1l1.4-.4h.7a5.503 5.503 0 0 0 2.8.4h1.2a1.904 1.904 0 0 1 1.4 1 21.134 21.134 0 0 0 1.8 3.3c.5.7.8 1.1.4 2-.4.9-.1.9.1 1.4.7 1 1.625 1.822 2.7 2.4a5.403 5.403 0 0 1 2 1.6 7.897 7.897 0 0 0 3.7 2.5c.7.1 1.2.8 1.9 1.1l2 .7c.226-.035.436-.14.6-.3a1.993 1.993 0 0 0 .1-2.1 16.992 16.992 0 0 0-3.5-5.2 2.295 2.295 0 0 1-.7-1.9 6.097 6.097 0 0 1 3 2 5.804 5.804 0 0 0 2.3 1.8c.709.271 1.284.81 1.6 1.5a18.65 18.65 0 0 0 1 2l.6.3a.395.395 0 0 0 .355-.411.392.392 0 0 0-.055-.189 2.397 2.397 0 0 1 .1-2.8 8.021 8.021 0 0 1 1.5-1.7 1.5 1.5 0 0 0 .4-1.7 3.596 3.596 0 0 0-.2-1 7.004 7.004 0 0 1-.7-4 1.802 1.802 0 0 0-1-1.8l-2-1.7a1.693 1.693 0 0 1-.5-1.4 4.598 4.598 0 0 0-.9-3 6.28 6.28 0 0 1-.2-.7h.7c1.1 0 1.2-.1 1.5-1.2.09-.349.224-.685.4-1 .1-.3.7-.3.9-.1l1.5 2.1a7.898 7.898 0 0 1 1.4 3.1c-.007.483.096.962.3 1.4a.908.908 0 0 0 .3.7 5.005 5.005 0 0 0 2.5 1.5c.2.1.5-.1.6-.3l.6-2.1a1.194 1.194 0 0 1 .9-1l1.1-.3c1.7-.6 2.3-2.5 3.9-3.3 1.6-.8.9-.9 1.2-1.4.131-.351.165-.731.1-1.1a2.49 2.49 0 0 0-.654-1.146 2.49 2.49 0 0 0-1.146-.654 1.805 1.805 0 0 1-1.3-.6h.1v-.2c.3-.2.3-.3 0-.5v-.2h-.1l-.5-.5h-1.4a.901.901 0 0 1-.6-1.2c.4-1.1.4-1.3-.3-1.6-.7-.3-1.2-.8-1.2-1.7l-2-.7a2.399 2.399 0 0 1-1.2-1.4 2.901 2.901 0 0 0-2.3-2.1.411.411 0 0 1-.5-.3.411.411 0 0 1 .3-.5c.7-.9 1.5-1.7 1.2-2.9-.3-1.2.2-.4.5-.3l1.8.5a1.803 1.803 0 0 0 1-.4 2.201 2.201 0 0 0-.1-1.1c0-.1-.1-.2-.2-.3-.1-.1-.8-1.2-.2-1.9a1.801 1.801 0 0 0 .4-2.1v-.2c-.4-1-.8-1.9-1.1-2.9a3.798 3.798 0 0 0-3.1-3.2 1.898 1.898 0 0 1-1.5-1.4c0-.1 0-.2-.1-.2s-.4-.3-.6-.5a3.104 3.104 0 0 0-.1-2.5l-1.1-1.5a1.499 1.499 0 0 0-2-.4c-.7.4-1 .4-1.2-.2-.2-.6-1.1-.8-1.8-.7h-.4c-.2-.1-.1-.3.1-.5l.9-1.2a.806.806 0 0 0-.1-.7c-.2-.3-.6-.5-.8-.8-.2-.3.2-.9.2-1.3a2.095 2.095 0 0 0-.8-1.7l-3.5-2.6 2.6.2c.3 0 .7-.5.7-.7a18.386 18.386 0 0 0-.6-4.1 3.402 3.402 0 0 0-2.7-2.7 13.005 13.005 0 0 1-3.9-1.4c-.4-.3-.9 0-1.2.4l-.9 1.5c0-.2-.1-.5-.1-.7 0-.2-.5-1.7-1.7-2a3.702 3.702 0 0 0-1.8 0c-1.5.3-2.8 1.2-4.3 1.2a4.102 4.102 0 0 0-3.3 1.5c-.4.5-1 .7-1.4 1.2a4.205 4.205 0 0 0-1.173 2.1c-.177.8-.117 1.634.173 2.4.1.3.2.7-.3.8-.5.1-1.1.6-1.6.9a1.398 1.398 0 0 0-.7 1.6l.7 2.1c.082.258.116.53.1.8v.2c-.2.1-.6.3-.7.2a5.406 5.406 0 0 1-1.2-4.5l.2-.3c.108-.49.35-.94.7-1.3a4.098 4.098 0 0 0 .7-2.8 1.796 1.796 0 0 1 .7-1.7l1.1-1a13.597 13.597 0 0 1 5-3.9c.2 0 .4-.3.5-.5a.895.895 0 0 0 0-.7 4.809 4.809 0 0 0-1.1-.9 7.2 7.2 0 0 0-7.1.8 32.987 32.987 0 0 0-3 2.2c-1.5 1.2-2.2 3.1-3.8 4.1a1.203 1.203 0 0 0-.5.5l-.8 1.3c-.2.4-.3 1-.7 1.3-.4.3-1.8 3.2-2.7 4.9a1.493 1.493 0 0 0-.035 1.258 1.492 1.492 0 0 0 .935.842l2.8 1.1.8.8c.1.1 0 .5-.1.6-.1.1-.5.3-.6.3l-1.9-1.2a1.602 1.602 0 0 0-2.2 1.3v1.9a4.399 4.399 0 0 0 1 1.9l.3.3c.4.6 1.1.6 1.7.7h1.1a1.805 1.805 0 0 1 1.2 1.3 2.4 2.4 0 0 0 2.3 1.1c.9-.2 1.3.3 1.4 1.1l-.7.2a1.785 1.785 0 0 0-.735.025A1.8 1.8 0 0 0 276 110.2c-.3 1.1-1 2-.6 3.2a.601.601 0 0 1-.2.7.197.197 0 0 1-.059.141.197.197 0 0 1-.141.059l-1.1 1.1c-1.1.1-1.6.9-2 1.9a6.515 6.515 0 0 1-.9 1.6 1.3 1.3 0 0 1-1.2.6c-.2-.4-.3-.9-.8-1-.5-.1-.8.4-1 1.3a1.996 1.996 0 0 0 0 1.5 1.404 1.404 0 0 1-.3 1.4 1.502 1.502 0 0 1-1.3.5 2.883 2.883 0 0 1-.8-.7 17.457 17.457 0 0 1-.5-2.2 3.704 3.704 0 0 1 1.3-3.7c.339-.354.551-.812.6-1.3a7.799 7.799 0 0 0-1.1-4.7.803.803 0 0 0-1 .1 6.39 6.39 0 0 0-1.9 2.7 3.297 3.297 0 0 1-1.1 1.5h-.4c-.2 0-.4-.2-.3-.4a7.793 7.793 0 0 0 .6-3.7c0-.6.5-.7.9-.9.4-.2.8-1 .2-1.4a3.695 3.695 0 0 0-1.9-1.1 3.4 3.4 0 0 1-1.7-.8c-.2-.1-.3-.3-.2-.4.1-.1 0-.2.1-.2a20.946 20.946 0 0 1 2-2.2l.6-.2 1-.5a.802.802 0 0 0 0-.7c-.5-2.4-.9-4.7.1-7 .098-.36.098-.74 0-1.1v-.2c-.4-1.3-.2-2.8-.9-4.1-.7-1.3.1-.9.5-1.3l2.7-2a2.696 2.696 0 0 0 1-1.9c.1-.2.1-.5.3-.7.2-.2.5-.4.6-.3l1.7.8a2 2 0 0 0 2.1-.2l1.1-.9 5.2-4.9.9-1.2a1.801 1.801 0 0 0-.6-2h-.3a7.3 7.3 0 0 1-4-1.8 3.501 3.501 0 0 0-1.4-.6 7.4 7.4 0 0 0-3.3 0 1.901 1.901 0 0 0-1 .5c-.6.6-.9 1.5-1.8 1.7l-1.7 1.9c-.6 1.2-1.3 2.4-1.9 3.7a5.207 5.207 0 0 0-.7 2.1c0 1.7-.8 3.1-1.3 4.6a1.108 1.108 0 0 1-.7.8c-.7.5-1.4 1.1-2.1 1.5a1.7 1.7 0 0 0-.5 1.6 5.893 5.893 0 0 0-1.6.6 6.092 6.092 0 0 0-2.9 4.5 2.702 2.702 0 0 1-.8 1.9l-.5.5-.3.4a3.497 3.497 0 0 0-.5 2c.075.225.109.463.1.7.1.644.339 1.258.7 1.8a.099.099 0 0 1 .1.1c.266.313.439.694.5 1.1h-.7a3.103 3.103 0 0 1-3.5-2.2c0-.2-.2-.4-.3-.6a1.205 1.205 0 0 0-1-.2 7.993 7.993 0 0 0-1.3 1.3 5.497 5.497 0 0 1-3.9 2.7c-.2 0-.4.2-.6.3l-.3.3a.9.9 0 0 0 0 1c1.3 1 2.7 1.8 3.4 3.4a11.31 11.31 0 0 1-1.8.3c-.7 0-1.2 0-1.5.7a2.7 2.7 0 0 1-1 1.1c-.3.3-.5.5-.5.9s0 .8-.4 1a1.399 1.399 0 0 1-1.4 0l-1.4-.6a3.087 3.087 0 0 0-1.239-.313 3.087 3.087 0 0 0-1.261.213 3.505 3.505 0 0 1-1.1.3 2.201 2.201 0 0 1-1.4-.2 4.198 4.198 0 0 1-2-1.7 3.204 3.204 0 0 0-2.6-1.9 1.896 1.896 0 0 1-1-1c-.3-1.2-1-2.3-.8-3.6a3.973 3.973 0 0 0 0-1.1 1.902 1.902 0 0 0-1.9-1.6c-1.687.298-3.39.499-5.1.6a2.197 2.197 0 0 0-1.6 1.5c-.091.295-.081.613.028.902.108.29.309.535.572.698a.802.802 0 0 0 1 .2l.6-.5a16.642 16.642 0 0 0 2.2-.3 17.235 17.235 0 0 0 2.1-.7l.5.4s-.1.3-.2.3c-.689.206-1.359.473-2 .8a6.603 6.603 0 0 1-2.7 1.2l-1.4.5a2.103 2.103 0 0 0-1.5 1.4 15.472 15.472 0 0 0-.8 3.6c-.102.383-.31.73-.6 1-.2.2-.7.5-.9.4-.2-.1-.2-.6 0-.9a1.9 1.9 0 0 0 0-1.8l-1.1-2.4c-.3-.7-.7-1.3-1-2a1.408 1.408 0 0 0-.567-.479 1.41 1.41 0 0 0-.733-.121l-1.4.3a11.103 11.103 0 0 1-10.2-2.3c-.2-.1-.2-.7 0-1a1.896 1.896 0 0 1 1.7-1.2h1.1c1.6 0 2.3-.8 2-2.3a5.992 5.992 0 0 0-.8-2.1 2.505 2.505 0 0 0-2.4-1.5 4.199 4.199 0 0 1-2.9-.7l-.5-.4-4.1-3.3-.5-.3a3.9 3.9 0 0 1-1.4-2.3c-.2-1.6-1.3-2.3-2.6-2.9a2.2 2.2 0 0 0-3 .7 2.7 2.7 0 0 1-1.2.9 1.798 1.798 0 0 1-1 .2c-.4.1-.9-.4-.6-.7a8.694 8.694 0 0 0 1.4-4.1l-.2-.3c0-.1-.2-.1-.3-.1l-.9.5-3.2 2.6c-.1.2-.5.2-.7.1-.2-.1-.4-.3-.4-.5a6.985 6.985 0 0 1 .1-2.9c.481-1.69.617-3.457.4-5.2a1.996 1.996 0 0 0-.3-1.1c0-.1-.4-.2-.6-.1-.455.416-.74.986-.8 1.6a1.603 1.603 0 0 1-.9 1.6l-2.2 1.3a1.1 1.1 0 0 1-1.2-.2h-.2l-.4-.4.3-1.1a.802.802 0 0 0-.5-.9 4.3 4.3 0 0 0-2.5-.1 15.998 15.998 0 0 1-5.7 1.5 3.699 3.699 0 0 0-1.8.5c-1 .9-2.2.8-3.4.7-1.2-.1.1-.2.2-.2a1.197 1.197 0 0 0 .1-1.4c-.4-.4-.7-.5-1.3-.1-.404.259-.841.46-1.3.6a10.21 10.21 0 0 0-2.5.6 2.697 2.697 0 0 0-1.9 2.1c-.1.5-.5.7-.8.5l-1.5-1.1a4.1 4.1 0 0 1-1.5-2.1 22.513 22.513 0 0 0-.8-2.4 7.984 7.984 0 0 0-.8-1.6 12.306 12.306 0 0 0-2.9-2.2 8.2 8.2 0 0 1-3.8-4 .99.99 0 0 0-.4-.7 1.502 1.502 0 0 0-1.2-.7h-1.5a3.8 3.8 0 0 1-2.7-1 13.91 13.91 0 0 0-3.8-2.5h-.1a6.504 6.504 0 0 1-1.6-1.3 6.194 6.194 0 0 1-1.5-2.1 1.8 1.8 0 0 0-2.2-1.1l-1.8.4a.8.8 0 0 1-.9-.4c-.1-.1-.1-.1-.1-.2s-.5-2-1.1-2.9c-.6-.9.1-.5.3-.6a1.094 1.094 0 0 0 .2-1.1 1.795 1.795 0 0 0-.7-.8 8.513 8.513 0 0 0-1.7-.6l-1.1-.2c-.6-.1-.7-.3-.6-1.1.1-.8.1-1.2-.6-1.5a4.7 4.7 0 0 0-1.5-2.5 1.5 1.5 0 0 0-1.3-.3A7.708 7.708 0 0 0 110 51a3.901 3.901 0 0 1-3.5.5l-.8-.3-1.4-.4a3.101 3.101 0 0 0-3 1c-.2.3-.3.7-.5 1-.2.3-.6.6-.9.6a7.299 7.299 0 0 1-2.9.4 4.7 4.7 0 0 0-3.9.7c-2.2 1.5-4.6 2.7-6.5 4.5-.19.309-.469.553-.8.7l-1 .6c-2.1 1.1-4.3 1.9-6.8.5h-.3a1.8 1.8 0 0 0-2.6.7c-.6.6-1 1.4-1.7 2a2.2 2.2 0 0 0-.8 2.9c.3.8.5 1.7.8 2.5.384 1.093.587 2.241.6 3.4a5.6 5.6 0 0 1-.9 3.5 1.5 1.5 0 0 0 .6 1.6c.61.435 1.245.836 1.9 1.2.1 0 .1.1.2.2v.4h-.3c-.4.1-.8.2-.8.6 0 .4-.2 2-.3 3a.7.7 0 0 0 .6.4h.9c-.2.4-.1 1-.7 1a3.6 3.6 0 0 0-2 .8 2.2 2.2 0 0 1-2.2.1l-2.3-1.3a.8.8 0 0 1-.3-1.2l.8-1.2a1.3 1.3 0 0 0-1.1-1.9 13.809 13.809 0 0 0-2.9.1 3.4 3.4 0 0 0-1.7.8l-.4.4a1.499 1.499 0 0 1-1.3.2h-.2l-1.9.3-1.1.3c-1.2.5-2.3 1.3-3.6 1.8a1.101 1.101 0 0 0-.5 1.5l1.8 2.4c.2.3.1.5-.5.8-.6.3-.6.1-.6.3 0 .2-1 2.3-1.3 3.5a2.3 2.3 0 0 0 .2 1.4c.9 1.3 2 2.3 3.7 2a4.602 4.602 0 0 1 3.9.9 1.7 1.7 0 0 0 2 .2l3.8-1.6a2.1 2.1 0 0 1 1.1.1.2.2 0 0 1 .2.2.3.3 0 0 1 0 .4c-.2.1-.4.3-.6.3-.2 0-1.2.4-1 1.3a1.4 1.4 0 0 1-.1 1.1c-.529.968-.9 2.015-1.1 3.1-.2 1.2-2.1 2.5-3.4 2.5l-.7-.2-1.2-.9c-.3-.2-.5-.
