@@ -1,0 +1,213 @@
+nohup: ignoring input
+🚀 Yudo Clone Server starting on http://localhost:8080
+📁 Serving static files from: /home/poornateja/Desktop/proaxon/power_heaters/yudo_clone/yudo.com
+🔌 API data from: /home/poornateja/Desktop/proaxon/power_heaters/yudo_clone/yudo.com/api_data
+📋 23 API endpoints + 28 page routes mapped
+
+👉 Open http://localhost:8080/en/ in your browser
+
+[12/Feb/2026 23:17:26] "GET /en/ HTTP/1.1" 200 -
+[12/Feb/2026 23:17:26] "POST /locale/getLangList HTTP/1.1" 200 -
+[12/Feb/2026 23:17:26] "POST /en/site/footer/getDetail HTTP/1.1" 200 -
+[12/Feb/2026 23:17:26] "POST /en/site/popup/getList HTTP/1.1" 200 -
+[12/Feb/2026 23:17:26] "POST /en/common/getMenuList HTTP/1.1" 200 -
+[12/Feb/2026 23:17:26] "POST /en/index/getPageInit HTTP/1.1" 200 -
+[12/Feb/2026 23:17:26] code 404, message File not found
+[12/Feb/2026 23:17:26] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/20220203232327331424bb-c3bb-4fb5-b800-4d9fb08daf50.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:26] code 404, message File not found
+[12/Feb/2026 23:17:26] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/20220203232336487d77da-7fb1-4993-8dde-cca03e5e8962.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:26] code 404, message File not found
+[12/Feb/2026 23:17:26] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/202202032324034aa0b515-87ac-45db-bcb5-b914d94dbfd1.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:26] code 404, message File not found
+[12/Feb/2026 23:17:26] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/202202032324109fad2222-82fb-4779-8c62-f2bbfe58c381.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:26] code 404, message File not found
+[12/Feb/2026 23:17:26] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/20220203232418036b9a33-18d5-4c2d-8483-15c8a5385c40.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:26] code 404, message File not found
+[12/Feb/2026 23:17:26] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/2022020923275961639570-36a8-4dbd-9ee6-9e2d115b10be.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:26] code 404, message File not found
+[12/Feb/2026 23:17:26] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/202202092328107e68d814-ce5c-420b-9115-46e03276b298.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:26] code 404, message File not found
+[12/Feb/2026 23:17:26] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/20220209232830082e29f6-6492-4824-a92e-5d57a5cd6ae5.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:26] code 404, message File not found
+[12/Feb/2026 23:17:26] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/20220223232321ccb3b093-a991-436e-91c9-655c3910c7aa.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:26] code 404, message File not found
+[12/Feb/2026 23:17:26] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/20220301170324796adc6a-c83e-42ab-8510-8633965210d6.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:26] code 404, message File not found
+[12/Feb/2026 23:17:26] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/202202032324364fd7c35a-93b1-494f-92d5-817ff32f4d3a.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:26] code 404, message File not found
+[12/Feb/2026 23:17:26] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/202203011702487d3e43a8-d231-4611-9a22-e70a8ccb7358.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:26] code 404, message File not found
+[12/Feb/2026 23:17:26] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/2022030117022970ad0b98-8d25-4361-be08-642493315d92.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:26] code 404, message File not found
+[12/Feb/2026 23:17:26] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/20220203232449fba9bcfb-18ef-4cd4-b320-23e5b9c71b48.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:26] code 404, message File not found
+[12/Feb/2026 23:17:26] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/202202032325144459bf3b-f30a-4e3a-9ccf-1a4fe7611655.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:26] code 404, message File not found
+[12/Feb/2026 23:17:26] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/202202100041205320b64f-ef18-4d90-94dc-fcc76a7fd48e.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:26] code 404, message File not found
+[12/Feb/2026 23:17:26] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/20220203232506f2bc9b27-1d47-4361-a04c-1dd220cbf6c6.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:26] code 404, message File not found
+[12/Feb/2026 23:17:26] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/202202232328095ea1b776-252b-448f-a679-f50801517666.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/20220301170324796adc6a-c83e-42ab-8510-8633965210d6.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/202202032324364fd7c35a-93b1-494f-92d5-817ff32f4d3a.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/202203011702487d3e43a8-d231-4611-9a22-e70a8ccb7358.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /enhttps://yudo-homepage.s3.us-west-1.amazonaws.com/prod/site/menu/2022030117022970ad0b98-8d25-4361-be08-642493315d92.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] "GET /en/sustainability/sustainable-plastics HTTP/1.1" 200 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/js/TrackballControls.js HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/ESG_image_01%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/particle.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/ESG_image_02%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/ESG_image_1024_01%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/bg_1.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/bg_2.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/bg_3.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/bg_4.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/mark_1-2.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/mark_2-2.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/ESG_image_1024_3%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/ESG_image_1024_2%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/ESG_image_01%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/particle.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] "POST /locale/getLangList HTTP/1.1" 200 -
+[12/Feb/2026 23:17:53] "POST /en/site/footer/getDetail HTTP/1.1" 200 -
+[12/Feb/2026 23:17:53] "POST /en/site/popup/getList HTTP/1.1" 200 -
+[12/Feb/2026 23:17:53] "POST /en/common/getMenuList HTTP/1.1" 200 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/ESG_image_01%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/ESG_image_02%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/ESG_image_1024_01%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/bg_1.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/bg_2.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/bg_3.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/bg_4.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/mark_1-2.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/mark_2-2.png HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/ESG_image_1024_3%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:17:53] code 404, message File not found
+[12/Feb/2026 23:17:53] "GET /static/images/esg_01/ESG_image_1024_2%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] "GET /en/sustainability/sustainable-plastics HTTP/1.1" 200 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/js/TrackballControls.js HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/ESG_image_01%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/particle.png HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/ESG_image_02%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/ESG_image_1024_01%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/bg_1.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/bg_2.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/bg_3.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/bg_4.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/mark_1-2.png HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/mark_2-2.png HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/ESG_image_1024_3%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/ESG_image_1024_2%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/ESG_image_01%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/particle.png HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] "POST /locale/getLangList HTTP/1.1" 200 -
+[12/Feb/2026 23:19:47] "POST /en/site/footer/getDetail HTTP/1.1" 200 -
+[12/Feb/2026 23:19:47] "POST /en/site/popup/getList HTTP/1.1" 200 -
+[12/Feb/2026 23:19:47] "POST /en/common/getMenuList HTTP/1.1" 200 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/ESG_image_01%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/ESG_image_02%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/ESG_image_1024_01%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/bg_1.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/bg_2.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/bg_3.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/bg_4.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/mark_1-2.png HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/mark_2-2.png HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/ESG_image_1024_3%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:47] code 404, message File not found
+[12/Feb/2026 23:19:47] "GET /static/images/esg_01/ESG_image_1024_2%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:19:51] "GET /en/product/mobility/automotive HTTP/1.1" 200 -
+[12/Feb/2026 23:19:51] "POST /locale/getLangList HTTP/1.1" 200 -
+[12/Feb/2026 23:19:51] "POST /en/site/footer/getDetail HTTP/1.1" 200 -
+[12/Feb/2026 23:19:51] "POST /en/site/popup/getList HTTP/1.1" 200 -
+[12/Feb/2026 23:19:51] "POST /en/common/getMenuList HTTP/1.1" 200 -
+[12/Feb/2026 23:19:51] "POST /en/site/category/getPageInit HTTP/1.1" 200 -
+[12/Feb/2026 23:19:57] code 404, message File not found
+[12/Feb/2026 23:19:57] "GET /en/sustainability/eco-friendly-technology HTTP/1.1" 404 -
+[12/Feb/2026 23:20:00] code 404, message File not found
+[12/Feb/2026 23:20:00] "GET /en/sustainability/eco-friendly-technology HTTP/1.1" 404 -
+[12/Feb/2026 23:20:04] "GET /en/sustainability/sustainable-plastics HTTP/1.1" 200 -
+[12/Feb/2026 23:20:04] code 404, message File not found
+[12/Feb/2026 23:20:04] "GET /static/js/TrackballControls.js HTTP/1.1" 404 -
+[12/Feb/2026 23:20:04] code 404, message File not found
+[12/Feb/2026 23:20:04] "GET /static/images/esg_01/ESG_image_01%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:20:04] code 404, message File not found
+[12/Feb/2026 23:20:04] "GET /static/images/esg_01/particle.png HTTP/1.1" 404 -
+[12/Feb/2026 23:20:04] code 404, message File not found
+[12/Feb/2026 23:20:04] "GET /static/images/esg_01/ESG_image_02%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:20:04] code 404, message File not found
+[12/Feb/2026 23:20:04] "GET /static/images/esg_01/ESG_image_1024_01%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:20:04] code 404, message File not found
+[12/Feb/2026 23:20:04] "GET /static/images/esg_01/bg_1.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:20:04] code 404, message File not found
+[12/Feb/2026 23:20:04] "GET /static/images/esg_01/bg_2.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:20:04] code 404, message File not found
+[12/Feb/2026 23:20:04] "GET /static/images/esg_01/bg_3.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:20:04] code 404, message File not found
+[12/Feb/2026 23:20:04] "GET /static/images/esg_01/bg_4.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:20:04] code 404, message File not found
+[12/Feb/2026 23:20:04] "GET /static/images/esg_01/mark_1-2.png HTTP/1.1" 404 -
+[12/Feb/2026 23:20:04] code 404, message File not found
+[12/Feb/2026 23:20:04] "GET /static/images/esg_01/mark_2-2.png HTTP/1.1" 404 -
+[12/Feb/2026 23:20:04] code 404, message File not found
+[12/Feb/2026 23:20:04] "GET /static/images/esg_01/ESG_image_1024_3%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:20:04] code 404, message File not found
+[12/Feb/2026 23:20:04] "GET /static/images/esg_01/ESG_image_1024_2%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:20:04] code 404, message File not found
+[12/Feb/2026 23:20:04] "GET /static/images/esg_01/ESG_image_01%201.jpg HTTP/1.1" 404 -
+[12/Feb/2026 23:20:04] code 404, message File not found
+[12/Feb/2026 23:20:04] "GET /static/images/esg_01/particle.png HTTP/1.1" 404 -

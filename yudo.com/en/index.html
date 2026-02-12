@@ -1114,26 +1114,26 @@ function openGnb(){
 
 <script type="text/x-jquery-tmpl" id="gnbPcTmpl">
 <div class="depth1 ${className}">
-	<a href="https://yudo.com/en/${menuUrl}" class="k-text font16 weight700" target="${menuTarget}">${webMenuNm}</a>
+	<a href="${menuUrl}" class="k-text font16 weight700" target="${menuTarget}">${webMenuNm}</a>
 	{{if menuDepth2List.length > 0}}
 	<div class="k-sub">
 		{{if _.eq(menuCd, "MENU01") }}
 			{{each(index, menuDepth2) menuDepth2List}}
 			<div class="depth2 ${menuDepth2.className} {{if index ==0 }}hover{{/if}}">
-				<a href="https://yudo.com/en/${menuDepth2.menuUrl}" class="k-text font16 weight700">${menuDepth2.webMenuNm}</a>
+				<a href="${menuDepth2.menuUrl}" class="k-text font16 weight700">${menuDepth2.webMenuNm}</a>
 				{{if !_.isEmpty(menuDepth2.menuDepth3List)}}
 				<div class="k-sub">
 					{{each(index, menuDepth3) menuDepth2.menuDepth3List}}
 					<div class="depth3">
-						<a href="https://yudo.com/en/${menuDepth3.menuUrl}" class="k-text font14 k-grey-1">${menuDepth3.webMenuNm}</a>
+						<a href="${menuDepth3.menuUrl}" class="k-text font14 k-grey-1">${menuDepth3.webMenuNm}</a>
 					</div>
 					{{/each}}
 				</div>
 				{{/if}}
 				{{if !_.isEmpty(menuDepth2.menuImgFileNm)}}
 				<div class="k-thumb">
-					<div class="k-img k-cover k-center" style="background-image:url('https://yudo.com/en/${menuDepth2.menuImgFilePath}')">
-						<img src="https://yudo.com/en/${menuDepth2.menuImgFilePath}" alt="">
+					<div class="k-img k-cover k-center" style="background-image:url('/en${menuDepth2.menuImgFilePath}')">
+						<img src="/en${menuDepth2.menuImgFilePath}" alt="">
 					</div>
 				</div>
 				{{/if}}
@@ -1141,7 +1141,7 @@ function openGnb(){
 			{{/each}}
 			<div class="depth2 depth2-4">
 				<div class="k-btn">
-					<a href="https://yudo.com/${lang}/search">
+					<a href="/${lang}/search">
 						<div class="k-text font18 weight700">
 							Find the product
 						</div>
@@ -1157,11 +1157,11 @@ function openGnb(){
 		{{else}}
 			{{each(index, menuDepth2) menuDepth2List}}
 			<div class="depth2">
-				<a href="https://yudo.com/en/${menuDepth2.menuUrl}" class="k-text font16 weight700">
+				<a href="${menuDepth2.menuUrl}" class="k-text font16 weight700">
 					<div class="k-text font16 weight700">${menuDepth2.webMenuNm}</div>
 					<div class="k-thumb">
-						<div class="k-img k-cover k-center" style="background-image:url('https://yudo.com/en/${menuDepth2.menuImgFilePath}')">
-							<img src="https://yudo.com/en/${menuDepth2.menuImgFilePath}" alt="">
+						<div class="k-img k-cover k-center" style="background-image:url('/en${menuDepth2.menuImgFilePath}')">
+							<img src="/en${menuDepth2.menuImgFilePath}" alt="">
 						</div>
 					</div>
 				</a>
@@ -1174,25 +1174,25 @@ function openGnb(){
 </script>
 <script type="text/x-jquery-tmpl" id="gnbMoTmpl">
 <div class="depth1 ${className}">
-	<a href="https://yudo.com/en/${menuUrl}" class="k-text font16 weight700" target="${menuTarget}">${moMenuNm}</a>
+	<a href="${menuUrl}" class="k-text font16 weight700" target="${menuTarget}">${moMenuNm}</a>
 	{{if menuDepth2List.length > 0}}
 	<div class="k-sub">
 		{{each(index, menuDepth2) menuDepth2List}}
 		<div class="depth2 ${menuDepth2.className} {{if index ==0 }}hover{{/if}}">
-			<a href="https://yudo.com/en/${menuDepth2.menuUrl}" class="k-text font16 weight700">${menuDepth2.moMenuNm}</a>
+			<a href="${menuDepth2.menuUrl}" class="k-text font16 weight700">${menuDepth2.moMenuNm}</a>
 			{{if !_.isEmpty(menuDepth2.menuDepth3List)}}
 			<div class="k-sub">
 				{{each(index, menuDepth3) menuDepth2.menuDepth3List}}
 				<div class="depth3">
-					<a href="https://yudo.com/en/${menuDepth3.menuUrl}" class="k-text font14 k-grey-1">${menuDepth3.moMenuNm}</a>
+					<a href="${menuDepth3.menuUrl}" class="k-text font14 k-grey-1">${menuDepth3.moMenuNm}</a>
 				</div>
 				{{/each}}
 			</div>
 			{{/if}}
 			{{if !_.isEmpty(menuDepth2.menuImgFileNm)}}
 			<div class="k-thumb">
-				<div class="k-img k-cover k-center" style="background-image:url('https://yudo.com/en/${menuDepth2.menuImgFilePath}')">
-					<img src="https://yudo.com/en/${menuDepth2.menuImgFilePath}" alt="">
+				<div class="k-img k-cover k-center" style="background-image:url('/en${menuDepth2.menuImgFilePath}')">
+					<img src="/en${menuDepth2.menuImgFilePath}" alt="">
 				</div>
 			</div>
 			{{/if}}
@@ -1201,7 +1201,7 @@ function openGnb(){
 		{{if _.eq(menuCd, "MENU01") }}
 		<div class="depth2 depth2-4">
 			<div class="k-btn">
-				<a href="https://yudo.com/${lang}/search">
+				<a href="/${lang}/search">
 					<div class="k-text font18 weight700">
 						Find the product
 					</div>
@@ -1321,7 +1321,7 @@ function openGnb(){
 <div class="k-global-banner" style="background-color: ${popupLangList[0].bgColr};"><!-- background-color -->
 	<picture>
 		<source media="(max-width:768px)" srcset="${popupLangList[0].moImgFilePath}"><!-- 모바일 이미지-->
-		<img src="https://yudo.com/en/${popupLangList[0].imgFilePath}"  /><!-- PC 이미지-->
+		<img src="/en${popupLangList[0].imgFilePath}"  /><!-- PC 이미지-->
 	</picture>
 
 	<div class="inner" >
@@ -1329,7 +1329,7 @@ function openGnb(){
 			<div class="k-left">
 				<div class="k-text font32 k-white k-title bold">${popupLangList[0].ttl}</div>
 				<div class="k-text font16 k-white k-desc">${popupLangList[0].srvTtl}</div>
-				{{if more }}<a href="https://yudo.com/en/${tmpUrl}" class="k-text font14 k-white k-more">
+				{{if more }}<a href="${tmpUrl}" class="k-text font14 k-white k-more">
 					Learn more
 					<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path d="m9 4 4 4-4 4M3 8h10" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1360,10 +1360,10 @@ function openGnb(){
 <input type="hidden" name="popupSeq" value="${popupSeq}"/>
 <div class="k-global-center-banner " >
 	<div class="banner-inner">
-		<a href="https://yudo.com/en/${tmpUrl}">
+		<a href="${tmpUrl}">
 			<picture>
 				<source media="(max-width:768px)" srcset="${popupLangList[0].imgFilePath}">
-				<img src="https://yudo.com/en/${popupLangList[0].imgFilePath}"  />
+				<img src="/en${popupLangList[0].imgFilePath}"  />
 			</picture>
 		</a>
 		<div class="inner" >
@@ -1744,13 +1744,13 @@ function openGnb(){
 <div class="kv-item type-video ${classOn}">
 	<div class="k-video">
 		<video class="type-video" autoplay="autoplay" muted="muted" playsinline>
-			<source src="https://yudo.com/en/${imgFilePath}" type="video/mp4">
+			<source src="/en${imgFilePath}" type="video/mp4">
 		</video>
 	</div>
 {{else}}
 <div class="kv-item type-img">
-	<div class="k-img k-cover k-center" style="background-image:url('https://yudo.com/en/${imgFilePath}');">
-		<img src="https://yudo.com/en/${imgFilePath}" alt="">
+	<div class="k-img k-cover k-center" style="background-image:url('/en${imgFilePath}');">
+		<img src="/en${imgFilePath}" alt="">
 	</div>
 {{/if}}
 	<div class="k-txt">
@@ -1776,8 +1776,8 @@ function openGnb(){
 <div rate="10" limit="1" class="k-item parallax alpha">
 	<a href="javascript:;" class="item-inner" onclick="util.goPage('${url}', '${linkCd}')">
 		<div class="item-top">
-			<div class="k-img k-cover k-center" style="background-image:url('https://yudo.com/en/${imgFilePath}')">
-				<img src="https://yudo.com/en/${imgFilePath}" alt="">
+			<div class="k-img k-cover k-center" style="background-image:url('/en${imgFilePath}')">
+				<img src="/en${imgFilePath}" alt="">
 			</div>
 		</div>
 		<div class="item-bottom">
@@ -1808,8 +1808,8 @@ function openGnb(){
 		</div>
 		<div class="k-right">
 			<a href="javascript:util.goPage('${url}', '${linkCd}')">
-			<div class="k-img k-cover k-center" style="background-image:url('https://yudo.com/en/${imgFilePath}')">
-				<img src="https://yudo.com/en/${imgFilePath}" alt="">
+			<div class="k-img k-cover k-center" style="background-image:url('/en${imgFilePath}')">
+				<img src="/en${imgFilePath}" alt="">
 			</div>
 			</a>
 		</div>
@@ -1819,8 +1819,8 @@ function openGnb(){
 
 <script type="text/x-jquery-tmpl" id="newsTmpl">
 <div class="swiper-slide">
-	<div class="k-img k-cover k-center" style="background-image:url('https://yudo.com/en/${imgFilePath}')">
-		<img src="https://yudo.com/en/${imgFilePath}" alt="">
+	<div class="k-img k-cover k-center" style="background-image:url('/en${imgFilePath}')">
+		<img src="/en${imgFilePath}" alt="">
 	</div>
 	<div class="k-txt">
 		<div class="k-text font16 k-category">${newsTpNameCache}</div>
@@ -1852,7 +1852,7 @@ function openGnb(){
 	<div class="k-text font16 k-cate">${newsTpNameCache}</div>
 	<div class="k-text font24 weight700 k-subtitle">${newsLangList[0].ttl}</div>
 	<div class="img-wrap">
-		<div class="k-img"><img src="https://yudo.com/en/${imgFilePath}" alt=""></div>
+		<div class="k-img"><img src="/en${imgFilePath}" alt=""></div>
 	</div>
 	<div class="k-text font16 k-desc">${newsLangList[0].sumryCont}</div>
 	<div class="k-editor">
@@ -2018,23 +2018,23 @@ function openGnb(){
 <script type="text/x-jquery-tmpl" id="footerTmpl">
 	${cpywrtCont}
 	{{if !_.isEmpty(url) }}
-	<a href="https://yudo.com/en/${url}" target="_blank">${srvCont}</a>
+	<a href="${url}" target="_blank">${srvCont}</a>
 	{{/if}}
 </script>
 
 <script type="text/x-jquery-tmpl" id="footerGnbPcTmpl">
 <div class="depth1 ${className}">
-	<a href="https://yudo.com/en/${menuUrl}" class="k-text font18 weight700" target="${menuTarget}">${webMenuNm}</a>
+	<a href="${menuUrl}" class="k-text font18 weight700" target="${menuTarget}">${webMenuNm}</a>
 	{{if menuDepth2List.length > 0}}
 	<div class="k-sub">
 		{{if _.eq(menuCd, "MENU01") }}
 		<div class="depth2">
-			<a href="https://yudo.com/${lang}/search" class="k-text font14 k-grey-2">Find the product</a>
+			<a href="/${lang}/search" class="k-text font14 k-grey-2">Find the product</a>
 		</div>
 		{{/if}}
 		{{each(index, menuDepth2) menuDepth2List}}
 		<div class="depth2">
-			<a href="https://yudo.com/en/${menuDepth2.menuUrl}" class="k-text font14 k-grey-2">${menuDepth2.webMenuNm}</a>
+			<a href="${menuDepth2.menuUrl}" class="k-text font14 k-grey-2">${menuDepth2.webMenuNm}</a>
 		</div>
 		{{/each}}
 	</div>
@@ -2044,17 +2044,17 @@ function openGnb(){
 
 <script type="text/x-jquery-tmpl" id="footerGnbMoTmpl">
 <div class="depth1 ${className}">
-	<a href="https://yudo.com/en/${menuUrl}" class="k-text font18 weight700" target="${menuTarget}">${moMenuNm} ${menuDepth2List.size}</a>
+	<a href="${menuUrl}" class="k-text font18 weight700" target="${menuTarget}">${moMenuNm} ${menuDepth2List.size}</a>
 	{{if menuDepth2List.length > 0}}
 	<div class="k-sub">
 		{{if _.eq(menuCd, "MENU01") }}
 		<div class="depth2">
-			<a href="https://yudo.com/${lang}/search" class="k-text font14 k-grey-2">Find the product</a>
+			<a href="/${lang}/search" class="k-text font14 k-grey-2">Find the product</a>
 		</div>
 		{{/if}}
 		{{each(index, menuDepth2) menuDepth2List}}
 		<div class="depth2">
-			<a href="https://yudo.com/en/${menuDepth2.menuUrl}" class="k-text font14 k-grey-2">${menuDepth2.moMenuNm}</a>
+			<a href="${menuDepth2.menuUrl}" class="k-text font14 k-grey-2">${menuDepth2.moMenuNm}</a>
 		</div>
 		{{/each}}
 	</div>

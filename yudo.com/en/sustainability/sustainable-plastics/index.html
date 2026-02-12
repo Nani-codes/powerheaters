@@ -1,0 +1,2918 @@
+
+
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<script type="text/javascript">
+		var contextPath= "";
+	</script>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<title>YUDO Sustainable plastics</title>
+
+	<link rel="shortcut icon" href="/static/images/favicon.ico">
+	<link rel="stylesheet" type="text/css" href="/static/css/yudo.css" />
+
+	<script type="text/javascript" src="/static/js/lib/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/jquery.tmpl.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/jquery.cookie.js"></script>
+	<script type="text/javascript" src="/static/js/lib/jquery.fileDownload.js"></script>
+	<script type="text/javascript" src="/static/js/lib/TweenMax.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/swiper.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/three.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/moment.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/lodash.min.js"></script>
+	<script type="text/javascript" src="/static/js/util.js"></script>
+	<script type="text/javascript" src="/static/js/k.swipeList.js"></script>
+	<script type="text/javascript" src="/static/js/k.main.js"></script>
+	<script type="text/javascript" src="/static/js/k.parallax.js"></script>
+
+	<script type="text/javascript" src="/static/js/common.js"></script>
+	<script type="text/javascript" src="/static/js/ajax.js"></script>
+	<script type="text/javascript" src="/static/js/interpreter.js"></script>
+	<script type="text/javascript" src="/static/js/popup.js"></script>
+<!-- 	<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
+	<style type="text/css">
+	.skiptranslate {display: none;}
+	</style>
+	
+<meta charset="EUC-KR">
+
+<script type="text/javascript" src="/static/js/TrackballControls.js"></script>
+<script type="text/javascript">
+
+$(function(){
+	window.SustainablePlastics = (function($){
+		var init = function(){
+			_bindEvent();
+			commonParticle();
+			loadEarth();
+			step1ParticleAnimation();
+			glslAnimation();
+			step3ParticleAnimation();
+		},
+		_bindEvent = function(){
+		};
+		return {
+			init: init
+		}
+	})(jQuery);
+
+});
+function pageInit() {
+	window.SustainablePlastics.init();
+}
+</script>
+
+
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-VW15DZRVDV"></script>
+	<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+
+	gtag('config', 'G-VW15DZRVDV');
+	</script>
+
+</head>
+<body>
+	<div id="root"></div>
+	<div id="google_translate_element" style="display:none;"></div>
+	<div class="root">
+		
+
+
+
+<!--banner-top banner-center banner-bottom-->
+<!-- top, bottom 공통 -->
+<!-- 중간 배너 -->
+<div id="banner"></div>
+
+<header id="header">
+<div class="k-header k-type">
+	<div class="header-inner">
+		<div class="k-left">
+			<h1>
+				<a href="javascript:;">
+					<svg width="100" height="20" viewBox="0 0 100 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<g clip-path="url(#yudoLogo)">
+							<path fill-rule="evenodd" clip-rule="evenodd" d="M14.706 19.802v-7.849L23.543 0H16.26l-4.489 6.06L7.286 0H0l8.84 11.953v7.849h5.866zM25.049.017H31v13.016c0 .576.464 1.04 1.04 1.04h9.578c.577 0 1.041-.468 1.041-1.04V.017h5.949v14.996a4.79 4.79 0 0 1-4.789 4.789H29.841a4.79 4.79 0 0 1-4.793-4.789V.017zm25.565 0h18.771a4.79 4.79 0 0 1 4.79 4.793v10.203a4.79 4.79 0 0 1-4.79 4.789H50.614V.017zm5.896 5.9v7.989h10.773c.576 0 1.044-.468 1.044-1.041V6.958a1.04 1.04 0 0 0-1.044-1.04H56.51zM76.386 4.81A4.791 4.791 0 0 1 81.178.017h13.983a4.79 4.79 0 0 1 4.788 4.793v10.203a4.79 4.79 0 0 1-4.788 4.789H81.178a4.79 4.79 0 0 1-4.792-4.789V4.81zm5.878 2.2v5.806c0 .573.465 1.04 1.038 1.04h9.724c.577 0 1.041-.467 1.041-1.04V7.01a1.04 1.04 0 0 0-1.04-1.041h-9.725c-.573 0-1.038.464-1.038 1.04z" fill="#DC0043"/>
+						</g>
+						<defs>
+							<clipPath id="yudoLogo">
+								<path fill="#fff" d="M0 0h100v19.802H0z"/>
+							</clipPath>
+						</defs>
+					</svg>
+				</a>
+			</h1>
+		</div>
+		<div class="k-center">
+			<div class="k-dim"></div>
+			<div class="k-center-inner">
+				<div class="k-gnb k-pc">
+					<div class="gnb-inner">
+					</div>
+				</div>
+				<div class="k-gnb k-mobile">
+					<div class="gnb-inner">
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="k-right">
+			<div class="k-language k-tooltip" >
+				<div class="k-btn">
+					<button>
+						<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<g clip-path="url(#a)" stroke="#191919" stroke-width="2" stroke-miterlimit="10" stroke-linejoin="round">
+								<path d="M27 16c0 6.075-4.925 11-11 11S5 22.075 5 16 9.925 5 16 5s11 4.925 11 11z"/>
+								<path d="M22 16c0 3.169-.751 5.988-1.914 7.981C18.909 26 17.43 27 16 27c-1.43 0-2.909-1-4.086-3.019C10.751 21.988 10 19.168 10 16s.751-5.988 1.914-7.981C13.091 6 14.57 5 16 5c1.43 0 2.909 1 4.086 3.019C21.249 10.012 22 12.832 22 16z"/>
+								<path d="M5 16h22M16 5v22" stroke-linecap="round"/>
+							</g>
+							<defs>
+								<clipPath id="a">
+									<path fill="#fff" d="M0 0h32v32H0z"/>
+								</clipPath>
+							</defs>
+						</svg>
+					</button>
+				</div>
+				<div class="k-list">
+					<div class="list-inner">
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="k-mobile-button">
+			<button onclick="openGnb();">
+				<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M6 8h20M6 16h20M6 24h20" stroke="#191919" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+				</svg>
+			</button>
+		</div>
+		<div class="k-mobile-button-close">
+			<button onclick="closeGnb();">
+				<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M24 8 8 24M24 24 8 8" stroke="#333" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+				</svg>
+			</button>
+		</div>
+	</div>
+</div>
+
+<!-- k-layer-modal modal-inquiry start1 -->
+<div class="k-layer-modal modal-inquiry " id="inquiryStep1">
+	<div class="k-dim"></div>
+	<div class="k-scroll">
+		<div class="layer-inner">
+			<div class="k-layer-header">
+				<button class="k-modal-close" onclick="closeModalAll();">
+					<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M36.086 11.914 11.915 36.086M36.086 36.086 11.915 11.914" stroke="#20232D" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+					</svg>
+				</button>
+			</div>
+			<div class="k-layer-body">
+				<div class="inqu-content">
+					<div class="k-head">
+						<div class="k-text font32 weight700 k-title">Contact us</div>
+					</div>
+					<div class="k-cont">
+						<div class="cont-head">
+							<div class="k-text font18">Please select a region</div>
+						</div>
+						<form id="frmInquiryStep1">
+						<div class="k-form">
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">Region</div>
+								</div>
+								<div class="form-body">
+									<div class="Search form">
+										<div
+											class="k-inner">
+											<!--  -->
+											<div class="k-display height-56">
+												<div class="k-center">
+													<div class="input-wrap">
+														<input type="text" name="inquiryCntrNm" id="inquiryCntrNm" placeholder="Region" data-cnty-id="" readonly />
+													</div>
+												</div>
+												<div class="k-right k-flex-center">
+													<div class="k-btn">
+														<button type="button">
+															<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+																<path d="M6.707 8.293a1 1 0 0 0-1.414 1.414l1.414-1.414zM12 15l-.707.707a1 1 0 0 0 1.414 0L12 15zm6.707-5.293a1 1 0 0 0-1.414-1.414l1.414 1.414zm-13.414 0 6 6 1.414-1.414-6-6-1.414 1.414zm7.414 6 6-6-1.414-1.414-6 6 1.414 1.414z" fill="#191919"/>
+															</svg>
+														</button>
+													</div>
+												</div>
+											</div>
+											<div class="k-list">
+												<div class="list-inner" id="inquiryCountry">
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						</form>
+					</div>
+					<div>
+						<div class="k-answer-confirm">
+							<a href="javascript:void(0);" class="k-text font16 weight700" onclick="openInquiryAnswer();">View the answer</a>
+						</div>
+						<div class="k-btn-wrap">
+							<!-- k-disable -->
+							<div class="k-btn k-fill k-round height-56 k-primary k-inline-block k-disable" id="divBtnInquiryNext1" style="width:158px;">
+								<button class="k-flex-justify-center" name="btnInquiryNext" data-step="2">
+									<div class="k-text font16 k-white">
+										Next
+									</div>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- k-layer-modal modal-inquiry stop1 -->
+<!-- k-layer-modal modal-inquiry start2 -->
+<div class="k-layer-modal modal-inquiry " id="inquiryStep2">
+	<div class="k-dim"></div>
+	<div class="k-scroll">
+		<div class="layer-inner">
+			<div class="k-layer-header">
+				<button class="k-modal-close" onclick="closeModalAll();">
+					<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M36.086 11.914 11.915 36.086M36.086 36.086 11.915 11.914" stroke="#20232D" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+					</svg>
+				</button>
+			</div>
+			<div class="k-layer-body">
+				<div class="inqu-content">
+					<!--  -->
+					<div class="k-head">
+						<div class="k-text font32 weight700 k-title">Contact us</div>
+					</div>
+					<div class="k-cont">
+						<div class="cont-head">
+							<div class="k-text font18">Select the classification of inquiries</div>
+							<input type="hidden" name="inquiryCatCd" id="inquiryCatCd" data-type-code-name/>
+						</div>
+						<div class="img-list">
+							<div class="list-inner" id="inquiryTypes">
+							</div>
+						</div>
+					</div>
+					<!--  -->
+					<div class="k-btn-wrap">
+						<!-- k-disable -->
+						<div class="k-btn k-fill k-round height-56 k-primary k-inline-block k-disable" id="divBtnInquiryNext2" style="width:158px;">
+							<button class="k-flex-justify-center" name="btnInquiryNext" data-step="3">
+								<div class="k-text font16 k-white">
+									Next
+								</div>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- k-layer-modal modal-inquiry stop2 -->
+<!-- k-layer-modal modal-inquiry start3 -->
+<div class="k-layer-modal modal-inquiry " id="inquiryStep3">
+	<div class="k-dim"></div>
+	<div class="k-scroll">
+		<div class="layer-inner">
+			<div class="k-layer-header">
+				<button class="k-modal-close" onclick="closeModalAll();">
+					<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M36.086 11.914 11.915 36.086M36.086 36.086 11.915 11.914" stroke="#20232D" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+					</svg>
+				</button>
+			</div>
+			<div class="k-layer-body">
+				<div class="inqu-content">
+					<!--  -->
+					<div class="k-head">
+						<div class="k-text font32 weight700 k-title">Enter your inquiry</div>
+					</div>
+					<div class="k-cont k-write">
+						<form id="inquiryForm" method="post">
+						<div class="k-form">
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">Name <span class="star">*</span> </div>
+								</div>
+								<div class="form-body">
+									<div class="TextInput" id="divTxtInqrrNm">
+										<div class="text-inner k-round k-outline height-56 k-grey">
+											<div class="k-left">
+												<input type="text" name="inqrrNm" id="txtInqrrNm" class="font16" placeholder="Name" maxlength="100" />
+											</div>
+											<div class="k-right">
+												<button type="button">
+													<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12z" fill="#DBDBDB"/>
+														<path d="m20 12-8 8M20 20l-8-8" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+													</svg>
+												</button>
+											</div>
+										</div>
+										<div class="k-require-wrap">
+											<div class="k-text font14 k-require">Please enter a Name</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">Company <span class="star">*</span> </div>
+								</div>
+								<div class="form-body">
+									<!--  -->
+									<div class="TextInput" id="divTxtCoNm">
+										<div class="text-inner k-round k-outline height-56 k-grey">
+
+											<div class="k-left">
+												<input type="text" name="coNm" id="txtCoNm" class="font16" placeholder="Company" maxlength="100" />
+											</div>
+											<div class="k-right">
+												<button type="button">
+													<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12z" fill="#DBDBDB"/>
+														<path d="m20 12-8 8M20 20l-8-8" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+													</svg>
+												</button>
+											</div>
+										</div>
+										<div class="k-require-wrap">
+											<div class="k-text font14 k-require">Please enter a Company name</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">Address <span class="star">*</span> </div>
+								</div>
+								<div class="form-body">
+									<!--  -->
+									<div class="TextInput" id="divTxtAddr">
+										<div class="text-inner k-round k-outline height-56 k-grey">
+
+											<div class="k-left">
+												<input type="text" name="addr" id="txtAddr" class="font16" placeholder="Address" maxlength="300" />
+											</div>
+											<div class="k-right">
+												<button type="button">
+													<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12z" fill="#DBDBDB"/>
+														<path d="m20 12-8 8M20 20l-8-8" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+													</svg>
+												</button>
+											</div>
+										</div>
+										<div class="k-require-wrap">
+											<div class="k-text font14 k-require">Please enter an Address.</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">Phone number <span class="star">*</span> </div>
+								</div>
+								<div class="form-body">
+									<!--  -->
+									<div class="TextInput" id="divTxtTelNo">
+										<div class="text-inner k-round k-outline height-56 k-grey">
+											<div class="k-left">
+												<input type="text" name="telNo" id="txtTelNo" class="font16" placeholder="Phone number" maxlength="50" />
+											</div>
+											<div class="k-right">
+												<button type="button">
+													<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12z" fill="#DBDBDB"/>
+														<path d="m20 12-8 8M20 20l-8-8" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+													</svg>
+												</button>
+											</div>
+										</div>
+										<div class="k-require-wrap">
+											<div class="k-text font14 k-require">Please enter a Phone number</div>
+										</div>
+									</div>
+									<!--  -->
+								</div>
+							</div>
+							<!--  -->
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">E-mail <span class="star">*</span> </div>
+								</div>
+								<div class="form-body">
+									<!--  -->
+									<div class="TextInput" id="divTxtEmailAddr"><!-- <div class="k-input k-require">  -->
+										<div class="text-inner k-round k-outline height-56 k-grey">
+											<div class="k-left">
+												<input type="text" name="emailAddr" id="txtEmailAddr" class="font16" placeholder="E-mail" maxlength="100" />
+											</div>
+											<div class="k-right">
+												<button type="button">
+													<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12z" fill="#DBDBDB"/>
+														<path d="m20 12-8 8M20 20l-8-8" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+													</svg>
+												</button>
+											</div>
+										</div>
+										<div class="k-require-wrap">
+											<div class="k-text font14 k-require">Please enter a E-mail</div>
+										</div>
+									</div>
+									<!--  -->
+								</div>
+							</div>
+							<!--  -->
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">Message <span class="star">*</span> </div>
+								</div>
+								<div class="form-body">
+									<!--  -->
+									<div class="TextArea" id="divTxtCont"><!-- <div class="k-input k-require">  -->
+										<div class="text-inner k-round k-outline height-56 k-grey" style="min-height:200px;">
+											<textarea name="cont" id="txtCont"></textarea>
+										</div>
+										<div class="k-require-wrap">
+											<div class="k-text font14 k-require">Please enter a Message</div>
+										</div>
+									</div>
+									<div class="k-desc">
+										<div class="k-text font14">Maximum 6,000 bytes are allowed</div>
+									</div>
+									<!--  -->
+								</div>
+							</div>
+							<!--  -->
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">Attach files</div>
+								</div>
+								<div class="form-body">
+									<!--  -->
+									<div class="k-file">
+										<div class="k-left">
+											<div class="TextInput"><!-- <div class="k-input k-require">  -->
+												<div class="text-inner k-round k-outline k-radius-30 height-56 k-grey">
+													<input type="text" id="txtInqFileNm" name="txtInqFileNm"  class="font16" readonly="readonly" >
+												</div>
+											</div>
+										</div>
+										<div class="k-right">
+											<div class="k-btn k-outline k-round height-40 k-grey-1 k-file-button">
+												<button clas="k-flex-justify-center" type="button">
+													<div class="k-text font14 weight700">Upload files</div>
+													<input type="file" id="fileFileNm" name="fileNm"/>
+												</button>
+											</div>
+										</div>
+									</div>
+									<div class="k-desc">
+										<div class="k-text font14">Maximum 10MB, JPG, PNG or PDF are allowed.</div>
+									</div>
+									<!--  -->
+								</div>
+							</div>
+							<!--  -->
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">Password <span class="star">*</span> </div>
+								</div>
+								<div class="form-body">
+									<!--  -->
+									<div class="TextInput" id="divTxtPwd"><!-- <div class="k-input k-require">  -->
+										<div class="text-inner k-round k-outline height-56 k-grey">
+
+											<div class="k-left">
+												<input type="password" name="pwd" id="txtPwd" class="font16" placeholder="Password" maxlength="6" />
+											</div>
+											<div class="k-right">
+												<button type="button">
+													<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12z" fill="#DBDBDB"/>
+														<path d="m20 12-8 8M20 20l-8-8" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+													</svg>
+												</button>
+											</div>
+										</div>
+										<div class="k-require-wrap">
+											<div class="k-text font14 k-require">Please enter a Password </div>
+										</div>
+									</div>
+									<div class="k-desc">
+										<div class="k-text font14">Please enter a password between 4 and 6 numbers. Be sure to remember your password for future use.</div>
+									</div>
+									<!--  -->
+								</div>
+							</div>
+							<!--  -->
+							<div class="form-item">
+
+								<div class="form-body">
+									<!--  -->
+									<div class="Search form toggle">
+										<div
+											class="k-inner">
+											<!--  -->
+											<div class="k-display height-56">
+
+												<div class="k-center">
+													<div class="CheckBox">
+														<input class="k-input" type="checkbox" name="checkbox-item-01" id="chkAgree" >
+														<label class="k-label" for="chkAgree">
+															<span class="k-icon">
+																<svg class="normal" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+																	<path d="M16 5.5a10.5 10.5 0 1 1 0 21 10.5 10.5 0 0 1 0-21zM16 4a12 12 0 1 0 0 24 12 12 0 0 0 0-24z" fill="#E7E7E7"/>
+																	<path d="m22 12-8.175 8L10 16.533" stroke="#E7E7E7" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+																</svg>
+																<svg class="active" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+																	<circle cx="16" cy="16" r="12" fill="#BB1E4D"/>
+																	<path d="m21 12-6.813 8L11 16.533" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+																</svg>
+															</span>
+															<div class="k-text font16 weight500 k-inline-block">I agree with the privacy policy.</div>
+														</label>
+													</div>
+												</div>
+												<div class="k-right k-flex-center">
+													<div class="k-btn">
+														<button type="button">
+															<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+																<path d="M6.707 8.293a1 1 0 0 0-1.414 1.414l1.414-1.414zM12 15l-.707.707a1 1 0 0 0 1.414 0L12 15zm6.707-5.293a1 1 0 0 0-1.414-1.414l1.414 1.414zm-13.414 0 6 6 1.414-1.414-6-6-1.414 1.414zm7.414 6 6-6-1.414-1.414-6 6 1.414 1.414z" fill="#191919"/>
+															</svg>
+														</button>
+													</div>
+												</div>
+											</div>
+											<!--  -->
+											<div class="k-list">
+												<div
+													class="list-inner">
+													<!--  -->
+													<dl>
+														<dt>
+															<div class="k-text font14 weight700">Personal information items collected.</div>
+														</dt>
+														<dd>
+															<div class="k-text font14">The company collects the following personal information for membership, counseling, and service application.</div>
+															<ul>
+																<li class="k-text font14">Collecting Information: name, phone number, e-mail address</li>
+																<li class="k-text font14">Personal information collecting method: Homepage.</li>
+															</ul>
+														</dd>
+													</dl>
+													<!--  -->
+													<dl>
+														<dt>
+															<div class="k-text font14 weight700">Purpose of collecting and using personal information.</div>
+														</dt>
+														<dd>
+															<div class="k-text font14">The company uses the collected personal information for the following purposes.</div>
+															<ul>
+																<li class="k-text font14">Identification to respond to customer inquiries.</li>
+																<li class="k-text font14">Notification of contact with the result of processing</li>
+															</ul>
+														</dd>
+													</dl>
+													<!--  -->
+													<dl>
+														<dt>
+															<div class="k-text font14 weight700">Period of retention and use of personal information.</div>
+														</dt>
+														<dd>
+															<div class="k-text font14">After the purpose of collecting and using personal information has been achieved, the company will fully erase the information without delay without exception.</div>
+														</dd>
+													</dl>
+													<!--  -->
+												</div>
+											</div>
+										</div>
+									</div>
+									<!--  -->
+								</div>
+							</div>
+							<div class="k-end-txt">
+								<div class="k-text font16 weight700">Register your inquiry <strong><span  id="setBindText">[나라명][문의분류]</span></strong></div>
+							</div>
+							<!--  -->
+						</div>
+						</form>
+					</div>
+					<!--  -->
+					<div class="k-btn-wrap">
+						<!-- k-disable -->
+						<div class="k-btn k-fill k-round height-56 k-primary k-inline-block k-disable" id="divBtnInquiryNext3" style="width:158px;">
+							<button class="k-flex-justify-center" name="btnInquiryNext" data-step="4" type="button">
+								<div class="k-text font16 k-white">
+									Submit
+								</div>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- k-layer-modal modal-inquiry stop3 -->
+<!-- k-layer-modal modal-inquiry start4 -->
+<div class="k-layer-modal modal-inquiry " id="inquiryStep4">
+	<div class="k-dim"></div>
+	<div class="k-scroll">
+		<div class="layer-inner">
+			<div class="k-layer-header">
+				<button class="k-modal-close" onclick="closeModalAll();">
+					<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M36.086 11.914 11.915 36.086M36.086 36.086 11.915 11.914" stroke="#20232D" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+					</svg>
+				</button>
+			</div>
+			<div class="k-layer-body">
+				<div class="inqu-content">
+					<!--  -->
+					<div class="k-head">
+						<div class="k-text font32 weight700 k-title">Registration completed</div>
+
+					</div>
+					<div class="k-cont ">
+						<div class="k-complete">
+							<div class="com-inner">
+								<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="m20 42 12 14 28-32" stroke="#BB1E4D" stroke-width="4" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+								<div class="k-text font32 weight700 k-title">
+									Registration is complete.
+								</div>
+								<div class="k-text font18 k-desc">
+									We will reply after checking your inquiry
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--  -->
+					<div class="k-btn-wrap">
+
+						<div class="k-btn k-fill k-round height-56 k-primary k-inline-block" style="width:158px;">
+							<button class="k-flex-justify-center" onclick="closeModalAll();">
+								<div class="k-text font16 k-white">
+									Close
+								</div>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- k-layer-modal modal-inquiry stop4 -->
+<!-- k-layer-modal modal-inquiry start5 -->
+<div class="k-layer-modal modal-inquiry " id="inquiryStep5">
+	<div class="k-dim"></div>
+	<div class="k-scroll">
+		<div class="layer-inner">
+			<div class="k-layer-header">
+				<button class="k-modal-close" onclick="closeModalAll();">
+					<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M36.086 11.914 11.915 36.086M36.086 36.086 11.915 11.914" stroke="#20232D" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+					</svg>
+				</button>
+			</div>
+			<div class="k-layer-body">
+				<div class="inqu-content">
+					<!--  -->
+					<div class="k-head">
+						<div class="k-text font32 weight700 k-title">View the answer</div>
+					</div>
+					<div class="k-cont">
+
+						<div class="cont-head">
+							<div class="k-text font18">Please enter the E-mail and Password registered to us</div>
+						</div>
+						<div class="k-form">
+							<!--  -->
+							<form name="frmInqCheck" id="frmInqCheck">
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">E-mail <span class="star">*</span></div>
+								</div>
+								<div class="form-body">
+									<!--  -->
+									<div class="TextInput" id="divTxtInqAnsEmail">
+										<div class="text-inner k-round k-outline height-56 k-grey">
+
+											<div class="k-left">
+												<input type="text" class="font16" placeholder="E-mail" id="txtInqAnsEmail" name="txtInqAnsEmail" />
+											</div>
+											<div class="k-right">
+												<button type="button">
+													<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12z" fill="#DBDBDB"/>
+														<path d="m20 12-8 8M20 20l-8-8" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+													</svg>
+												</button>
+											</div>
+										</div>
+										<div class="k-require-wrap">
+											<div class="k-text font14 k-require">E-mail</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!--  -->
+							<div class="form-item">
+								<div class="form-head">
+									<div class="k-text font16">Password<span class="star">*</span></div>
+								</div>
+								<div class="form-body">
+									<!--  -->
+									<div class="TextInput" id="divTxtInqAnsPwd">
+										<div class="text-inner k-round k-outline height-56 k-grey">
+											<div class="k-left">
+												<input type="password" class="font16" placeholder="Password" id="txtInqAnsPwd" name="txtInqAnsPwd" />
+											</div>
+											<div class="k-right">
+												<button type="button">
+													<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12z" fill="#DBDBDB"/>
+														<path d="m20 12-8 8M20 20l-8-8" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+													</svg>
+												</button>
+											</div>
+										</div>
+										<div class="k-require-wrap">
+											<div class="k-text font14 k-require">Please enter a Password </div>
+										</div>
+									</div>
+								</div>
+							</div>
+							</form>
+						</div>
+					</div>
+					<div class="k-btn-wrap">
+						<!-- k-disable -->
+						<div class="k-btn k-fill k-round height-56 k-primary k-inline-block k-disable" id="divBtnInquiryNext6" style="width:158px;">
+							<button class="k-flex-justify-center" name="btnInquiryNext" data-step="6">
+								<div class="k-text font16 k-white">
+									Next
+								</div>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- k-layer-modal modal-inquiry stop5 -->
+<!-- k-layer-modal modal-inquiry stop6 -->
+<div class="k-layer-modal modal-inquiry " id="inquiryStep6">
+	<div class="k-dim"></div>
+	<div class="k-scroll">
+		<div class="layer-inner">
+			<div class="k-layer-header">
+				<button class="k-modal-close" onclick="closeModalAll();">
+					<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M36.086 11.914 11.915 36.086M36.086 36.086 11.915 11.914" stroke="#20232D" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+					</svg>
+				</button>
+			</div>
+			<div class="k-layer-body">
+				<div class="inqu-content">
+					<!--  -->
+					<div class="k-head">
+						<div class="k-text font32 weight700 k-title">View the answer</div>
+					</div>
+					<div class="k-cont">
+						<div class="k-toggle-list">
+							<div class="list-inner" id="divInquiryReply">
+
+							</div>
+						</div>
+					</div>
+					<!--  -->
+					<div class="k-btn-wrap">
+						<!-- k-disable -->
+						<div class="k-btn k-fill k-round height-56 k-primary k-inline-block" style="width:158px;"  onclick="closeModalAll();">
+							<button class="k-flex-justify-center">
+								<div class="k-text font16 k-white">
+									Close
+								</div>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- k-layer-modal modal-inquiry stop6 -->
+
+<script>
+
+/**************************************************************
+ * gnb
+ ***************************************************************/
+$(function (){
+	$(".k-gnb.k-pc").on("mouseenter", ".depth1 > a", function (){
+		if(window.innerWidth > 1024){
+			$(".depth1").removeClass("on");
+			$(".k-header").addClass("hover");
+			$(this).parent().addClass("on");
+			$(".depth2").removeClass("hover");
+			$(this).parent().find(".depth2").eq(0).addClass("hover");
+
+			var noSub = $(this).parent().hasClass("no-sub");
+			if(noSub){
+				$(".k-header").removeClass("hover");
+			}else{
+				$(".k-header").addClass("hover");
+			}
+		}
+	})
+	$(".k-gnb.k-pc").on("mouseenter", ".depth2", function (){
+		$(".depth2").removeClass("hover");
+		$(this).addClass("hover");
+	});
+
+
+	$(".k-gnb.k-mobile").on("click", ".depth1 > a", function (){
+		// 하위메뉴 없을 경우 링크 처리
+		if( $(this).parent().find(".depth2").length == 0 ){
+			return true;
+		}
+
+		if($(this).parent().hasClass("on")){
+			$(".k-header").removeClass("hover");
+			$(this).parent().removeClass("on");
+		}else{
+			$(".k-header").addClass("hover");
+			$(".depth1").removeClass("on");
+			$(this).parent().addClass("on");
+
+		}
+		return false;
+	})
+
+	$(".k-header").mouseenter(function (e){
+		_kglobal.stopWheel = true;
+	}).mouseleave(function (){
+		if( $(".modal-inquiry").hasClass("on")) return;
+		_kglobal.stopWheel = false;
+	});
+
+	//
+	$(".k-header").mouseleave(function (){
+		if(window.innerWidth > 1024){
+			$(".k-header").removeClass("hover");
+			$(".depth1").removeClass("on");
+		}
+	});
+
+	$(".k-language .k-btn").on("mouseenter", function (e){
+		$(".k-language").addClass("on");
+	});
+	$(".k-language .k-btn").on("click", function (e){
+		$(".k-language").addClass("on");
+		e.stopPropagation();
+	});
+})
+//
+function closeGnb(e) {
+	$(".k-header").removeClass("open hover");
+	$("html").removeClass("fixed-layer");
+	_kglobal.stopWheel = false;
+}
+function openGnb(){
+	$(".k-header").addClass("open");
+	$("html").addClass("fixed-layer");
+	_kglobal.stopWheel = true;
+}
+</script>
+
+<script type="text/x-jquery-tmpl" id="langTmpl">
+<a href="javascript:;" class="k-text font16 ${className}">${cdNm}</a>
+</script>
+
+<script type="text/x-jquery-tmpl" id="gnbPcTmpl">
+<div class="depth1 ${className}">
+	<a href="${menuUrl}" class="k-text font16 weight700" target="${menuTarget}">${webMenuNm}</a>
+	{{if menuDepth2List.length > 0}}
+	<div class="k-sub">
+		{{if _.eq(menuCd, "MENU01") }}
+			{{each(index, menuDepth2) menuDepth2List}}
+			<div class="depth2 ${menuDepth2.className} {{if index ==0 }}hover{{/if}}">
+				<a href="${menuDepth2.menuUrl}" class="k-text font16 weight700">${menuDepth2.webMenuNm}</a>
+				{{if !_.isEmpty(menuDepth2.menuDepth3List)}}
+				<div class="k-sub">
+					{{each(index, menuDepth3) menuDepth2.menuDepth3List}}
+					<div class="depth3">
+						<a href="${menuDepth3.menuUrl}" class="k-text font14 k-grey-1">${menuDepth3.webMenuNm}</a>
+					</div>
+					{{/each}}
+				</div>
+				{{/if}}
+				{{if !_.isEmpty(menuDepth2.menuImgFileNm)}}
+				<div class="k-thumb">
+					<div class="k-img k-cover k-center" style="background-image:url('${menuDepth2.menuImgFilePath}')">
+						<img src="${menuDepth2.menuImgFilePath}" alt="">
+					</div>
+				</div>
+				{{/if}}
+			</div>
+			{{/each}}
+			<div class="depth2 depth2-4">
+				<div class="k-btn">
+					<a href="/${lang}/search">
+						<div class="k-text font18 weight700">
+							Find the product
+						</div>
+						<div class="k-icon">
+							<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="m13 11 3 3-3 3" stroke="#505050" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M14 24c5.523 0 10-4.477 10-10S19.523 4 14 4 4 8.477 4 14s4.477 10 10 10z" stroke="#505050" stroke-width="2" stroke-miterlimit="10"/>
+							</svg>
+						</div>
+					</a>
+				</div>
+			</div>
+		{{else}}
+			{{each(index, menuDepth2) menuDepth2List}}
+			<div class="depth2">
+				<a href="${menuDepth2.menuUrl}" class="k-text font16 weight700">
+					<div class="k-text font16 weight700">${menuDepth2.webMenuNm}</div>
+					<div class="k-thumb">
+						<div class="k-img k-cover k-center" style="background-image:url('${menuDepth2.menuImgFilePath}')">
+							<img src="${menuDepth2.menuImgFilePath}" alt="">
+						</div>
+					</div>
+				</a>
+			</div>
+			{{/each}}
+		{{/if}}
+	</div>
+	{{/if}}
+</div>
+</script>
+<script type="text/x-jquery-tmpl" id="gnbMoTmpl">
+<div class="depth1 ${className}">
+	<a href="${menuUrl}" class="k-text font16 weight700" target="${menuTarget}">${moMenuNm}</a>
+	{{if menuDepth2List.length > 0}}
+	<div class="k-sub">
+		{{each(index, menuDepth2) menuDepth2List}}
+		<div class="depth2 ${menuDepth2.className} {{if index ==0 }}hover{{/if}}">
+			<a href="${menuDepth2.menuUrl}" class="k-text font16 weight700">${menuDepth2.moMenuNm}</a>
+			{{if !_.isEmpty(menuDepth2.menuDepth3List)}}
+			<div class="k-sub">
+				{{each(index, menuDepth3) menuDepth2.menuDepth3List}}
+				<div class="depth3">
+					<a href="${menuDepth3.menuUrl}" class="k-text font14 k-grey-1">${menuDepth3.moMenuNm}</a>
+				</div>
+				{{/each}}
+			</div>
+			{{/if}}
+			{{if !_.isEmpty(menuDepth2.menuImgFileNm)}}
+			<div class="k-thumb">
+				<div class="k-img k-cover k-center" style="background-image:url('${menuDepth2.menuImgFilePath}')">
+					<img src="${menuDepth2.menuImgFilePath}" alt="">
+				</div>
+			</div>
+			{{/if}}
+		</div>
+		{{/each}}
+		{{if _.eq(menuCd, "MENU01") }}
+		<div class="depth2 depth2-4">
+			<div class="k-btn">
+				<a href="/${lang}/search">
+					<div class="k-text font18 weight700">
+						Find the product
+					</div>
+					<div class="k-icon">
+						<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="m13 11 3 3-3 3" stroke="#505050" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M14 24c5.523 0 10-4.477 10-10S19.523 4 14 4 4 8.477 4 14s4.477 10 10 10z" stroke="#505050" stroke-width="2" stroke-miterlimit="10"/>
+						</svg>
+					</div>
+				</a>
+			</div>
+		</div>
+		{{/if}}
+	</div>
+	{{/if}}
+</div>
+</script>
+<script type="text/x-jquery-tmpl" id="menuPathTmpl">
+	{{each(idx,menu) menus}}
+		{{if (idx+1) == menus.length }}
+			<div class="k-item font12 k-text weight700 last">${menu}</div>
+		{{else}}
+			<div class="k-item font12">${menu}</div>
+			<span class="k-gap">/</span>
+		{{/if}}
+	{{/each}}
+</script>
+<script type="text/x-jquery-tmpl" id="inquiryCountryTmpl">
+<div class="list-item" data-cnty-id="${cntyId}" data-cnty-nm="${cntyNm}">
+	<div class="k-left">
+		<div class="k-text font18 k-ellipsis">
+			${cntyNm}
+		</div>
+	</div>
+	<div class="k-right">
+		<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path d="m18.8 7-8.72 9.6L6 12.44" stroke="#BB1E4D" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+		</svg>
+	</div>
+</div>
+</script>
+<script type="text/x-jquery-tmpl" id="inquiryCategoryTmpl">
+<div class="img-item">
+	<button class="item-inner" name="btnInquiryType" data-type-code="${cd}" data-type-code-name="${cdNm}" >
+		<div class="k-img k-center k-cover" style="background-image:url('/static/images/inquiry/select_bt_01.jpg')">
+			<img src="/static/images/inquiry/select_bt_01.jpg" alt="">
+		</div>
+		<div class="k-txt">
+			<div class="txt-inner">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="m18.8 7-8.72 9.6L6 12.44" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+				</svg>
+				<div class="k-text font18 weight700 k-white">${cdNm}</div>
+			</div>
+		</div>
+	</button>
+</div>
+</script>
+
+<script type="text/x-jquery-tmpl" id="inquiryReplyTmpl">
+<div class="Search form toggle reply">
+	<div class="k-inner">
+		<div class="k-display ">
+			<div class="k-center">
+				<div class="k-reply-group">
+					<div class="k-head">
+						<div class="k-left">
+							<div class="k-text font18 weight700 ${statusClass}">${statusNm}</div>
+						</div>
+						<div class="k-right">
+							<div class="k-text font18">${tmpTxt}</div>
+						</div>
+					</div>
+					<div class="k-detail">
+						<div class="k-text font16 k-name">${inqrrNm}</div>
+						<div class="k-text font16 k-date k-eng">{{html util.dateFormat(rgstYmdt, 'YYYY-MM-DD')}}</div>
+					</div>
+				</div>
+			</div>
+			<div class="k-right k-flex-center">
+				<div class="k-btn">
+					<button name="btnReply">
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M6.707 8.293a1 1 0 0 0-1.414 1.414l1.414-1.414zM12 15l-.707.707a1 1 0 0 0 1.414 0L12 15zm6.707-5.293a1 1 0 0 0-1.414-1.414l1.414 1.414zm-13.414 0 6 6 1.414-1.414-6-6-1.414 1.414zm7.414 6 6-6-1.414-1.414-6 6 1.414 1.414z" fill="#191919"/>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</div>
+		<div class="k-list">
+			<div
+				class="list-inner">
+				<div class="k-write-wrap">
+					<div class="k-text font16 k-write">
+						${cont}
+					</div>
+				</div>
+				{{if ansCont != '' && expsYn == 'Y' }}
+				<div class="k-answer-wrap">
+					<div class="">
+						<div class="k-detail">
+							<div class="k-text font16 k-name k-primary">Administrator's answer</div>
+							<div class="k-text font16 k-date k-eng">{{html util.dateFormat(ansYmdt, 'YYYY-MM-DD')}}</div>
+						</div>
+						<div class="k-text font16 k-answer">${ansCont}</div>
+					</div>
+				</div>
+				{{/if}}
+			</div>
+		</div>
+	</div>
+</div>
+</script>
+
+<script type="text/x-jquery-tmpl" id="topBottomBannerTmpl">
+<input type="hidden" name="popupSeq" value="${popupSeq}"/>
+<div class="k-global-banner" style="background-color: ${popupLangList[0].bgColr};"><!-- background-color -->
+	<picture>
+		<source media="(max-width:768px)" srcset="${popupLangList[0].moImgFilePath}"><!-- 모바일 이미지-->
+		<img src="${popupLangList[0].imgFilePath}"  /><!-- PC 이미지-->
+	</picture>
+
+	<div class="inner" >
+		<div class="k-cont">
+			<div class="k-left">
+				<div class="k-text font32 k-white k-title bold">${popupLangList[0].ttl}</div>
+				<div class="k-text font16 k-white k-desc">${popupLangList[0].srvTtl}</div>
+				{{if more }}<a href="${tmpUrl}" class="k-text font14 k-white k-more">
+					Learn more
+					<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="m9 4 4 4-4 4M3 8h10" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</a>{{/if}}
+			</div>
+			<div class="k-right">
+				<div class="right-inner">
+					<div class="left" >
+						<span class="k-radio k-today" ><input type="radio" name="today1YN" id="today1YN" value="${clsConfCd}"><label class="k-radio-label" for="today1YN">${clsConfNm}</label></span>
+					</div>
+					<div class="right">
+						<button class="btn-clsConf">
+							<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M24.057 7.943 7.943 24.057M24.057 24.057 7.943 7.943" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+							</svg>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</script>
+
+
+<script type="text/x-jquery-tmpl" id="centerBannerTmpl">
+<input type="hidden" name="popupSeq" value="${popupSeq}"/>
+<div class="k-global-center-banner " >
+	<div class="banner-inner">
+		<a href="${tmpUrl}">
+			<picture>
+				<source media="(max-width:768px)" srcset="${popupLangList[0].imgFilePath}">
+				<img src="${popupLangList[0].imgFilePath}"  />
+			</picture>
+		</a>
+		<div class="inner" >
+			<div class="left" >
+				<span class="k-radio k-today" ><input type="radio" name="today2YN" id="today2YN" value="${clsConfCd}"><label class="k-radio-label" for="today2YN">${clsConfNm}</label></span>
+			</div>
+			<div class="right">
+				<button class="btn-clsConf">
+					<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M24.057 7.943 7.943 24.057M24.057 24.057 7.943 7.943" stroke="#fff" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+					</svg>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+</script>
+</header>
+		
+<div class="k-body lang-ko" style="display: none;">
+
+	<div class="k-history k-white">
+		<div class="history-inner menu-path">
+		</div>
+	</div>
+	<!--  -->
+	<div class="k-section esg-one-01">
+		<div class="k-section-inner">
+			<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_01 1.jpg')">
+				<img src="/static/images/esg_01/ESG_image_01 1.jpg" alt="">
+			</div>
+			<div class="k-txt">
+				<div class="txt-inner">
+					<div class="particle">
+						<div class="pt-inner">
+							<img src="/static/images/esg_01/particle.png" alt="">
+						</div>
+					</div>
+					<div class="k-text font48 weight700 k-white">
+						플라스틱도 종이처럼 자연으로<br>돌아가야 합니다
+					</div>
+				</div>
+			</div>
+			<div class="k-down-wrap">
+				<button>
+					<svg width="40" height="56" viewBox="0 0 40 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="m8 42.002 12 12 12-12M8 30l12 12 12-12M20 42V6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</button>
+			</div>
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>01</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="k-section esg-one-02">
+		<div class="k-section-inner">
+			<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_02 1.jpg')">
+				<img src="/static/images/esg_01/ESG_image_02 1.jpg" alt="">
+			</div>
+			<div class="k-txt">
+				<div class="txt-inner">
+					<div class="k-text font40 weight700 k-white k-title">
+						플라스틱이 골칫덩어리가 된 이유는 무엇일까요?
+					</div>
+					<div class="k-text font18 k-white k-desc">
+						플라스틱의 분해에 오랜 시간이 걸리기 때문이겠죠.
+					</div>
+				</div>
+			</div>
+			<div class="k-txt">
+				<div class="txt-inner">
+					<div class="k-text font40 weight700 k-white k-title">
+						그렇다면 우리는 <br>
+						플라스틱 없이 살 수 있을까요?
+					</div>
+					<div class="k-text font18 k-white k-desc">
+						모두가 플라스틱을 대체할 수 있는 여러 방법을 찾고 있지만
+						전문적인 능력과 연구가 없으면 힘든 길임은 분명합니다.
+					</div>
+				</div>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>01</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="k-section esg-one-03 tweenLeft">
+		<div class="k-section-inner">
+
+			<div class="k-cont">
+				<div class="cont-inner">
+					<div class="k-left">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_1024_01 1.jpg')">
+							<img src="/static/images/esg_01/ESG_image_1024_01 1.jpg" alt="">
+						</div>
+					</div>
+					<div class="k-right">
+						<div class="k-txt">
+							<div class="txt-inner ">
+								<div rate="10" limit="1" class="k-text font40 weight700 k-title k-white parallax alpha">
+									지속가능한 플라스틱이 만들어질 수 있도록, 유도가 앞장서서 연구하고 있습니다.
+								</div>
+								<div rate="10" limit="1" class="k-text font18 k-desc k-white parallax alpha">
+									우리가 플라스틱 없이 살 수 없다면, 어떻게 해야 우리네 생활에 플라스틱이 지속가능한 방법으로 만들어지고 환경을 지킬 수 있을까요?
+									<br><br>
+									유도는 분해에 걸리는 시간을 줄일 수 있는 생분해 플라스틱을 이용한 사출 연구에 집중하기로 했습니다.
+									폐기 후 1년, 짧으면 6개월 안에 썩는 생분해 플라스틱은
+									기존의 화학 플라스틱에 비해 ‘착한 플라스틱’으로 주목받고 있죠.
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>02</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="k-section esg-one-04">
+		<div class="k-section-inner">
+
+			<div class="k-list">
+				<div class="img-wrap">
+					<div class="img-item img-01 on">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/bg_1.jpg')">
+							<img src="/static/images/esg_01/bg_1.jpg" alt="">
+						</div>
+					</div>
+					<div class="img-item img-02">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/bg_2.jpg')">
+							<img src="/static/images/esg_01/bg_2.jpg" alt="">
+						</div>
+					</div>
+					<div class="img-item img-03">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/bg_3.jpg')">
+							<img src="/static/images/esg_01/bg_3.jpg" alt="">
+						</div>
+					</div>
+					<div class="img-item img-04">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/bg_4.jpg')">
+							<img src="/static/images/esg_01/bg_4.jpg" alt="">
+						</div>
+					</div>
+				</div>
+
+				<div class="k-cont">
+					<div class="k-inner">
+						<div class="cont-inner">
+							<div class="k-left">
+								<div class="k-text font40 weight700">
+									<strong>생분해 플라스틱</strong> 은 <br>
+									기존 플라스틱의 대안으로 <br>
+									<strong>주목받고 있습니다.</strong>
+								</div>
+							</div>
+							<div class="k-center">
+								<div class="k-movie movie-01">
+									<div class="earthCanvas"></div>
+								</div>
+							</div>
+							<div class="k-right">
+								<div class="right-inner">
+									<div class="txt-wrap">
+										<div class="txt-item txt-01 on">
+											<div class="k-txt">
+												<div class="k-text font32 k-name weight700 k-primary">저밀도 폴리에틸렌</div>
+												<div class="k-desc">
+													<div class="k-text font160 k-year weight700  k-primary k-eng">500</div>
+													<div class="k-text font48 k-year-txt">년 이상</div>
+												</div>
+											</div>
+										</div>
+										<div class="txt-item txt-02">
+											<div class="k-txt">
+												<div class="k-text font32 k-name weight700 k-primary">폴리에틸렌</div>
+												<div class="k-desc">
+													<div class="k-text font160 k-year weight700  k-primary k-eng">50</div>
+													<div class="k-text font48 k-year-txt">년 이상</div>
+												</div>
+											</div>
+										</div>
+										<div class="txt-item txt-03">
+											<div class="k-txt">
+												<div class="k-text font32 k-name weight700 k-primary">페트</div>
+												<div class="k-desc">
+													<div class="k-text font160 k-year weight700  k-primary k-eng">10</div>
+													<div class="k-text font48 k-year-txt">년 이상</div>
+												</div>
+											</div>
+										</div>
+										<div class="txt-item txt-04">
+											<div class="k-txt">
+												<div class="k-text font32 k-name weight700 k-primary">생분해 플라스틱</div>
+												<div class="k-desc">
+													<div class="k-text font160 k-year weight700  k-primary k-eng">1</div>
+													<div class="k-text font48 k-year-txt">년 이내</div>
+												</div>
+												<div class="k-desc2 font24">
+													생분해 플라스틱은 화학 플라스틱보다 <br>
+													<strong>탄소를 약 60% 적게 배출</strong> 하고, <br>
+													<strong>에너지는 약 50% 적게 사용</strong> 합니다
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>03</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="k-section esg-one-05 tweenLeft">
+		<div class="k-section-inner">
+			<div class="k-cont">
+				<div class="cont-inner">
+					<div class="k-left">
+						<div class="k-txt">
+							<div class="txt-inner">
+								<div rate="10" limit="1" class="k-text font40 weight700 k-title k-white parallax alpha">
+									그러면
+									모두가 생분해 플라스틱을 쓰면 되겠네요?
+								</div>
+								<div rate="10" limit="1" class="k-text font18 k-desc k-white parallax alpha">
+									생분해 플라스틱을 개발했다고 해서 문제가 해결된 것은 아닙니다.
+									일반적인 레진과 비교해 내열성, 내구성, 강도 등이 굉장히 약하기 때문입니다.
+									<br><br>
+									이는 사출 과정에서 가열과 응축으로 인해 물을 생성시키고, 부품에 심각한 문제를 유발하기도 하죠.
+									습기와 먼지로 인한 부식을 관리하는 것도 어렵습니다.
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="k-right">
+						<div class="img-wrap">
+							<div class="k-img k-cover k-center k-front" style="background-image:url('/static/images/esg_01/mark_1-2.png')">
+								<img src="/static/images/esg_01/mark_1-2.png" alt="">
+							</div>
+							<div class="k-img k-cover k-center k-back" style="background-image:url('/static/images/esg_01/mark_2-2.png')">
+								<img src="/static/images/esg_01/mark_2-2.png" alt="">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>04</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="k-section esg-one-06">
+		<div class="k-section-inner">
+			<div class="cont-wrap">
+				<div class="k-top">
+					<div class="k-text font40 weight700">
+						유도 핫러너 시스템에서는
+						<strong>친환경 레진도 OK</strong>
+					</div>
+				</div>
+				<div class="k-center">
+					<div class="txt-inner">
+						<div class="canvasDivGlSl" id="canvasDivGlSl"></div>
+						<div class="canvasDiv" id="canvasDiv"></div>
+						<canvas class="canvas2" width="534" height="534"></canvas>
+						<div class="txt-wrap">
+							<div class="txt-item item-01 on">
+								<div>
+									<div class="k-text font32 weight700">
+										부식ㆍ먼지ㆍ균열
+									</div>
+									<div class="k-text font24">
+										PLA 사출에서 발생하는 문제들
+									</div>
+								</div>
+							</div>
+							<div class="txt-item item-02">
+								<div>
+									<div class="k-text font32 weight700 k-primary">
+										유도 고온 밸런스 솔루션
+									</div>
+									<div class="k-text font24 k-primary">
+										유도의 고온 밸런스 솔루션
+									</div>
+								</div>
+							</div>
+							<div class="txt-item item-03">
+								<div>
+									<div class="k-text font32 weight700">
+										빨대, 포크, 컵, 마스크 등 <br>
+										고품질 PLA 제품
+									</div>
+									<div class="k-text font24">
+										자연으로 돌아가는 생분해 플라스틱
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="k-bottom">
+					<div class="k-text font18">
+						유도는 이러한 단점을 사출 과정 중, 레진 흐름을 최적화할 수 있는 구조적 기술과 고온 상태에서 결정화가 끝날 때까지 세밀한 온도 컨트롤 기술을 통해 극복했습니다. 복잡한 공정상의 문제를 해결해 많은 플라스틱 제조기업들이 지속가능한 플라스틱 제품을 생산할 수 있도록 시스템을 제공할 수 있게 된 것이죠.
+					</div>
+				</div>
+			</div>
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>05</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="k-section esg-one-07 tweenLeft">
+		<div class="k-section-inner">
+			<div class="k-cont">
+				<div class="cont-inner">
+					<div class="k-left">
+						<div class="k-txt">
+							<div class="txt-inner">
+								<div rate="10" limit="1" class="k-text font40 weight700 k-title parallax alpha">
+									유도의 사출 시스템으로 이제는 장비 걱정 없이 <strong>고품질의 친환경 플라스틱</strong> 제품을 생산할 수 있어요!
+								</div>
+								<div rate="10" limit="1" class="k-text font18 k-desc parallax alpha">
+									유도는 이러한 PLA 수지 사출에 특화된 기술로 고객의 PLA 제품 생산을 돕고 있습니다. PLA 수지를 사출할 때 겪는 부품의 부식 및 다량의 분진 발생 문제들은 이제 유도의 최적화된 실린더 사용, 특수 코팅 등 PLA에 최적화된 솔루션으로 극복할 수 있게 되었죠.
+									<br><br>
+									실제로 PLA 수지로 일회용 식기를 생산하는 유도의 한 고객사는 3백만 개 이상의 제품을 생산하는 동안 한 번도 문제가 발생하지 않았고 성공적으로 제품을 생산할 수 있었습니다.
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="k-right">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_1024_3 1.jpg')">
+							<img src="/static/images/esg_01/ESG_image_1024_3 1.jpg" alt="">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>06</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="k-section esg-one-08 tweenLeft">
+		<div class="k-section-inner">
+			<div class="k-cont">
+				<div class="cont-inner">
+					<div class="k-left">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_1024_2 1.jpg')">
+							<img src="/static/images/esg_01/ESG_image_1024_2 1.jpg" alt="">
+						</div>
+					</div>
+					<div class="k-right">
+						<div class="k-txt">
+							<div class="txt-inner">
+								<div rate="10" limit="1"class="k-text font40 weight700 k-title k-white parallax alpha">
+									플라스틱도 자연처럼 선순환을 그리도록 유도가 돕겠습니다.
+								</div>
+								<div rate="10" limit="1" class="k-text font18 k-desc k-white parallax alpha">
+									2019년, 한 해 동안 우리가 만들어 낸 플라스틱 쓰레기는 약 353만 톤으로, 그 중 91%가 재활용이 안 되고 자연으로 흘러 들어가고 있습니다. 이를 생분해 플라스틱으로 바꿀 수 있다면, 비로소 자연과 플라스틱이 공존하는 시대가 열릴 것입니다.
+									<br><br>
+									하지만 현재로서는 생분해 플라스틱으로 제품을 생산하는 데에는 해결해야 할 일들이 많습니다. 유도는 생분해 플라스틱의 사용성을 높일 수 있는 핫러너의 지속적인 개발로, 플라스틱 생태계의 선순환에 도움이 되고자 노력을 멈추지 않을 것 입니다.
+								</div>
+								<div rate="10" limit="1" class="k-text font16 k-desc k-desc2 k-white parallax alpha">
+									Source: Global Plastics Outlook, February 2022
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="k-section-page">
+			<div class="k-text font16 weight700 k-eng">
+				<strong>07</strong>  <span>/</span>  07
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="k-body lang-en" style="display: none;">
+	<div class="k-history k-white">
+		<div class="history-inner menu-path">
+		</div>
+	</div>
+	<div class="k-section esg-one-01">
+		<div class="k-section-inner">
+			<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_01 1.jpg')">
+				<img src="/static/images/esg_01/ESG_image_01 1.jpg" alt="">
+			</div>
+			<div class="k-txt">
+				<div class="txt-inner">
+					<div class="particle">
+						<div class="pt-inner">
+							<img src="/static/images/esg_01/particle.png" alt="">
+						</div>
+					</div>
+					<div class="k-text font48 weight700 k-white">
+						Plastic must be returned back to nature like paper.
+					</div>
+				</div>
+			</div>
+			<div class="k-down-wrap">
+				<button>
+					<svg width="40" height="56" viewBox="0 0 40 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="m8 42.002 12 12 12-12M8 30l12 12 12-12M20 42V6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</button>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>01</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<div class="k-section esg-one-02">
+		<div class="k-section-inner">
+			<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_02 1.jpg')">
+				<img src="/static/images/esg_01/ESG_image_02 1.jpg" alt="">
+			</div>
+
+			<div class="k-txt">
+				<div class="txt-inner">
+					<div class="k-text font40 weight700 k-white k-title">
+						Why has plastic become a nuisance?
+					</div>
+					<div class="k-text font18 k-white k-desc">
+						Because it takes a long time to be decomposed.
+					</div>
+				</div>
+			</div>
+
+			<div class="k-txt">
+				<div class="txt-inner">
+					<div class="k-text font40 weight700 k-white k-title">
+						Then, can you live without plastic?
+					</div>
+					<div class="k-text font18 k-white k-desc">
+						Everyone is looking for ways to replace plastic. However, it's clear that it's hard without professional skills and R&D.
+					</div>
+				</div>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>01</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="k-section esg-one-03 tweenLeft">
+		<div class="k-section-inner">
+			<div class="k-cont">
+				<div class="cont-inner">
+					<div class="k-left">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_1024_01 1.jpg')">
+							<img src="/static/images/esg_01/ESG_image_1024_01 1.jpg" alt="">
+						</div>
+					</div>
+					<div class="k-right">
+						<div class="k-txt">
+							<div class="txt-inner ">
+								<div rate="10" limit="1" class="k-text font40 weight700 k-title k-white parallax alpha">
+									YUDO is taking the head in researching to make sustainable plastic.
+								</div>
+								<div rate="10" limit="1" class="k-text font18 k-desc k-white parallax alpha">
+									If we can't live without plastic, how can we make plastic sustainable and protect the environment?
+									<br><br>
+									YUDO has made a decision to focus on an injection study for biodegradable plastic that can reduce the time to decompose. Biodegradable plastics which can be decomposed within 6 to 12 months after disposal are attracting attention as 'Good plastics' compared to conventional chemical plastics.
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>02</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="k-section esg-one-04">
+		<div class="k-section-inner">
+			<div class="k-list">
+				<div class="img-wrap">
+					<div class="img-item img-01 on">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/bg_1.jpg')">
+							<img src="/static/images/esg_01/bg_1.jpg" alt="">
+						</div>
+					</div>
+					<div class="img-item img-02">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/bg_2.jpg')">
+							<img src="/static/images/esg_01/bg_2.jpg" alt="">
+						</div>
+					</div>
+					<div class="img-item img-03">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/bg_3.jpg')">
+							<img src="/static/images/esg_01/bg_3.jpg" alt="">
+						</div>
+					</div>
+					<div class="img-item img-04">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/bg_4.jpg')">
+							<img src="/static/images/esg_01/bg_4.jpg" alt="">
+						</div>
+					</div>
+				</div>
+
+				<div class="k-cont">
+					<div class="k-inner">
+						<div class="cont-inner">
+							<div class="k-left">
+								<div class="k-text font40 weight700">
+									<strong>Biodegradable plastics</strong> are <br>
+									<strong>attracting attention</strong> as an alternative  <br>
+									to conventional plastics.
+								</div>
+							</div>
+							<div class="k-center">
+								<div class="k-movie movie-01">
+									<div class="earthCanvas"></div>
+								</div>
+							</div>
+							<div class="k-right">
+								<div class="right-inner">
+									<div class="txt-wrap">
+										<div class="txt-item txt-01 on">
+											<div class="k-txt">
+												<div class="k-text font32 k-name weight700 k-primary">Low-density polyethylene</div>
+												<div class="k-desc">
+													<!-- Over 500 years -->
+													<div class="k-text font160 k-year weight700  k-primary k-eng">500</div>
+													<div class="k-text font48 k-year-txt">years</div>
+												</div>
+											</div>
+										</div>
+										<div class="txt-item txt-02">
+											<div class="k-txt">
+												<div class="k-text font32 k-name weight700 k-primary">polyethylene</div>
+												<div class="k-desc">
+													<div class="k-text font160 k-year weight700  k-primary k-eng">50</div>
+													<div class="k-text font48 k-year-txt">years</div>
+												</div>
+											</div>
+										</div>
+										<div class="txt-item txt-03">
+											<div class="k-txt">
+												<div class="k-text font32 k-name weight700 k-primary">PET</div>
+												<div class="k-desc">
+													<div class="k-text font160 k-year weight700  k-primary k-eng">10</div>
+													<div class="k-text font48 k-year-txt">years</div>
+												</div>
+											</div>
+										</div>
+										<div class="txt-item txt-04">
+											<div class="k-txt">
+												<div class="k-text font32 k-name weight700 k-primary">Biodegradable <br> plastics</div>
+												<div class="k-desc">
+													<div class="k-text font48 k-year-txt first">Within</div>
+													<div class="k-text font160 k-year weight700  k-primary k-eng">1</div>
+													<div class="k-text font48 k-year-txt">year</div>
+												</div>
+												<div class="k-desc2 font24">
+													Biodegradable plastics
+													<strong>emit about 60% less carbon </strong>
+													and
+													<strong>use about 50% less energy </strong>
+													than conventional plastics.
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>03</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="k-section esg-one-05 tweenLeft">
+		<div class="k-section-inner">
+			<div class="k-cont">
+				<div class="cont-inner">
+					<div class="k-left">
+						<div class="k-txt">
+							<div class="txt-inner">
+								<div rate="10" limit="1" class="k-text font40 weight700 k-title k-white parallax alpha">
+									Then, should everyone use biodegradable plastic?
+								</div>
+								<div rate="10" limit="1" class="k-text font18 k-desc k-white parallax alpha">
+									Developing biodegradable plastics doesn't mean that problem is settled because these have low heat resistance, durability, and strength compared to general resins. This creates water due to heating and condensation during the injection process causing problems with products.
+									<br><br>
+									It's also difficult to manage corrosion caused by moisture and dust.
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="k-right">
+						<div class="img-wrap">
+							<div class="k-img k-cover k-center k-front" style="background-image:url('/static/images/esg_01/mark_1-2.png')">
+								<img src="/static/images/esg_01/mark_1-2.png" alt="">
+							</div>
+							<div class="k-img k-cover k-center k-back" style="background-image:url('/static/images/esg_01/mark_2-2.png')">
+								<img src="/static/images/esg_01/mark_2-2.png" alt="">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>04</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="k-section esg-one-06">
+		<div class="k-section-inner">
+			<div class="cont-wrap">
+				<div class="k-top">
+					<div class="k-text font40 weight700">
+						<strong>Eco-friendly resin  with</strong>
+						YUDO's Hot runner : OK
+					</div>
+				</div>
+				<div class="k-center">
+					<div class="txt-inner">
+						<div class="canvasDivGlSl" id="canvasDivGlSl"></div>
+						<div class="canvasDiv" id="canvasDiv"></div>
+						<canvas class="canvas2" width="534" height="534"></canvas>
+						<div class="txt-wrap">
+							<div class="txt-item item-01 on">
+								<div>
+									<div class="k-text font32 weight700">
+										CorrosionㆍDustㆍCrack
+									</div>
+									<div class="k-text font24">
+										Problems arising from PLA injection
+									</div>
+								</div>
+							</div>
+							<div class="txt-item item-02">
+								<div>
+									<div class="k-text font32 weight700 k-primary">
+										High temperature balance solution
+									</div>
+									<div class="k-text font24 k-primary">
+										YUDO High temperature balance solution
+									</div>
+								</div>
+							</div>
+							<div class="txt-item item-03">
+								<div>
+									<div class="k-text font32 weight700">
+										High quality PLA products
+									</div>
+									<div class="k-text font24">
+										Biodegradable plastic products that go back to nature
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="k-bottom">
+					<div class="k-text font18">
+						YUDO overcame the weakness of the existing resins through structural technology which can optimize resin flow during the injection process and control temperature precisely until crystallization at high temperatures. By solving complex process problems, YUDO helps a lot of plastic manufacturers to produce sustainable plastic products.
+					</div>
+				</div>
+			</div>
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>05</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="k-section esg-one-07 tweenLeft">
+		<div class="k-section-inner">
+			<div class="k-cont">
+				<div class="cont-inner">
+					<div class="k-left">
+						<div class="k-txt">
+							<div class="txt-inner">
+								<div rate="10" limit="1" class="k-text font40 weight700 k-title parallax alpha">
+									Manufacturers can make
+									<strong>high-quality and eco-friendly plastic </strong>
+									products with YUDO's injection system.
+								</div>
+								<div rate="10" limit="1" class="k-text font18 k-desc parallax alpha">
+									Through specialized technology in PLA plastic injection, YUDO helps customers produce PLA products. The corrosion and large amounts of dust experienced when injecting PLA resin can now be overcome with PLA solutions such as optimized cylinders and special coatings.
+									<br><br>
+									One of the customers of YUDO who produces disposable tableware with PLA resin has never experienced any problems while producing more than 3 million products successfully
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="k-right">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_1024_3 1.jpg')">
+							<img src="/static/images/esg_01/ESG_image_1024_3 1.jpg" alt="">
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>06</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="k-section esg-one-08 tweenLeft">
+		<div class="k-section-inner">
+
+			<div class="k-cont">
+				<div class="cont-inner">
+					<div class="k-left">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_1024_2 1.jpg')">
+							<img src="/static/images/esg_01/ESG_image_1024_2 1.jpg" alt="">
+						</div>
+					</div>
+					<div class="k-right">
+						<div class="k-txt">
+							<div class="txt-inner">
+								<div rate="10" limit="1"class="k-text font40 weight700 k-title k-white parallax alpha">
+									YUDO support to reshaping the plastic lifecycle into a circle.
+								</div>
+								<div rate="10" limit="1" class="k-text font18 k-desc k-white parallax alpha">
+									In 2019, the amount of plastic waste we created during the year was approximately 353 million tons. 91% of waste is non-recycled and adversely affects nature. If biodegradable plastic is applied, an era where nature and plastic coexist will be opened.
+									<br><br>
+									However, for now, in order to make products with biodegradable plastics requires a lot to be solved. YUDO will not stop trying to develop a Hot Runner system to increase usability with Biodegradable plastics. And it will cause a virtuous cycle for nature.
+								</div>
+								<div rate="10" limit="1" class="k-text font16 k-desc k-desc2 k-white parallax alpha">
+									Source: Global Plastics Outlook, February 2022
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="k-section-page">
+			<div class="k-text font16 weight700 k-eng">
+				<strong>07</strong>  <span>/</span>  07
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="k-body lang-cn" style="display: none;">
+	<div class="k-history k-white">
+		<div class="history-inner menu-path">
+		</div>
+	</div>
+
+	<div class="k-section esg-one-01">
+		<div class="k-section-inner">
+			<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_01 1.jpg')">
+				<img src="/static/images/esg_01/ESG_image_01 1.jpg" alt="">
+			</div>
+			<div class="k-txt">
+				<div class="txt-inner">
+					<div class="particle">
+						<div class="pt-inner">
+							<img src="/static/images/esg_01/particle.png" alt="">
+						</div>
+					</div>
+					<div class="k-text font48 weight700 k-white">
+						塑料必须像纸一样回归自然。
+					</div>
+				</div>
+			</div>
+			<div class="k-down-wrap">
+				<button>
+					<svg width="40" height="56" viewBox="0 0 40 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="m8 42.002 12 12 12-12M8 30l12 12 12-12M20 42V6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</button>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>01</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<div class="k-section esg-one-02">
+		<div class="k-section-inner">
+			<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_02 1.jpg')">
+				<img src="/static/images/esg_01/ESG_image_02 1.jpg" alt="">
+			</div>
+			<div class="k-txt">
+				<div class="txt-inner">
+					<div class="k-text font40 weight700 k-white k-title">
+						为什么塑料成了一种讨厌的东西？
+					</div>
+					<div class="k-text font18 k-white k-desc">
+						因为降解塑料需要很长时间。
+					</div>
+				</div>
+			</div>
+			<div class="k-txt">
+				<div class="txt-inner">
+					<div class="k-text font40 weight700 k-white k-title">
+						然而，没有塑料能生活吗？
+					</div>
+					<div class="k-text font18 k-white k-desc">
+						每个人都在寻找替代塑料的方法 然而，很明显，没有专业技能和研发是很困难的。
+					</div>
+				</div>
+			</div>
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>01</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="k-section esg-one-03 tweenLeft">
+		<div class="k-section-inner">
+
+			<div class="k-cont">
+				<div class="cont-inner">
+					<div class="k-left">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_1024_01 1.jpg')">
+							<img src="/static/images/esg_01/ESG_image_1024_01 1.jpg" alt="">
+						</div>
+					</div>
+					<div class="k-right">
+						<div class="k-txt">
+							<div class="txt-inner ">
+								<div rate="10" limit="1" class="k-text font40 weight700 k-title k-white parallax alpha">
+									YUDO正在率先研究制造可持续塑料。
+								</div>
+								<div rate="10" limit="1" class="k-text font18 k-desc k-white parallax alpha">
+									如果没有塑料我们无法生存，我们如何以可持续的方式制造塑料并保护环境？
+									YUDO决定专注于研究可降解塑料的注塑，这种塑料能够减少降解时间。 与传统化学塑料相比，可降解塑料在处理后6至12个月内分解，是一种“优质塑料”，受到人们的关注。
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>02</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="k-section esg-one-04">
+		<div class="k-section-inner">
+			<div class="k-list">
+				<div class="img-wrap">
+					<div class="img-item img-01 on">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/bg_1.jpg')">
+							<img src="/static/images/esg_01/bg_1.jpg" alt="">
+						</div>
+					</div>
+					<div class="img-item img-02">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/bg_2.jpg')">
+							<img src="/static/images/esg_01/bg_2.jpg" alt="">
+						</div>
+					</div>
+					<div class="img-item img-03">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/bg_3.jpg')">
+							<img src="/static/images/esg_01/bg_3.jpg" alt="">
+						</div>
+					</div>
+					<div class="img-item img-04">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/bg_4.jpg')">
+							<img src="/static/images/esg_01/bg_4.jpg" alt="">
+						</div>
+					</div>
+				</div>
+				<div class="k-cont">
+					<div class="k-inner">
+						<div class="cont-inner">
+							<div class="k-left">
+								<div class="k-text font40 weight700">
+									生物可降解塑料作为传统塑料的替代品正引起人们的关注。
+								</div>
+							</div>
+							<div class="k-center">
+								<div  class="k-movie movie-01">
+									<div class="earthCanvas"></div>
+								</div>
+							</div>
+							<div class="k-right">
+								<div class="right-inner">
+									<div class="txt-wrap">
+										<div class="txt-item txt-01 on">
+											<div class="k-txt">
+												<div class="k-text font32 k-name weight700 k-primary">低密度聚乙烯</div>
+												<div class="k-desc">
+													<div class="k-text font160 k-year weight700  k-primary k-eng">500</div>
+													<div class="k-text font48 k-year-txt">年以上</div>
+												</div>
+											</div>
+										</div>
+										<!--  -->
+										<div class="txt-item txt-02">
+											<div class="k-txt">
+												<div class="k-text font32 k-name weight700 k-primary">聚乙烯</div>
+												<div class="k-desc">
+													<div class="k-text font160 k-year weight700  k-primary k-eng">50</div>
+													<div class="k-text font48 k-year-txt">年以上</div>
+												</div>
+											</div>
+										</div>
+										<div class="txt-item txt-03">
+											<div class="k-txt">
+												<div class="k-text font32 k-name weight700 k-primary">塑料</div>
+												<div class="k-desc">
+													<div class="k-text font160 k-year weight700  k-primary k-eng">10</div>
+													<div class="k-text font48 k-year-txt">年以上</div>
+												</div>
+											</div>
+										</div>
+										<div class="txt-item txt-04">
+											<div class="k-txt">
+												<div class="k-text font32 k-name weight700 k-primary">生物可降解塑</div>
+												<div class="k-desc">
+													<div class="k-text font160 k-year weight700  k-primary k-eng">1</div>
+													<div class="k-text font48 k-year-txt">年内</div>
+												</div>
+												<div class="k-desc2 font24">
+													与传统塑料相比，生物降解塑料的碳排放量减少约60%，能耗减少约50%。
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>03</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="k-section esg-one-05 tweenLeft">
+		<div class="k-section-inner">
+
+			<div class="k-cont">
+				<div class="cont-inner">
+					<div class="k-left">
+						<div class="k-txt">
+							<div class="txt-inner">
+								<div rate="10" limit="1" class="k-text font40 weight700 k-title k-white parallax alpha">
+									那么，每个人都应该使用生物降解塑料吗？
+								</div>
+								<div rate="10" limit="1" class="k-text font18 k-desc k-white parallax alpha">
+									开发可生物降解塑料并不意味着问题得到解决，因为与普通树脂相比，这些塑料的耐热性、耐久性和强度较弱。
+									<br><br>
+									这些缺点会在注塑过程中导致材料由于加热和冷凝而产生水，从而导致产品出现问题。 同时也很难控制由湿气和灰尘引起的腐蚀。
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="k-right">
+						<div class="img-wrap">
+							<div class="k-img k-cover k-center k-front" style="background-image:url('/static/images/esg_01/mark_1-2.png')">
+								<img src="/static/images/esg_01/mark_1-2.png" alt="">
+							</div>
+							<div class="k-img k-cover k-center k-back" style="background-image:url('/static/images/esg_01/mark_2-2.png')">
+								<img src="/static/images/esg_01/mark_2-2.png" alt="">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>04</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="k-section esg-one-06">
+		<div class="k-section-inner">
+			<div class="cont-wrap">
+				<div class="k-top">
+					<div class="k-text font40 weight700">
+						YUDO热流道应用于环保树脂：OK
+					</div>
+				</div>
+				<div class="k-center">
+					<div class="txt-inner">
+						<div class="canvasDivGlSl" id="canvasDivGlSl"></div>
+						<div class="canvasDiv" id="canvasDiv"></div>
+						<canvas class="canvas2" width="534" height="534"></canvas>
+						<div class="txt-wrap">
+							<div class="txt-item item-01 on">
+								<div>
+									<div class="k-text font32 weight700">
+										腐蚀ㆍ灰尘ㆍ裂缝
+									</div>
+									<div class="k-text font24">
+										PLA注射的问题
+									</div>
+								</div>
+							</div>
+							<div class="txt-item item-02">
+								<div>
+									<div class="k-text font32 weight700 k-primary">
+										高温平衡解决方案
+									</div>
+									<div class="k-text font24 k-primary">
+										YUDO 高温平衡解决方案
+									</div>
+								</div>
+							</div>
+							<div class="txt-item item-03">
+								<div>
+									<div class="k-text font32 weight700">
+										高品质的PLA产品
+									</div>
+									<div class="k-text font24">
+										回归自然的可生物降解塑料产品
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="k-bottom">
+					<div class="k-text font18">
+						YUDO通过结构技术克服了现有树脂的缺点，可以在注塑过程中优化树脂流动，精确控制温度，直到高温结晶。 通过解决复杂的工艺问题，YUDO帮助许多塑料制造商生产可持续塑料产品。
+					</div>
+				</div>
+			</div>
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>05</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="k-section esg-one-07 tweenLeft">
+		<div class="k-section-inner">
+			<div class="k-cont">
+				<div class="cont-inner">
+					<div class="k-left">
+						<div class="k-txt">
+							<div class="txt-inner">
+								<div rate="10" limit="1" class="k-text font40 weight700 k-title parallax alpha">
+									制造商可以用YUDO的注塑系统生产高质量和环保的塑料产品。
+								</div>
+								<div rate="10" limit="1" class="k-text font18 k-desc parallax alpha">
+									通过PLA注塑的专业技术，YUDO帮助客户生产PLA产品。 注塑PLA树脂时遇到的腐蚀和大量灰尘问题，现在可以通过PLA解决方案（如优化的气缸和特殊涂层）加以克服。
+									<br><br>
+									事实上，YUDO有一家客户已经能够成功地使用PLA树脂生产一次性餐具，在生产300多万件产品的过程中从未遇到过任何问题。
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="k-right">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_1024_3 1.jpg')">
+							<img src="/static/images/esg_01/ESG_image_1024_3 1.jpg" alt="">
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>06</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="k-section esg-one-08 tweenLeft">
+		<div class="k-section-inner">
+			<div class="k-cont">
+				<div class="cont-inner">
+					<div class="k-left">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_1024_2 1.jpg')">
+							<img src="/static/images/esg_01/ESG_image_1024_2 1.jpg" alt="">
+						</div>
+					</div>
+					<div class="k-right">
+						<div class="k-txt">
+							<div class="txt-inner">
+								<div rate="10" limit="1"class="k-text font40 weight700 k-title k-white parallax alpha">
+									YUDO支持重塑塑料的生命周期，使之成为一个循环。
+								</div>
+								<div rate="10" limit="1" class="k-text font18 k-desc k-white parallax alpha">
+									2019年产生的塑料废物量约为3.53亿吨，91%的废物不可回收，并对自然产生不利影响。如果应用可生物降解塑料，自然和塑料共存的时代将开启。
+									<br><br>
+									然而在当下，使用可生物降解的塑料制造产品还需要解决很多问题。YUDO在开发可生物降解塑料热流道系统上将不会止步，这也将会促进大自然的良性循环。
+								</div>
+								<div rate="10" limit="1" class="k-text font16 k-desc k-desc2 k-white parallax alpha">
+									Source: Global Plastics Outlook, February 2022
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="k-section-page">
+			<div class="k-text font16 weight700 k-eng">
+				<strong>07</strong>  <span>/</span>  07
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="k-body lang-de" style="display: none;">
+	<!--  -->
+	<div class="k-history k-white">
+		<div class="history-inner menu-path">
+		</div>
+	</div>
+	<!--  -->
+	<div class="k-section esg-one-01">
+		<div class="k-section-inner">
+			<!--  -->
+			<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_01 1.jpg')">
+				<img src="/static/images/esg_01/ESG_image_01 1.jpg" alt="">
+			</div>
+			<!--  -->
+			<div class="k-txt">
+				<div class="txt-inner">
+
+					<div class="particle">
+						<div class="pt-inner">
+							<img src="/static/images/esg_01/particle.png" alt="">
+						</div>
+					</div>
+					<div class="k-text font48 weight700 k-white">
+						Plastik muss genauso wie Papier an die Natur zurückgegeben werden
+					</div>
+				</div>
+			</div>
+			<!--  -->
+			<div class="k-down-wrap">
+				<button>
+					<svg width="40" height="56" viewBox="0 0 40 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="m8 42.002 12 12 12-12M8 30l12 12 12-12M20 42V6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</button>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>01</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<!--  -->
+	<div class="k-section esg-one-02">
+		<div class="k-section-inner">
+			<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_02 1.jpg')">
+				<img src="/static/images/esg_01/ESG_image_02 1.jpg" alt="">
+			</div>
+
+			<!--  -->
+			<div class="k-txt">
+				<div class="txt-inner">
+					<div class="k-text font40 weight700 k-white k-title">
+						Warum wurde Kunststoff zu einem Ärgernis?
+					</div>
+					<div class="k-text font18 k-white k-desc">
+						Weil es eine lange Zeit braucht bis es abgebaut wird
+					</div>
+				</div>
+			</div>
+
+			<!--  -->
+			<div class="k-txt">
+				<div class="txt-inner">
+					<div class="k-text font40 weight700 k-white k-title">
+						Können wir ohne Kunststoff leben?
+					</div>
+					<div class="k-text font18 k-white k-desc">
+						Jeder sucht nach Wegen Kunststoff zu ersetzen. Aber es ist schwer ohne professionelles Können, Forschung und Entwicklung
+					</div>
+				</div>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>01</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<!--  -->
+	<div class="k-section esg-one-03 tweenLeft">
+		<div class="k-section-inner">
+
+			<div class="k-cont">
+				<div class="cont-inner">
+					<div class="k-left">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_1024_01 1.jpg')">
+							<img src="/static/images/esg_01/ESG_image_1024_01 1.jpg" alt="">
+						</div>
+					</div>
+					<div class="k-right">
+						<!--  -->
+						<div class="k-txt">
+							<div class="txt-inner ">
+								<div rate="10" limit="1" class="k-text font40 weight700 k-title k-white parallax alpha">
+									YUDO übernimmt die Leitung in der Entwicklung um Kunststoff nachhaltig zu machen
+								</div>
+								<div rate="10" limit="1" class="k-text font18 k-desc k-white parallax alpha">
+									Wenn wir ohne Kunststoff nicht leben können, wie können wir Kunststoff nachhaltig machen und die Umwelt schützen?
+									<br><br>
+									YUDO hat die Entscheidung getroffen den Focus auf eine Spritzstudie von biologisch abbaubaren Kunststoffen zu richten, die eine reduzierte Zeit für den Abbau benötigen. Biologisch abbaubare Kunststoffe die sich nach einer Zeit von 6 - 12 Monaten nach der Entsorgung abbauen, haben Aufsehen als "Gute Kunststoffe" erregt im Vergleich zu den herkömmlichen chemischen Kunststoffen
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>02</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!--  -->
+	<div class="k-section esg-one-04">
+		<div class="k-section-inner">
+
+			<div class="k-list">
+				<!--  -->
+				<div class="img-wrap">
+					<div class="img-item img-01 on">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/bg_1.jpg')">
+							<img src="/static/images/esg_01/bg_1.jpg" alt="">
+						</div>
+					</div>
+					<div class="img-item img-02">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/bg_2.jpg')">
+							<img src="/static/images/esg_01/bg_2.jpg" alt="">
+						</div>
+					</div>
+					<div class="img-item img-03">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/bg_3.jpg')">
+							<img src="/static/images/esg_01/bg_3.jpg" alt="">
+						</div>
+					</div>
+					<div class="img-item img-04">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/bg_4.jpg')">
+							<img src="/static/images/esg_01/bg_4.jpg" alt="">
+						</div>
+					</div>
+				</div>
+
+				<!--  -->
+				<div class="k-cont">
+					<div class="k-inner">
+						<div class="cont-inner">
+							<div class="k-left">
+								<div class="k-text font40 weight700">
+									Biologisch abbaubare Kunststoffe <br>
+									erregen Aufsehen als Alternative zu den <br>
+									herkömmlichen Kunststoffen
+								</div>
+							</div>
+							<div class="k-center">
+								<div  class="k-movie movie-01">
+									<div class="earthCanvas"></div>
+								</div>
+							</div>
+							<div class="k-right">
+								<div class="right-inner">
+									<div class="txt-wrap">
+										<div class="txt-item txt-01 on">
+											<div class="k-txt">
+												<div class="k-text font32 k-name weight700 k-primary">Polyethylen mit geringer Dichte</div>
+												<div class="k-desc">
+													<div class="k-text font160 k-year weight700  k-primary k-eng">500</div>
+													<div class="k-text font48 k-year-txt">Jahre</div>
+												</div>
+											</div>
+										</div>
+										<!--  -->
+										<div class="txt-item txt-02">
+											<div class="k-txt">
+												<div class="k-text font32 k-name weight700 k-primary">Polyethylen  </div>
+												<div class="k-desc">
+													<div class="k-text font160 k-year weight700  k-primary k-eng">50</div>
+													<div class="k-text font48 k-year-txt">Jahre</div>
+												</div>
+											</div>
+										</div>
+										<div class="txt-item txt-03">
+											<div class="k-txt">
+												<div class="k-text font32 k-name weight700 k-primary">PET</div>
+												<div class="k-desc">
+													<div class="k-text font160 k-year weight700  k-primary k-eng">10</div>
+													<div class="k-text font48 k-year-txt">Jahre</div>
+												</div>
+											</div>
+										</div>
+										<div class="txt-item txt-04">
+											<div class="k-txt">
+												<div class="k-text font32 k-name weight700 k-primary">Biologisch abbaubare Kunststoffe  </div>
+												<div class="k-desc">
+													<div class="k-text font160 k-year weight700  k-primary k-eng">1</div>
+													<div class="k-text font48 k-year-txt"> Innerhalb eines</div>
+												</div>
+												<div class="k-desc2 font24">
+													Biologisch abbaubare Kunststoffe stoßen 60% weniger CO2 aus und brauchen 50% weniger Energie als herkömmliche Kunststoffe
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>03</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!--  -->
+	<div class="k-section esg-one-05 tweenLeft">
+		<div class="k-section-inner">
+
+			<div class="k-cont">
+				<div class="cont-inner">
+					<!--  -->
+					<div class="k-left">
+						<!--  -->
+						<div class="k-txt">
+							<div class="txt-inner">
+								<div rate="10" limit="1" class="k-text font40 weight700 k-title k-white parallax alpha">
+									Sollte jeder biologisch abbaubare Kunststoffe verwenden?
+								</div>
+								<div rate="10" limit="1" class="k-text font18 k-desc k-white parallax alpha">
+									Die Entwicklung von biologisch abbaubaren Kunststoffen ist leider nicht die Lösung des Problems, da diese eine geringe Hitzebeständigkeit, Haltbarkeit und Festigkeit im Vergleich zu herkömmlichen Kunststoffen haben. Während der Einspritzung kreieren Sie auch Feuchtigkeit durch Hitze und Kondensation und das wirft Probleme im Produkt auf.
+									<br><br>
+									Es ist auch schwierig Korrosion durch Feuchtigkeit und Staub zu vermeiden
+								</div>
+
+							</div>
+						</div>
+					</div>
+					<!--  -->
+					<div class="k-right">
+						<div class="img-wrap">
+							<div class="k-img k-cover k-center k-front" style="background-image:url('/static/images/esg_01/mark_1-2.png')">
+								<img src="/static/images/esg_01/mark_1-2.png" alt="">
+							</div>
+							<div class="k-img k-cover k-center k-back" style="background-image:url('/static/images/esg_01/mark_2-2.png')">
+								<img src="/static/images/esg_01/mark_2-2.png" alt="">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>04</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="k-section esg-one-06">
+		<div class="k-section-inner">
+
+			<div class="cont-wrap">
+				<!--  -->
+				<div class="k-top">
+					<div class="k-text font40 weight700">
+						<!-- 유도 핫러너 시스템에서는
+						<strong>친환경 레진도 OK</strong> -->
+
+						Umweltfreundliche Kunststoffe mit
+						<strong>YUDO´s Heißkanal : OK</strong>
+					</div>
+				</div>
+				<!--  -->
+				<div class="k-center">
+					<div class="txt-inner">
+						<div class="canvasDivGlSl" id="canvasDivGlSl"></div>
+						<div class="canvasDiv" id="canvasDiv"></div>
+						<canvas class="canvas2" width="534" height="534"></canvas>
+						<div class="txt-wrap">
+							<!--  -->
+							<div class="txt-item item-01 on">
+								<div>
+									<div class="k-text font32 weight700">
+										KorrosionㆍStaubㆍBruch
+									</div>
+									<div class="k-text font24">
+										Probleme die durch PLA Einspritzung entstehen
+									</div>
+								</div>
+							</div>
+							<!--  -->
+							<div class="txt-item item-02">
+								<div>
+									<div class="k-text font32 weight700 k-primary">
+										Lösung durch Balance der hohen Temperatur
+									</div>
+									<div class="k-text font24 k-primary">
+										YUDO´s Lösung zur Temperatur Balance
+									</div>
+								</div>
+							</div>
+							<!--  -->
+							<div class="txt-item item-03">
+								<div>
+									<div class="k-text font32 weight700">
+										PLA Produkte von hoher Qualität
+									</div>
+									<div class="k-text font24">
+										Biologisch abbaubare Kunststoffe die der Natur wieder zugeführt werden
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+				<!--  -->
+				<div class="k-bottom">
+					<div class="k-text font18">
+						YUDO überwindet die Schwäche der existierenden Kunststoffe durch strukturelle Technologie die den Kunststofffluss während des Prozesses optimiert und die Temperatur bis zur Kristallisation bei hohen Temperaturen präzise kontrolliert. Durch die Lösung der komplexen Prozessprobleme hilft YUDO vielen Kunststoffanwendern bei der Produktion von nachhaltigen Kunststoffen.
+					</div>
+				</div>
+			</div>
+			<!--  -->
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>05</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--  -->
+	<div class="k-section esg-one-07 tweenLeft">
+		<div class="k-section-inner">
+
+			<div class="k-cont">
+				<div class="cont-inner">
+					<!--  -->
+					<div class="k-left">
+						<!--  -->
+						<div class="k-txt">
+							<div class="txt-inner">
+								<div rate="10" limit="1" class="k-text font40 weight700 k-title parallax alpha">
+									Mit YUDO Systemen können Hersteller qualitativ hochwertige Produkte mit umweltfreundlichen Kunststoffen produzieren
+								</div>
+								<div rate="10" limit="1" class="k-text font18 k-desc parallax alpha">
+									YUDO hilft den Kunden durch die spezielle Technologie bei PLA Verarbeitung. Das Problem mit den vielen Staub und der Korrosion bei PLA Verarbeitung kann durch den Einsatz von speziellen Zylindern und Sonderbeschichtungen behoben werden.
+									<br><br>
+									Einer unserer Kunden der abbaubares Gebrauchsgeschirr aus PLA macht hatte bis heute nach über 3 Millionen Schuss noch keine Probleme in der Produktion
+								</div>
+
+							</div>
+						</div>
+					</div>
+					<!--  -->
+					<div class="k-right">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_1024_3 1.jpg')">
+							<img src="/static/images/esg_01/ESG_image_1024_3 1.jpg" alt="">
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>06</strong>  <span>/</span>  07
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<!--  -->
+	<div class="k-section esg-one-08 tweenLeft">
+		<div class="k-section-inner">
+
+			<div class="k-cont">
+				<div class="cont-inner">
+					<div class="k-left">
+						<div class="k-img k-cover k-center" style="background-image:url('/static/images/esg_01/ESG_image_1024_2 1.jpg')">
+							<img src="/static/images/esg_01/ESG_image_1024_2 1.jpg" alt="">
+						</div>
+					</div>
+					<div class="k-right">
+						<!--  -->
+						<div class="k-txt">
+							<div class="txt-inner">
+								<div rate="10" limit="1"class="k-text font40 weight700 k-title k-white parallax alpha">
+									YUDO unterstützt die Umwandlung des Lebenslaufs von Kunststoff in einen Kreislauf
+								</div>
+								<div rate="10" limit="1" class="k-text font18 k-desc k-white parallax alpha">
+									2019 produzierten wir 353 Millionen Tonnen Kunststoff Abfälle innerhalb eines Jahres. 91% diese Kunststoffabfalles wurden nicht recycelt und belasten die Umwelt. Wenn abbaubarer Kunststoff eingesetzt wird ein Feld geöffnet in dem Kunststoff und Natur koexistieren können.
+									<br><br>
+									Allerdings müssen bis dahin noch viele Probleme für die Verarbeitung von abbaubaren Kunststoffen gelöst werden. YUDO wird nicht aufhören an der Entwicklung eines Heißkanalsystems für den Einsatz von abbaubaren Kunststoff zu arbeiten. Dies wird zu einen positiven Kreislauf für die Natur führen.
+								</div>
+								<div rate="10" limit="1" class="k-text font16 k-desc k-desc2 k-white parallax alpha">
+									Source: Global Plastics Outlook, February 2022
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="k-section-page">
+				<div class="k-text font16 weight700 k-eng">
+					<strong>07</strong>  <span>/</span>  07
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+<!--  -->
+</div>
+
+
+		
+
+<button class="top-btn">
+	<div class="k-text font12 weight700">
+		<svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path d="m4 2 3.464 4.5H.536L4 2z" fill="#505050"/>
+		</svg>
+		TOP
+	</div>
+</button>
+
+<p id="btn_find" class="aa floating-btn" style="display: none;">
+	<a href="javascript:;" onclick="util.goPage('/search','');">
+		<b class="k-text font14 k-white weight700">
+			Find the product
+		</b>
+	</a>
+</p>
+		
+
+<footer id="footer">
+	<div class="k-footer">
+		<div class="footer-inner">
+			<div class="k-top">
+				<div class="k-footer-gnb k-pc">
+					<div class="gnb-inner">
+					</div>
+				</div>
+				<div class="k-footer-gnb k-mobile">
+					<div class="gnb-inner">
+					</div>
+				</div>
+			</div>
+			<div class="k-ft-bottom">
+				<div class="k-inner">
+					<div class="k-left">
+						<a>
+							<svg width="122" height="24" viewBox="0 0 122 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<g clip-path="url(#footer)">
+									<path fill-rule="evenodd" clip-rule="evenodd" d="M17.823 24v-9.513L28.534 0h-8.827l-5.44 7.345L8.831 0H0l10.715 14.487V24h7.108zM30.36.021h7.214v15.774a1.26 1.26 0 0 0 1.261 1.262h11.609c.698 0 1.261-.567 1.261-1.262V.021h7.21v18.175c0 3.205-2.6 5.804-5.804 5.804H36.167a5.806 5.806 0 0 1-5.808-5.804V.02zm30.985 0h22.751c3.205 0 5.805 2.6 5.805 5.809v12.366C89.9 21.4 87.3 24 84.095 24h-22.75V.021zm7.146 7.15v9.683h13.057c.698 0 1.266-.567 1.266-1.262V8.433a1.26 1.26 0 0 0-1.266-1.261H68.49zM92.58 5.83c0-3.21 2.599-5.809 5.808-5.809h16.947c3.204 0 5.804 2.6 5.804 5.809v12.366c0 3.205-2.6 5.804-5.804 5.804H98.388a5.806 5.806 0 0 1-5.809-5.804V5.83zm7.124 2.667v7.036a1.26 1.26 0 0 0 1.258 1.261h11.786c.698 0 1.262-.567 1.262-1.261V8.497a1.26 1.26 0 0 0-1.262-1.262h-11.786c-.695 0-1.258.563-1.258 1.262z" fill="#DC0043"/>
+								</g>
+								<defs>
+									<clipPath id="footer">
+										<path fill="#fff" d="M0 0h121.2v24H0z"/>
+									</clipPath>
+								</defs>
+							</svg>
+						</a>
+					</div>
+					<div class="k-center">
+						<div class="k-text font14 k-grey-2 k-eng">
+						</div>
+					</div>
+					<div class="k-right">
+						<ul>
+							<li>
+								<a href="javascript:;" class="fbUrl" target="_blank">
+									<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path d="M27.733 15.933h2.6v-4h-3.866a5.135 5.135 0 0 0-3.934 1.934s-1.067 1-1.067 3.866v3h-3.8v4.334h3.8v11h4.4v-11H29.6l.533-4.334h-4.267v-3a1.735 1.735 0 0 1 1.867-1.8z" fill="#767676"/>
+									</svg>
+								</a>
+							</li>
+							<li>
+								<a href="javascript:;" class="youtubeUrl" target="_blank">
+									<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path d="M37.733 17a3.467 3.467 0 0 0-2.533-2.533c-2.2-.6-11.2-.6-11.2-.6s-8.933 0-11.2.6A3.734 3.734 0 0 0 10.266 17c-.6 2.267-.6 7-.6 7s0 4.667.6 6.933a3.733 3.733 0 0 0 2.534 2.534c2.267.6 11.2.6 11.2.6s9 0 11.2-.6a3.467 3.467 0 0 0 2.533-2.534c.6-2.266.6-6.933.6-6.933s0-4.733-.6-7z" fill="#767676"/>
+										<path d="M21.067 28.267v-8.534L28.534 24l-7.467 4.267z" fill="#F9F9F9"/>
+									</svg>
+								</a>
+							</li>
+							<li>
+								<a href="javascript:;" class="linkedInUrl" target="_blank">
+									<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path d="M18.067 20.467H13.8V34.8h4.267V20.467z" fill="#767676"/>
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M34.666 25.2v9.667H30.4v-7.734a2.667 2.667 0 0 0-5.333 0v7.734H20.8V20.533h4.267V22.6a5.133 5.133 0 0 1 5.733-2.4 5.2 5.2 0 0 1 3.866 5zM15.867 18.333a2.6 2.6 0 1 0-2.534-2.6 2.534 2.534 0 0 0 2.534 2.6z" fill="#767676"/>
+									</svg>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="k-loading">
+		<div class="loading"></div>
+	</div>
+
+<script type="text/x-jquery-tmpl" id="footerTmpl">
+	${cpywrtCont}
+	{{if !_.isEmpty(url) }}
+	<a href="${url}" target="_blank">${srvCont}</a>
+	{{/if}}
+</script>
+
+<script type="text/x-jquery-tmpl" id="footerGnbPcTmpl">
+<div class="depth1 ${className}">
+	<a href="${menuUrl}" class="k-text font18 weight700" target="${menuTarget}">${webMenuNm}</a>
+	{{if menuDepth2List.length > 0}}
+	<div class="k-sub">
+		{{if _.eq(menuCd, "MENU01") }}
+		<div class="depth2">
+			<a href="/${lang}/search" class="k-text font14 k-grey-2">Find the product</a>
+		</div>
+		{{/if}}
+		{{each(index, menuDepth2) menuDepth2List}}
+		<div class="depth2">
+			<a href="${menuDepth2.menuUrl}" class="k-text font14 k-grey-2">${menuDepth2.webMenuNm}</a>
+		</div>
+		{{/each}}
+	</div>
+	{{/if}}
+</div>
+</script>
+
+<script type="text/x-jquery-tmpl" id="footerGnbMoTmpl">
+<div class="depth1 ${className}">
+	<a href="${menuUrl}" class="k-text font18 weight700" target="${menuTarget}">${moMenuNm} ${menuDepth2List.size}</a>
+	{{if menuDepth2List.length > 0}}
+	<div class="k-sub">
+		{{if _.eq(menuCd, "MENU01") }}
+		<div class="depth2">
+			<a href="/${lang}/search" class="k-text font14 k-grey-2">Find the product</a>
+		</div>
+		{{/if}}
+		{{each(index, menuDepth2) menuDepth2List}}
+		<div class="depth2">
+			<a href="${menuDepth2.menuUrl}" class="k-text font14 k-grey-2">${menuDepth2.moMenuNm}</a>
+		</div>
+		{{/each}}
+	</div>
+	{{/if}}
+</div>
+</script>
+</footer>
+	</div>
+</body>
+</html>
