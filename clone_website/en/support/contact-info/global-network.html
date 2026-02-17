@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YUDO Global Networks - New</title>
+
+    <!-- Reuse existing common styles/fonts if possible for consistency -->
+    <link rel="stylesheet" href="../../../static/css/font/Montserrat/Montserrat.css">
+    <link rel="stylesheet" href="../../../static/css/common/common.css">
+    <link rel="stylesheet" href="../../../static/css/views/global-new.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+
+    <div class="global-network-container">
+        <h1 style="text-align: center; margin: 40px 0;">GLOBAL NETWORK</h1>
+
+        <!-- Search/Filter Filter placeholder if needed, skipping for now to focus on list -->
+
+        <div class="network-grid" id="networkGrid">
+            <!-- Cards will be injected here -->
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // Fetch data
+            $.ajax({
+                url: '/en/support/contact-info/global-network/getPageInit',
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    console.log("Data fetched:", data);
+                    renderNetworkList(data.networkList);
+                },
+                error: function (err) {
+                    console.error("Error fetching data:", err);
+                    // Fallback for testing if server endpoint fails locally
+                    $.getJSON('../../../api_data/globalNetworkAll.json', function (data) {
+                        console.log("Fallback data loaded");
+                        renderNetworkList(data);
+                    });
+                }
+            });
+
+            function renderNetworkList(list) {
+                const $grid = $('#networkGrid');
+                $grid.empty();
+
+                if (!list || list.length === 0) {
+                    $grid.html('<p>No network data found.</p>');
+                    return;
+                }
+
+                // Filter for useful entries if needed, or just render all
+                // The live site seems to group by country or just list them. 
+                // Based on "globalNetworkAll.json", let's render them.
+
+                list.forEach(item => {
+                    // Extract data safely
+                    const country = item.cntyNm || '';
+                    const city = item.cityNm || '';
+                    const company = item.globalNetworkLangForWeb ? item.globalNetworkLangForWeb.coNm : (item.coNm || '');
+                    const address = item.globalNetworkLangForWeb ? item.globalNetworkLangForWeb.addr : '';
+                    const tel = item.telNo || '';
+                    const fax = item.faxNo || '';
+                    const email = item.mailAddr || '';
+                    const businessTypes = item.globalNetworkBusinessTypeListForWeb ? item.globalNetworkBusinessTypeListForWeb.map(b => b.bizTpNm).join(' / ') : '';
+
+                    const cardHtml = `
+                        <div class="network-card">
+                            <div class="card-header">
+                                <span class="country-badge">${country}</span>
+                                ${city ? `<h3 class="city-name">${city}</h3>` : ''}
+                            </div>
+                            <div class="card-body">
+                                <div class="business-type">${businessTypes}</div>
+                                <h4 class="company-name">${company}</h4>
+                                <p class="address">${address}</p>
+                                
+                                <div class="contact-info">
+                                    ${tel ? `<div class="contact-item"><span class="icon">📞</span> <span class="text">${tel}</span></div>` : ''}
+                                    ${fax ? `<div class="contact-item"><span class="icon">📠</span> <span class="text">${fax}</span></div>` : ''}
+                                    ${email ? `<div class="contact-item"><span class="icon">✉️</span> <span class="text">${email}</span></div>` : ''}
+                                </div>
+                            </div>
+                            ${item.lat && item.lot ? `
+                            <div class="card-footer">
+                                <button class="view-map-btn" onclick="alert('Map click: ${item.globNtwkSeq}')">View Map</button>
+                            </div>` : ''}
+                        </div>
+                    `;
+                    $grid.append(cardHtml);
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

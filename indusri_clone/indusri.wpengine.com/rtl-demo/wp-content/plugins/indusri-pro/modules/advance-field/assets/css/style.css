@@ -1,0 +1,19 @@
+
+.wdt-widget-advanced-button {
+    background-image: linear-gradient(to bottom, var(--wdtPrimaryColor) 0%, var(--wdtSecondaryColor) 51%, var(--wdtPrimaryColor) 100%);
+    background-size: auto 200%;
+    overflow: hidden;
+    -webkit-transition: all 500ms ease-in-out;
+    transition: all 500ms ease-in-out;
+    width: fit-content;
+    padding: var(--wdtInputPadding);
+}
+
+.wdt-widget-advanced-button a,
+.wdt-widget-advanced-button:hover a{
+    color: var(--wdtAccentTxtColor);
+}
+
+.wdt-widget-advanced-button:hover{
+    background-position: bottom center;
+}

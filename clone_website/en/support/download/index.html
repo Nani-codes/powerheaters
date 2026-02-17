@@ -1,0 +1,622 @@
+
+
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<script type="text/javascript">
+		var contextPath= "";
+	</script>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<title>YUDO Download</title>
+
+	<link rel="shortcut icon" href="/static/images/favicon.ico">
+	<link rel="stylesheet" type="text/css" href="/static/css/yudo.css" />
+	<link rel="stylesheet" type="text/css" href="/static/css/views/download.css" />
+
+	<script type="text/javascript" src="/static/js/lib/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/jquery.tmpl.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/jquery.cookie.js"></script>
+	<script type="text/javascript" src="/static/js/lib/jquery.fileDownload.js"></script>
+	<script type="text/javascript" src="/static/js/lib/TweenMax.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/swiper.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/three.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/moment.min.js"></script>
+	<script type="text/javascript" src="/static/js/lib/lodash.min.js"></script>
+	<script type="text/javascript" src="/static/js/util.js"></script>
+	<script type="text/javascript" src="/static/js/k.swipeList.js"></script>
+	<script type="text/javascript" src="/static/js/k.main.js"></script>
+	<script type="text/javascript" src="/static/js/k.parallax.js"></script>
+
+	<script type="text/javascript" src="/static/js/common.js"></script>
+	<script type="text/javascript" src="/static/js/ajax.js"></script>
+	<script type="text/javascript" src="/static/js/interpreter.js"></script>
+	<script type="text/javascript" src="/static/js/popup.js"></script>
+	<style type="text/css">
+	.skiptranslate {display: none;}
+	</style>
+
+<meta name="Title" content="YUDO Download">
+<meta name="description" content="Download brochures, catalogs and technical documents">
+
+<script type="text/javascript">
+function pageInit() {
+	/* Download page: tabs and list are static */
+	$(".download-03 .k-tab").on("click", ".swiper-slide", function(){
+		$(".download-03 .k-tab .swiper-slide").removeClass("active");
+		$(this).addClass("active");
+		var cat = $(this).data("cat");
+		$(".download-03 .tab-list .k-item").each(function(){
+			if(cat === "ALL" || $(this).data("cat") === cat) {
+				$(this).show();
+			} else {
+				$(this).hide();
+			}
+		});
+	});
+}
+</script>
+
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-VW15DZRVDV"></script>
+	<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-VW15DZRVDV');
+	</script>
+
+</head>
+<body>
+	<div id="root"></div>
+	<div id="google_translate_element" style="display:none;"></div>
+	<div class="root">
+
+
+
+<!--banner-top banner-center banner-bottom-->
+<div id="banner"></div>
+
+<header id="header">
+<div class="k-header k-type">
+	<div class="header-inner">
+		<div class="k-left">
+			<h1>
+				<a href="javascript:;">
+					<svg width="100" height="20" viewBox="0 0 100 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<g clip-path="url(#yudoLogo)">
+							<path fill-rule="evenodd" clip-rule="evenodd" d="M14.706 19.802v-7.849L23.543 0H16.26l-4.489 6.06L7.286 0H0l8.84 11.953v7.849h5.866zM25.049.017H31v13.016c0 .576.464 1.04 1.04 1.04h9.578c.577 0 1.041-.468 1.041-1.04V.017h5.949v14.996a4.79 4.79 0 0 1-4.789 4.789H29.841a4.79 4.79 0 0 1-4.793-4.789V.017zm25.565 0h18.771a4.79 4.79 0 0 1 4.79 4.793v10.203a4.79 4.79 0 0 1-4.79 4.789H50.614V.017zm5.896 5.9v7.989h10.773c.576 0 1.044-.468 1.044-1.041V6.958a1.04 1.04 0 0 0-1.044-1.04H56.51zM76.386 4.81A4.791 4.791 0 0 1 81.178.017h13.983a4.79 4.79 0 0 1 4.788 4.793v10.203a4.79 4.79 0 0 1-4.788 4.789H81.178a4.79 4.79 0 0 1-4.792-4.789V4.81zm5.878 2.2v5.806c0 .573.465 1.04 1.038 1.04h9.724c.577 0 1.041-.467 1.041-1.04V7.01a1.04 1.04 0 0 0-1.04-1.041h-9.725c-.573 0-1.038.464-1.038 1.04z" fill="#DC0043"/>
+						</g>
+						<defs>
+							<clipPath id="yudoLogo">
+								<path fill="#fff" d="M0 0h100v19.802H0z"/>
+							</clipPath>
+						</defs>
+					</svg>
+				</a>
+			</h1>
+		</div>
+		<div class="k-center">
+			<div class="k-dim"></div>
+			<div class="k-center-inner">
+				<div class="k-gnb k-pc">
+					<div class="gnb-inner">
+					</div>
+				</div>
+				<div class="k-gnb k-mobile">
+					<div class="gnb-inner">
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="k-right">
+			<div class="k-language k-tooltip" >
+				<div class="k-btn">
+					<button>
+						<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<g clip-path="url(#a)" stroke="#191919" stroke-width="2" stroke-miterlimit="10" stroke-linejoin="round">
+								<path d="M27 16c0 6.075-4.925 11-11 11S5 22.075 5 16 9.925 5 16 5s11 4.925 11 11z"/>
+								<path d="M22 16c0 3.169-.751 5.988-1.914 7.981C18.909 26 17.43 27 16 27c-1.43 0-2.909-1-4.086-3.019C10.751 21.988 10 19.168 10 16s.751-5.988 1.914-7.981C13.091 6 14.57 5 16 5c1.43 0 2.909 1 4.086 3.019C21.249 10.012 22 12.832 22 16z"/>
+								<path d="M5 16h22M16 5v22" stroke-linecap="round"/>
+							</g>
+							<defs>
+								<clipPath id="a">
+									<path fill="#fff" d="M0 0h32v32H0z"/>
+								</clipPath>
+							</defs>
+						</svg>
+					</button>
+				</div>
+				<div class="k-list">
+					<div class="list-inner">
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="k-mobile-button">
+			<button onclick="openGnb();">
+				<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M6 8h20M6 16h20M6 24h20" stroke="#191919" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+				</svg>
+			</button>
+		</div>
+		<div class="k-mobile-button-close">
+			<button onclick="closeGnb();">
+				<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M24 8 8 24M24 24 8 8" stroke="#333" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
+				</svg>
+			</button>
+		</div>
+	</div>
+</div>
+
+<script>
+$(document).on("mouseenter", ".k-gnb.k-pc .depth1", function(){
+	$(".k-header").addClass("hover");
+	$(".k-gnb .depth1").removeClass("on");
+	$(this).addClass("on");
+});
+$(document).on("mouseleave", ".k-header", function(){
+	$(".k-header").removeClass("hover");
+	$(".k-gnb .depth1").removeClass("on");
+});
+$(".k-language .k-btn").on("mouseenter", function(){ $(".k-language").addClass("on"); });
+$(".k-language .k-btn").on("click", function(e){ $(".k-language").addClass("on"); e.stopPropagation(); });
+function closeGnb(){ $(".k-header").removeClass("open hover"); $("html").removeClass("fixed-layer"); _kglobal.stopWheel = false; }
+function openGnb(){ $(".k-header").addClass("open"); $("html").addClass("fixed-layer"); _kglobal.stopWheel = true; }
+</script>
+
+<script type="text/x-jquery-tmpl" id="langTmpl">
+<a href="javascript:;" class="k-text font16 ${className}">${cdNm}</a>
+</script>
+
+<script type="text/x-jquery-tmpl" id="gnbPcTmpl">
+<div class="depth1 ${className}">
+	<a href="${menuUrl}" class="k-text font16 weight700" target="${menuTarget}">${webMenuNm}</a>
+	{{if menuDepth2List.length > 0}}
+	<div class="k-sub">
+		{{if _.eq(menuCd, "MENU01") }}
+			{{each(index, menuDepth2) menuDepth2List}}
+			<div class="depth2 ${menuDepth2.className} {{if index ==0 }}hover{{/if}}">
+				<a href="${menuDepth2.menuUrl}" class="k-text font16 weight700">${menuDepth2.webMenuNm}</a>
+				{{if !_.isEmpty(menuDepth2.menuDepth3List)}}
+				<div class="k-sub">
+					{{each(index, menuDepth3) menuDepth2.menuDepth3List}}
+					<div class="depth3">
+						<a href="${menuDepth3.menuUrl}" class="k-text font14 k-grey-1">${menuDepth3.webMenuNm}</a>
+					</div>
+					{{/each}}
+				</div>
+				{{/if}}
+				{{if !_.isEmpty(menuDepth2.menuImgFileNm)}}
+				<div class="k-thumb">
+					<div class="k-img k-cover k-center" style="background-image:url('${menuDepth2.menuImgFilePath}')">
+						<img src="${menuDepth2.menuImgFilePath}" alt="">
+					</div>
+				</div>
+				{{/if}}
+			</div>
+			{{/each}}
+		{{else}}
+			{{each(index, menuDepth2) menuDepth2List}}
+			<div class="depth2">
+				<a href="${menuDepth2.menuUrl}" class="k-text font16 weight700">
+					<div class="k-text font16 weight700">${menuDepth2.webMenuNm}</div>
+					<div class="k-thumb">
+						<div class="k-img k-cover k-center" style="background-image:url('${menuDepth2.menuImgFilePath}')">
+							<img src="${menuDepth2.menuImgFilePath}" alt="">
+						</div>
+					</div>
+				</a>
+			</div>
+			{{/each}}
+		{{/if}}
+	</div>
+	{{/if}}
+</div>
+</script>
+<script type="text/x-jquery-tmpl" id="gnbMoTmpl">
+<div class="depth1 ${className}">
+	<a href="${menuUrl}" class="k-text font16 weight700" target="${menuTarget}">${moMenuNm}</a>
+	{{if menuDepth2List.length > 0}}
+	<div class="k-sub">
+		{{each(index, menuDepth2) menuDepth2List}}
+		<div class="depth2 ${menuDepth2.className} {{if index ==0 }}hover{{/if}}">
+			<a href="${menuDepth2.menuUrl}" class="k-text font16 weight700">${menuDepth2.moMenuNm}</a>
+			{{if !_.isEmpty(menuDepth2.menuDepth3List)}}
+			<div class="k-sub">
+				{{each(index, menuDepth3) menuDepth2.menuDepth3List}}
+				<div class="depth3">
+					<a href="${menuDepth3.menuUrl}" class="k-text font14 k-grey-1">${menuDepth3.moMenuNm}</a>
+				</div>
+				{{/each}}
+			</div>
+			{{/if}}
+		</div>
+		{{/each}}
+	</div>
+	{{/if}}
+</div>
+</script>
+<script type="text/x-jquery-tmpl" id="menuPathTmpl">
+	{{each(idx,menu) menus}}
+		{{if (idx+1) == menus.length }}
+			<div class="k-item font12 k-text weight700 last">${menu}</div>
+		{{else}}
+			<div class="k-item font12">${menu}</div>
+			<span class="k-gap">/</span>
+		{{/if}}
+	{{/each}}
+</script>
+
+</header>
+
+	<!-- k-body -->
+	<div class="k-body lang-en">
+		<div class="k-history k-white">
+			<div class="history-inner menu-path">
+			</div>
+		</div>
+
+		<!-- download-01: Key Visual -->
+		<div class="k-section download-01">
+			<div class="k-section-inner">
+				<div class="k-keyvisual">
+					<div class="k-img k-cover k-center" style="background-image:url('https://placehold.co/1920x528/1a1a2e/ffffff?text=Download')">
+						<img src="https://placehold.co/1920x528/1a1a2e/ffffff?text=Download" alt="">
+					</div>
+					<div class="k-txt">
+						<div class="k-text font40 weight700 k-title k-white" style="opacity:1;">
+							Download
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- download-02: What are you looking for? -->
+		<div class="k-section download-02">
+			<div class="k-section-inner">
+				<div class="k-head">
+					<div class="k-text font32 weight700 k-title">
+						What are you looking for?
+					</div>
+				</div>
+				<div class="k-cont">
+					<div class="cont-inner">
+						<div class="k-left">
+							<dl>
+								<dt class="k-text font16 weight700">Option1</dt>
+								<dd>
+									<div class="Search form">
+										<div class="k-inner">
+											<div class="k-display height-56">
+												<div class="k-center">
+													<div class="input-wrap">
+														<input type="text" placeholder="Select category" readonly />
+													</div>
+												</div>
+												<div class="k-right k-flex-center">
+													<div class="k-btn">
+														<button type="button">
+															<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+																<path d="M6.707 8.293a1 1 0 0 0-1.414 1.414l1.414-1.414zM12 15l-.707.707a1 1 0 0 0 1.414 0L12 15zm6.707-5.293a1 1 0 0 0-1.414-1.414l1.414 1.414zm-13.414 0 6 6 1.414-1.414-6-6-1.414 1.414zm7.414 6 6-6-1.414-1.414-6 6 1.414 1.414z" fill="#191919"/>
+															</svg>
+														</button>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</dd>
+							</dl>
+						</div>
+						<div class="k-right">
+							<dl>
+								<dt class="k-text font16 weight700">Option2</dt>
+								<dd>
+									<div class="Search form">
+										<div class="k-inner">
+											<div class="k-display height-56">
+												<div class="k-center">
+													<div class="input-wrap">
+														<input type="text" placeholder="Select product" readonly />
+													</div>
+												</div>
+												<div class="k-right k-flex-center">
+													<div class="k-btn">
+														<button type="button">
+															<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+																<path d="M6.707 8.293a1 1 0 0 0-1.414 1.414l1.414-1.414zM12 15l-.707.707a1 1 0 0 0 1.414 0L12 15zm6.707-5.293a1 1 0 0 0-1.414-1.414l1.414 1.414zm-13.414 0 6 6 1.414-1.414-6-6-1.414 1.414zm7.414 6 6-6-1.414-1.414-6 6 1.414 1.414z" fill="#191919"/>
+															</svg>
+														</button>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+				<div class="btn-wrap">
+					<div class="k-btn k-fill k-round height-56 k-primary k-inline-block" style="width:312px;">
+						<button class="k-flex-justify-center">
+							<div class="k-text font16 k-white">Find</div>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- download-03: Tabs + Download List -->
+		<div class="k-section download-03">
+			<div class="k-section-inner">
+				<div class="k-tab">
+					<div class="tab-inner">
+						<div class="tab-swipe swiper-container">
+							<div class="swiper-wrapper">
+								<button class="swiper-slide active" data-cat="ALL">
+									<div class="tab-item">
+										<span class="k-text font16 k-name">ALL</span>
+										<span class="k-no font12">4</span>
+									</div>
+								</button>
+								<button class="swiper-slide" data-cat="BRO">
+									<div class="tab-item">
+										<span class="k-text font16 k-name">Brochures</span>
+										<span class="k-no font12">2</span>
+									</div>
+								</button>
+								<button class="swiper-slide" data-cat="CAT">
+									<div class="tab-item">
+										<span class="k-text font16 k-name">Catalogs</span>
+										<span class="k-no font12">1</span>
+									</div>
+								</button>
+								<button class="swiper-slide" data-cat="TEC">
+									<div class="tab-item">
+										<span class="k-text font16 k-name">Technical</span>
+										<span class="k-no font12">2</span>
+									</div>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="tab-list">
+					<div class="list-inner">
+						<!-- Item 1 -->
+						<div class="k-item" data-cat="BRO">
+							<div class="item-inner">
+								<div class="k-text font14 k-title">Product Brochure 2024</div>
+								<div class="tag-list">
+									<span class="tag-item"><span class="k-text font14">Brochure</span></span>
+									<span class="tag-item"><span class="k-text font14">PDF</span></span>
+								</div>
+								<div class="k-text font18 weight700 k-name">YUDO Product Brochure</div>
+								<div class="k-text font14 k-desc">Overview of hot runner systems and applications.</div>
+								<div class="btn-wrap">
+									<div class="k-btn k-outline k-round height-40 k-inline-block">
+										<button>
+											<div class="k-text font14">Download</div>
+											<div class="k-icon" style="margin-left:6px;">
+												<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+													<circle cx="10" cy="10" r="9" stroke="#191919"/>
+													<path d="M10 6v6M7 10l3 3 3-3" stroke="#191919" stroke-linecap="round" stroke-linejoin="round"/>
+												</svg>
+											</div>
+										</button>
+									</div>
+									<span class="k-text font14" style="margin-left:12px;color:#767676;">2.4 MB</span>
+								</div>
+							</div>
+						</div>
+						<!-- Item 2 -->
+						<div class="k-item" data-cat="CAT">
+							<div class="item-inner">
+								<div class="k-text font14 k-title">Technical Catalog – Hot Runners</div>
+								<div class="tag-list">
+									<span class="tag-item"><span class="k-text font14">Catalog</span></span>
+									<span class="tag-item"><span class="k-text font14">Technical</span></span>
+									<span class="tag-item"><span class="k-text font14">PDF</span></span>
+								</div>
+								<div class="k-text font18 weight700 k-name">Hot Runner Systems Catalog</div>
+								<div class="k-text font14 k-desc">Specifications and selection guide.</div>
+								<div class="btn-wrap">
+									<div class="k-btn k-outline k-round height-40 k-inline-block">
+										<button>
+											<div class="k-text font14">Download</div>
+											<div class="k-icon" style="margin-left:6px;">
+												<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+													<circle cx="10" cy="10" r="9" stroke="#191919"/>
+													<path d="M10 6v6M7 10l3 3 3-3" stroke="#191919" stroke-linecap="round" stroke-linejoin="round"/>
+												</svg>
+											</div>
+										</button>
+									</div>
+									<span class="k-text font14" style="margin-left:12px;color:#767676;">5.1 MB</span>
+								</div>
+							</div>
+						</div>
+						<!-- Item 3 -->
+						<div class="k-item" data-cat="TEC">
+							<div class="item-inner">
+								<div class="k-text font14 k-title">Installation Guide</div>
+								<div class="tag-list">
+									<span class="tag-item"><span class="k-text font14">Technical</span></span>
+									<span class="tag-item"><span class="k-text font14">PDF</span></span>
+								</div>
+								<div class="k-text font18 weight700 k-name">Installation &amp; Maintenance</div>
+								<div class="k-text font14 k-desc">Installation and maintenance instructions.</div>
+								<div class="btn-wrap">
+									<div class="k-btn k-outline k-round height-40 k-inline-block">
+										<button>
+											<div class="k-text font14">Download</div>
+											<div class="k-icon" style="margin-left:6px;">
+												<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+													<circle cx="10" cy="10" r="9" stroke="#191919"/>
+													<path d="M10 6v6M7 10l3 3 3-3" stroke="#191919" stroke-linecap="round" stroke-linejoin="round"/>
+												</svg>
+											</div>
+										</button>
+									</div>
+									<span class="k-text font14" style="margin-left:12px;color:#767676;">1.8 MB</span>
+								</div>
+							</div>
+						</div>
+						<!-- Item 4 -->
+						<div class="k-item" data-cat="BRO">
+							<div class="item-inner">
+								<div class="k-text font14 k-title">Sustainability Report</div>
+								<div class="tag-list">
+									<span class="tag-item"><span class="k-text font14">Brochure</span></span>
+									<span class="tag-item"><span class="k-text font14">PDF</span></span>
+								</div>
+								<div class="k-text font18 weight700 k-name">Eco-Friendly Technology</div>
+								<div class="k-text font14 k-desc">Environmental and sustainability initiatives.</div>
+								<div class="btn-wrap">
+									<div class="k-btn k-outline k-round height-40 k-inline-block">
+										<button>
+											<div class="k-text font14">Download</div>
+											<div class="k-icon" style="margin-left:6px;">
+												<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+													<circle cx="10" cy="10" r="9" stroke="#191919"/>
+													<path d="M10 6v6M7 10l3 3 3-3" stroke="#191919" stroke-linecap="round" stroke-linejoin="round"/>
+												</svg>
+											</div>
+										</button>
+									</div>
+									<span class="k-text font14" style="margin-left:12px;color:#767676;">3.2 MB</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+<button class="top-btn">
+	<div class="k-text font12 weight700">
+		<svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path d="m4 2 3.464 4.5H.536L4 2z" fill="#505050"/>
+		</svg>
+		TOP
+	</div>
+</button>
+
+<footer id="footer">
+	<div class="k-footer">
+		<div class="footer-inner">
+			<div class="k-top">
+				<div class="k-footer-gnb k-pc">
+					<div class="gnb-inner">
+					</div>
+				</div>
+				<div class="k-footer-gnb k-mobile">
+					<div class="gnb-inner">
+					</div>
+				</div>
+			</div>
+			<div class="k-ft-bottom">
+				<div class="k-inner">
+					<div class="k-left">
+						<a>
+							<svg width="122" height="24" viewBox="0 0 122 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<g clip-path="url(#footer)">
+									<path fill-rule="evenodd" clip-rule="evenodd" d="M17.823 24v-9.513L28.534 0h-8.827l-5.44 7.345L8.831 0H0l10.715 14.487V24h7.108zM30.36.021h7.214v15.774a1.26 1.26 0 0 0 1.261 1.262h11.609c.698 0 1.261-.567 1.261-1.262V.021h7.21v18.175c0 3.205-2.6 5.804-5.804 5.804H36.167a5.806 5.806 0 0 1-5.808-5.804V.02zm30.985 0h22.751c3.205 0 5.805 2.6 5.805 5.809v12.366C89.9 21.4 87.3 24 84.095 24h-22.75V.021zm7.146 7.15v9.683h13.057c.698 0 1.266-.567 1.266-1.262V8.433a1.26 1.26 0 0 0-1.266-1.261H68.49zM92.58 5.83c0-3.21 2.599-5.809 5.808-5.809h16.947c3.204 0 5.804 2.6 5.804 5.809v12.366c0 3.205-2.6 5.804-5.804 5.804H98.388a5.806 5.806 0 0 1-5.809-5.804V5.83zm7.124 2.667v7.036a1.26 1.26 0 0 0 1.258 1.261h11.786c.698 0 1.262-.567 1.262-1.261V8.497a1.26 1.26 0 0 0-1.262-1.262h-11.786c-.695 0-1.258.563-1.258 1.262z" fill="#DC0043"/>
+								</g>
+								<defs>
+									<clipPath id="footer">
+										<path fill="#fff" d="M0 0h121.2v24H0z"/>
+									</clipPath>
+								</defs>
+							</svg>
+						</a>
+					</div>
+					<div class="k-center">
+						<div class="k-text font14 k-grey-2 k-eng">
+							&copy; YUDO Co., Ltd. All rights reserved.
+						</div>
+					</div>
+					<div class="k-right">
+						<ul>
+							<li>
+								<a href="javascript:;" target="_blank">
+									<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path d="M27.733 15.933h2.6v-4h-3.866a5.135 5.135 0 0 0-3.934 1.934s-1.067 1-1.067 3.866v3h-3.8v4.334h3.8v11h4.4v-11H29.6l.533-4.334h-4.267v-3a1.735 1.735 0 0 1 1.867-1.8z" fill="#767676"/>
+									</svg>
+								</a>
+							</li>
+							<li>
+								<a href="javascript:;" target="_blank">
+									<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path d="M37.733 17a3.467 3.467 0 0 0-2.533-2.533c-2.2-.6-11.2-.6-11.2-.6s-8.933 0-11.2.6A3.734 3.734 0 0 0 10.266 17c-.6 2.267-.6 7-.6 7s0 4.667.6 6.933a3.733 3.733 0 0 0 2.534 2.534c2.267.6 11.2.6 11.2.6s9 0 11.2-.6a3.467 3.467 0 0 0 2.533-2.534c.6-2.266.6-6.933.6-6.933s0-4.733-.6-7z" fill="#767676"/>
+										<path d="M21.067 28.267v-8.534L28.534 24l-7.467 4.267z" fill="#F9F9F9"/>
+									</svg>
+								</a>
+							</li>
+							<li>
+								<a href="javascript:;" target="_blank">
+									<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path d="M18.067 20.467H13.8V34.8h4.267V20.467z" fill="#767676"/>
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M34.666 25.2v9.667H30.4v-7.734a2.667 2.667 0 0 0-5.333 0v7.734H20.8V20.533h4.267V22.6a5.133 5.133 0 0 1 5.733-2.4 5.2 5.2 0 0 1 3.866 5zM15.867 18.333a2.6 2.6 0 1 0-2.534-2.6 2.534 2.534 0 0 0 2.534 2.6z" fill="#767676"/>
+									</svg>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="k-loading">
+		<div class="loading"></div>
+	</div>
+
+<script type="text/x-jquery-tmpl" id="footerTmpl">
+	${cpywrtCont}
+	{{if !_.isEmpty(url) }}
+	<a href="${url}" target="_blank">${srvCont}</a>
+	{{/if}}
+</script>
+
+<script type="text/x-jquery-tmpl" id="footerGnbPcTmpl">
+<div class="depth1 ${className}">
+	<a href="${menuUrl}" class="k-text font18 weight700" target="${menuTarget}">${webMenuNm}</a>
+	{{if menuDepth2List.length > 0}}
+	<div class="k-sub">
+		{{each(index, menuDepth2) menuDepth2List}}
+		<div class="depth2">
+			<a href="${menuDepth2.menuUrl}" class="k-text font14 k-grey-2">${menuDepth2.webMenuNm}</a>
+		</div>
+		{{/each}}
+	</div>
+	{{/if}}
+</div>
+</script>
+
+<script type="text/x-jquery-tmpl" id="footerGnbMoTmpl">
+<div class="depth1 ${className}">
+	<a href="${menuUrl}" class="k-text font18 weight700" target="${menuTarget}">${moMenuNm}</a>
+	{{if menuDepth2List.length > 0}}
+	<div class="k-sub">
+		{{each(index, menuDepth2) menuDepth2List}}
+		<div class="depth2">
+			<a href="${menuDepth2.menuUrl}" class="k-text font14 k-grey-2">${menuDepth2.moMenuNm}</a>
+		</div>
+		{{/each}}
+	</div>
+	{{/if}}
+</div>
+</script>
+</footer>
+	</div>
+</body>
+</html>

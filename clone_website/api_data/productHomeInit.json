@@ -1,0 +1,70 @@
+{
+  "code": "000",
+  "indexData": {
+    "stdCatGroupCode": {
+      "stdGrpNm": "At Home"
+    },
+    "indexCoverImageList": [
+      {
+        "imgFilePath": "https://placehold.co/1200x600/1a1a2e/eee?text=YUDO+At+Home",
+        "indexCoverImageLangList": [
+          {
+            "copyCont": "We're closer than you think.<br/>From home appliances to personal care."
+          }
+        ]
+      },
+      {
+        "imgFilePath": "https://placehold.co/1200x600/16213e/eee?text=Innovation+Everyday",
+        "indexCoverImageLangList": [
+          {
+            "copyCont": "Technology that drives innovation<br/>in any business."
+          }
+        ]
+      }
+    ],
+    "indexCategoryList": [
+      {
+        "imgFilePath": "https://placehold.co/400x698/0f3460/eee?text=Television",
+        "standardCodeDTO": {
+          "stdCatNm": "Television"
+        },
+        "indexCategoryLangList": [
+          {
+            "copyCont": "Display and TV components",
+            "copyCont2": "Precision molding for displays"
+          }
+        ],
+        "url": "/en/product/at-home/television",
+        "classOn": "on"
+      },
+      {
+        "imgFilePath": "https://placehold.co/400x698/533483/eee?text=Home+Appliance",
+        "standardCodeDTO": {
+          "stdCatNm": "Home Appliance"
+        },
+        "indexCategoryLangList": [
+          {
+            "copyCont": "Household and kitchen appliances",
+            "copyCont2": "Durable plastic solutions"
+          }
+        ],
+        "url": "/en/product/at-home/home-appliance",
+        "classOn": ""
+      },
+      {
+        "imgFilePath": "https://placehold.co/400x698/e94560/eee?text=Personal+Care",
+        "standardCodeDTO": {
+          "stdCatNm": "Personal Care"
+        },
+        "indexCategoryLangList": [
+          {
+            "copyCont": "Beauty and personal care products",
+            "copyCont2": "Safe and sustainable materials"
+          }
+        ],
+        "url": "/en/product/at-home/personal-care",
+        "classOn": ""
+      }
+    ]
+  }
+}

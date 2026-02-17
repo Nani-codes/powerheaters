@@ -1,0 +1,45 @@
+{
+  "code": "000",
+  "catgData": {
+    "imgFilePath": "https://placehold.co/1920x600/0f3460/eee?text=Television+Category",
+    "standardCode": {
+      "stdCatCd": "CATG_TV",
+      "stdCatNm": "Television"
+    },
+    "categoryCopyLangList": [
+      {
+        "copyCont": "Hot runner solutions for television housings, displays and related components."
+      }
+    ]
+  },
+  "goodsData": [
+    {
+      "mfgdId": "MFGD220330220358062",
+      "mfgdNm": "Tina ML",
+      "goodsImageList": [
+        {
+          "imgFilePath": "https://placehold.co/400x300/1a1a2e/eee?text=Tina+ML"
+        }
+      ],
+      "manufacturedGoodsLangList": [
+        {
+          "sumry": "Compact multi-drop nozzle system for thin-wall TV housings and high-cavitation display parts."
+        }
+      ]
+    },
+    {
+      "mfgdId": "MGD_TV_HOUSING",
+      "mfgdNm": "TV Housing System",
+      "goodsImageList": [
+        {
+          "imgFilePath": "https://placehold.co/400x300/e94560/eee?text=TV+Housing+System"
+        }
+      ],
+      "manufacturedGoodsLangList": [
+        {
+          "sumry": "Hot runner configuration optimized for television back covers and structural housings."
+        }
+      ]
+    }
+  ]
+}

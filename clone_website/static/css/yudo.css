@@ -1,0 +1,55 @@
+@charset "utf-8";
+@import './font/Montserrat/Montserrat.css';
+@import './common/common.css';
+@import './common/gnb.css?data=1243';
+@import './common/header.css';
+@import './common/footer.css';
+@import './common/layer.css';
+@import './modules/swiper.css';
+@import './views/view-common.css';
+@import './views/main.css';
+@import './views/product-search.css';
+@import './views/product-index.css';
+@import './views/product-category.css';
+@import './views/product-detail.css';
+@import './views/esg-01.css';
+@import './views/esg-02.css';
+@import './views/esg-03.css';
+@import './views/esg-04.css';
+@import './views/history.css';
+@import './views/ceo.css';
+@import './views/download.css';
+@import './views/warranty.css';
+@import './views/global.css';
+@import './views/news.css';
+@import './views/company.css';
+
+
+
+
+
+@font-face {
+    font-family:'Noto Sans KR';
+    src: url('./font/notocjk/NotoSansKR-Regular.woff') format('woff'),
+         url('./font/notocjk/NotoSansKR-Regular.svg#NotoSansKR-Regular') format('svg');
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family:'Noto Sans KR';
+    src: url('./font/notocjk/NotoSansKR-Medium.woff') format('woff'),
+         url('./font/notocjk/NotoSansKR-Medium.svg#NotoSansKR-Medium') format('svg');
+    font-weight: 500;
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family:'Noto Sans KR';
+    src: url('./font/notocjk/NotoSansKR-Black.woff') format('woff'),
+         url('./font/notocjk/NotoSansKR-Black.svg#NotoSansKR-Black') format('svg');
+    font-weight: 700;
+    font-style: normal;
+}
+
+

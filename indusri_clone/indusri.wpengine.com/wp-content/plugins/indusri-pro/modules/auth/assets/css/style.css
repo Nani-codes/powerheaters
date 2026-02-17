@@ -1,0 +1,481 @@
+/* Registration Form */
+.wdt-registration-form{
+    padding: 80px;
+    background: linear-gradient(180deg, var(--wdtPrimaryColor), var(--wdtSecondaryColor));
+    width: 100%;
+    max-width: 650px;
+    margin: auto;
+    box-shadow: none;
+    margin-bottom: 0;
+}
+.wdt-registration-form form{
+    margin-top: 60px;
+}
+.wdt-registration-form .ai-max-custom-auth-sc-border-title h2{
+    text-align: center;
+    color: var(--wdtAccentTxtColor);
+}
+.wdt-registration-form p{
+    text-align: center;
+    color: var(--wdtAccentTxtColor);
+}
+.wdt-registration-form p strong{
+    font-weight: calc(var(--wdtFontWeight_Base) - 100);
+}
+.wdt-registration-form form p{
+    text-align: left;
+    color: var(--wdtAccentTxtColor);
+}
+.wdt-registration-form form p:last-child{
+    text-align: center;
+}
+.wdt-registration-form form p a.aimax-pro-login-link{
+    color: var(--wdtLinkHoverColor);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+}
+.wdt-registration-form form p a.aimax-pro-login-link:hover{
+    text-decoration-color: currentColor;
+}
+.wdt-registration-form form#loginform{
+    display: block;
+}
+.wdt-registration-form input[type="text"],
+.wdt-registration-form input[type="password"],
+.wdt-registration-form input[type="email"],
+.wdt-registration-form input[type="url"],
+.wdt-registration-form input[type="tel"],
+.wdt-registration-form input[type="number"], 
+.wdt-registration-form input[type="range"], 
+.wdt-registration-form input[type="date"], 
+.wdt-registration-form textarea, 
+.wdt-registration-form input.text, 
+.wdt-registration-form input[type="search"], 
+.wdt-registration-form .select2-container--default .select2-search .select2-search__field, 
+.wdt-registration-form .select2-container--default .select2-search--dropdown .select2-search__field, 
+.wdt-registration-form .select2-container--default .select2-search--inline .select2-search__field{
+    background-color: var(--wdtBodyBGColor);
+    box-shadow: 0 0;
+    -webkit-box-shadow: 0 0;
+    padding-top: 13px;
+    padding-bottom: 13px;
+}
+.wdt-registration-form input[type="text"]:focus,
+.wdt-registration-form input[type="password"]:focus,
+.wdt-registration-form input[type="email"]:focus,
+.wdt-registration-form input[type="url"]:focus,
+.wdt-registration-form input[type="tel"]:focus,
+.wdt-registration-form input[type="number"]:focus, 
+.wdt-registration-form input[type="range"]:focus, 
+.wdt-registration-form input[type="date"]:focus, 
+.wdt-registration-form textarea:focus, 
+.wdt-registration-form input.text:focus, 
+.wdt-registration-form input[type="search"]:focus, 
+.wdt-registration-form .select2-container--default .select2-search .select2-search__field:focus, 
+.wdt-registration-form .select2-container--default .select2-search--dropdown .select2-search__field:focus, 
+.wdt-registration-form .select2-container--default .select2-search--inline .select2-search__field:focus{
+    border-color: var(--wdtPrimaryColor);
+}
+.wdt-registration-form input[type="submit"]{
+    width: 100%;
+    padding: var(--wdtPadding_MiniBtn);
+    padding-top: 14px;
+    padding-bottom: 14px;
+    background: var(--wdtBodyTxtColor);
+}
+.wdt-registration-form input[type="submit"]:hover{
+    background: var(--wdtLinkHoverColor);
+}
+.wdt-registration-form form p{
+    margin-bottom: 20px;
+}
+.wdt-registration-form p.submit{
+    margin-bottom: 50px;
+}
+
+@media screen and (max-width:767px){
+    .wdt-registration-form{
+        padding: 30px;
+    }
+    .wdt-registration-form .ai-max-custom-auth-sc-border-title h2{
+        font-size: var(--wdtFontSize_H3);
+    }
+    
+}
+@media screen and (max-width: 479px){
+    .wdt-registration-form .ai-max-custom-auth-sc-border-title h2{
+        font-size: var(--wdtFontSize_H4);
+    }
+}
+
+
+/* Login form */
+
+.indusri-pro-login-form-container{
+    display: block;
+    height: 100% !important;
+    margin: 0;
+    padding: 0;
+    pointer-events: none;
+    width: 100%;
+    z-index: 10000;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+}
+.indusri-pro-login-form-overlay{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 9999;
+    background: rgba(0,0,0, .5);
+    backdrop-filter: blur(5px);
+}
+.indusri-pro-login-form-container .indusri-pro-login-form{
+    display: block;
+    padding: 80px;
+    pointer-events: auto;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    background-color: var(--wdtBodyBGColor);
+    width: 100%;
+    max-width: 650px;
+    margin: auto;
+    z-index: 10000;
+}
+.indusri-pro-login-form-container .indusri-pro-login-form .indusri-pro-title.indusri-pro-login-title{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.indusri-pro-login-form-container .indusri-pro-login-form .indusri-pro-title.indusri-pro-login-title .indusri-pro-login-description {
+    color: #737373;
+}
+
+#loginform .login-username, #loginform .login-password{
+    width: 100%;
+}
+#loginform p{
+    margin-bottom: 20px;
+}
+#loginform .login-remember{
+    text-align: left;
+    color: #737373;
+    font-size: var(--wdtFontSize_Ext);
+}
+#loginform p.login-remember input[type="checkbox"]{
+    opacity: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    transform: translateY(-0.075em);
+    display: inline-grid;
+    place-content: center;
+	box-shadow: 0 0 40px #00000080;
+    -webkit-box-shadow: 0 0 40px #00000080;
+    background: linear-gradient(180deg, var(--wdtPrimaryColor), var(--wdtSecondaryColor));
+    border-radius: 2px;
+    padding: 0 0;
+    margin: 0 5px 0 0;
+}
+#loginform p.login-remember input[type="checkbox"]:after{
+    content: "";
+    width: 10px;
+    height: 10px;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+    transform: scale(0);
+    transform-origin: bottom left;
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em var(--wdtAccentTxtColor);
+}
+#loginform p.login-remember input[type="checkbox"]:checked:after {
+	transform: scale(1);
+}
+
+#loginform p.login-remember{
+    margin: 0 0 40px;
+}
+#loginform input[type="text"],
+#loginform input[type="password"]{
+    background-color: #F6F6F6;
+    padding-top: 13px;
+    padding-bottom: 13px;
+}
+#loginform input[type="text"]:focus,
+#loginform input[type="password"]:focus{
+    border-color: var(--wdtLinkColor);
+}
+#loginform .login-submit{
+    margin-bottom: 20px;
+}
+#loginform .login-submit input[type="submit"]{
+    width: 100%;
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+#loginform .login-submit input[type="submit"]:hover{
+    background-color: var(--wdtTertiaryColor);
+}
+.indusri-pro-social-logins-divider{
+    margin-bottom: 30px;
+    text-align: center;
+    color: var(--wdtBodyTxtColor);
+    font-size: 14px;
+    position: relative;
+}
+
+.indusri-pro-social-logins-divider:after {
+    position: absolute;
+    content: '';
+    width: 40%;
+    height: 1px;
+    background: #0000003d;
+    left: 0;
+    top: 12px;
+}
+
+.indusri-pro-social-logins-divider:before {
+    position: absolute;
+    content: '';
+    width: 40%;
+    height: 1px;
+    background: #0000003d;
+    right: 0;
+    top: 12px;
+}
+
+
+
+.indusri-pro-title.indusri-pro-login-title h2{
+    text-align: center;
+}
+.indusri-pro-login-form #loginform{
+    margin-top: 60px;
+}
+.indusri-pro-login-form-container .indusri-pro-login-form .indusri-pro-login-form-holder p.tpl-forget-pwd{
+    margin-bottom: 30px; text-align: center;
+}
+.indusri-pro-login-form-container .indusri-pro-login-form .indusri-pro-login-form-holder p.tpl-forget-pwd a{
+    color: var(--wdtLinkHoverColor);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: all 0.3s linear;
+}
+.indusri-pro-login-form-container .indusri-pro-login-form .indusri-pro-login-form-holder p.tpl-forget-pwd a:hover{
+    text-decoration-color: var(--wdtLinkHoverColor);
+}
+
+a.indusri-pro-social-facebook-connect,
+a.indusri-pro-social-google-connect{
+    width: 45%;
+    padding: var(--wdtInputPadding);
+    display: inline-block;
+    text-align: center;
+    color: var(--wdtAccentTxtColor);
+    margin: 0 10px 0 10px;
+    font-size: var(--wdtFontSize_Ext);
+    font-weight: var(--wdtFontWeight_Ext);
+    background-image: linear-gradient(to bottom, var(--wdtPrimaryColor) 0%, var(--wdtSecondaryColor) 51%, var(--wdtPrimaryColor) 100%);
+    -webkit-transition: all 500ms ease-in-out;
+    transition: all 500ms ease-in-out;
+    background-size: auto 200%;
+    overflow: hidden;
+}
+
+a.indusri-pro-social-facebook-connect:hover, a.indusri-pro-social-google-connect:hover{ 
+    background-position: bottom center;
+    color: var(--wdtAccentTxtColor);
+}
+
+a.indusri-pro-social-facebook-connect i,
+a.indusri-pro-social-google-connect i{
+    margin-right: 10px;
+}
+.indusri-pro-login-form-container{
+    max-width: 1640px;
+    margin: auto;
+}
+@media screen and (min-width:1281px) and (max-width: 1540px){
+    .indusri-pro-login-form-container{
+        max-width: 1080px;
+        margin: auto;
+    }    
+}
+@media screen and (min-width:1025px) and (max-width: 1280px){
+    .indusri-pro-login-form-container{
+        max-width: 900px;
+        margin: auto;
+    }    
+}
+@media screen and (min-width:768px) and (max-width: 1024px){
+    .indusri-pro-login-form-container{
+        max-width: 710px;
+        margin: auto;
+    }    
+}
+@media screen and (max-width: 767px){
+    #loginform .login-username, 
+    #loginform .login-password{
+        margin-bottom: 20px;
+    }
+    .indusri-pro-login-form-container {overflow: scroll;}
+    .indusri-pro-login-form-container .indusri-pro-login-form{
+        padding: 30px;
+        max-width: 420px;
+        
+    }
+    .indusri-pro-title.indusri-pro-login-title h2{
+        font-size: var(--wdtFontSize_H3);
+    }
+    a.indusri-pro-social-facebook-connect, a.indusri-pro-social-google-connect{
+        width: 44%;
+    }
+}
+@media screen and (min-width:480px) and (max-width: 767px){
+    .indusri-pro-login-form-container{
+        max-width: 420px;
+        margin: auto;
+    }
+
+    .indusri-pro-social-logins-divider:after,
+    .indusri-pro-social-logins-divider:before{
+        width: 35%;
+    }
+}
+@media screen and (max-width: 479px){
+    .indusri-pro-login-form-container{
+        max-width: 290px;
+        margin: auto;
+    }    
+    .indusri-pro-title.indusri-pro-login-title h2{
+        font-size: var(--wdtFontSize_H4);
+    }
+    a.indusri-pro-social-facebook-connect, a.indusri-pro-social-google-connect{
+        width: 100%;
+    }
+
+    .indusri-pro-social-logins-divider:after,
+    .indusri-pro-social-logins-divider:before{
+        width: 25%;
+    }
+
+    a.indusri-pro-social-facebook-connect, a.indusri-pro-social-google-connect { margin: 0; }
+}
+
+/* After Registration */
+.mu_register{
+    width: 100%;
+    margin: 0 auto;
+    max-width: 600px;
+    padding: 50px 50px 65px 50px;
+    background: var(--wdtSecondaryColor);
+    box-shadow: rgba(0,0,0,.8) 0 0 40px;
+    border-radius: var(--wdtRadius_3X);
+}
+.mu_register h2{
+    font-size: var(--wdtFontSize_H4);
+    text-align: center;
+    text-transform: capitalize;
+}
+.mu_register form input{
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    border: 1px solid transparent;
+}
+.mu_register form input:focus{
+    border-color: var(--wdtBodyTxtColor);
+}
+.mu_register form .wp-signup-username-description,
+.mu_register form .wp-signup-email-description{
+    margin-bottom: 15px;
+}
+.mu_register p.submit{
+
+    margin-top: 20px;
+}
+.mu_register form p.submit input[type="submit"]{
+    font-size: var(--wdtFontSize_Base);
+}
+@media screen and (max-width: 479px){
+    .mu_register{
+        padding: 30px;
+    }
+}
+
+/* Custom Css */
+
+.wdt-custom-auth-form .elementor-section.elementor-section-boxed>.elementor-container {
+    max-width: 1700px;
+}
+
+.indusri-custom-auth-column .indusri-custom-auth-sc-border-title { text-align: center; }
+
+.indusri-custom-auth-column .indusri-custom-auth-sc-border-title h2 { color: var(--wdtAccentTxtColor); margin-top: 0; }
+
+.indusri-pro-login-form-container .indusri-pro-title-logo .login-form-custom-logo,
+.indusri-pro-login-form-container .indusri-pro-title-logo .login-form-description { text-align: center; }
+
+.indusri-pro-login-form-container .indusri-pro-title-logo .login-form-custom-logo { width: 100%; max-width: 163px; height: 100%; margin: 0 auto; }
+
+.indusri-pro-login-form-container .indusri-pro-title-logo .login-form-description { margin-top: 20px; }
+
+/* Header */
+
+.wdt-custom-auth-form #header{
+    background: var(--wdtBodyTxtColor);
+}
+
+.wdt-custom-auth-form .wdt-custom-header-bghalf .elementor-widget-container{
+    background-color: transparent;
+    background-image: linear-gradient(180deg, var(--wdtPrimaryColor) 0%, var(--wdtSecondaryColor) 100%) !important;
+}
+
+.wdt-custom-auth-form .woocommerce .wdt-search-icon span { color: var(--wdtAccentTxtColor) !important; }
+
+.wdt-custom-auth-form .woocommerce .wdt-search-icon:hover span { color: var(--wdtBodyTxtColor) !important; }
+
+/* Footer */
+
+.wdt-custom-auth-form .wdt-custom-footer-i-mailchimp-sec { 
+    background-image: linear-gradient(180deg, var(--wdtPrimaryColor) 0%, var(--wdtSecondaryColor) 100%) !important;
+}
+
+.wdt-custom-auth-form .wdt-custom-footer-i-mailchimp-hd .wdt-heading-holder .wdt-heading-subtitle-wrapper,
+.wdt-custom-auth-form .wdt-custom-footer-i-mailchimp-hd .wdt-heading-holder .wdt-heading-title-wrapper{
+    color: var(--wdtAccentTxtColor) !important;
+}
+ 
+.wdt-custom-auth-form .wdt-custom-footer-i-contactinfo-sec{
+    background-color: var(--wdtBodyTxtColor) !important;
+}
+
+.wdt-custom-auth-form .wdt-custom-footer-i-contactinfo-hd p,
+.wdt-custom-auth-form .wdt-custom-footer-i-contactinfo-main-hd .wdt-heading-holder .wdt-heading-title-wrapper,
+.wdt-custom-auth-form .wdt-custom-footer-i-contactinfo-address p,
+.wdt-custom-auth-form .wdt-custom-footer-contactinfo p,
+.wdt-custom-auth-form .wdt-custom-footer-copyright p { color: var(--wdtAccentTxtColor); }
+
+/* After Register */
+
+.mu_register h2 { color: var(--wdtAccentTxtColor); }
+
+.mu_register form p.submit input[type="submit"] { background: var(--wdtBodyTxtColor); }
+
+.mu_register form p.submit input[type="submit"]:hover { background: var(--wdtLinkHoverColor); }
+
+.mu_register input + p,
+.mu_register label, .mu_register legend, .mu_register .label-heading { color: var(--wdtAccentTxtColor); }
+
+.mu_register { background-image: linear-gradient(180deg, var(--wdtPrimaryColor) 0%, var(--wdtSecondaryColor) 100%); box-shadow: rgba(0,0,0,.8) 0 0 20px; color: var(--wdtAccentTxtColor); }
+
+.mu_register .mu_alert a:hover { color: var(--wdtLinkHoverColor); }

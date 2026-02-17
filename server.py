@@ -10,7 +10,7 @@ import os
 import urllib.parse
 
 PORT = 8080
-BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "yudo.com")
+BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "clone_website")
 API_DATA_DIR = os.path.join(BASE_DIR, "api_data")
 
 # Map API endpoints to their corresponding JSON files
@@ -31,7 +31,8 @@ API_ROUTES = {
     "/en/prod/successcase/getList": "successCases.json",
     "/en/prod/technology/getPagingList": "technologies.json",
     "/en/prod/applicationrealm/getPagingList": "applicationRealm.json",
-    "/en/support/contact-info/global-network/getPageInit": "globalNetworkInit.json",
+    "/en/support/contact-info/global-network/getPageInit": "globalNetworkAll.json",
+    "/en/support/download/getPageInit": "downloadPageInit.json",
     "/en/support/contact-info/global-network/getListAllInfo": "globalNetworkAll.json",
     "/en/support/contact-info/global-network/getCountryListByCntnnCd": "countryList.json",
     "/en/index/getPageInit": "homePageInit.json",
@@ -66,6 +67,7 @@ PAGE_PATHS = [
     "/en/product/at-work",
     "/en/product/at-work/laptop",
     "/en/product/at-work/office-appliance",
+    "/en/product/product-detail",
     "/en/product/everywhere",
     "/en/product/everywhere/closures",
     "/en/product/everywhere/medical",
@@ -136,11 +138,32 @@ class YudoHandler(http.server.SimpleHTTPRequestHandler):
         content_length = int(self.headers.get('Content-Length', 0))
         post_data = self.rfile.read(content_length).decode('utf-8') if content_length > 0 else ""
 
-        # Check for category-specific request
-        if path == "/en/site/category/getPageInit" and "stdCatGrpCd=" in post_data:
-            params = urllib.parse.parse_qs(post_data)
-            cat_code = params.get("stdCatGrpCd", [""])[0]
-            json_file = CATEGORY_MAP.get(cat_code, "categoryMobility.json")
+        # Product index pages: /en/site/index/getPageInit with idxId
+        if path == "/en/site/index/getPageInit" and "idxId=" in post_data:
+            json_file = "productIndexInit.json"
+        # Category sub-pages: /en/site/category/getPageInit (catgId or stdCatGrpCd)
+        elif path == "/en/site/category/getPageInit":
+            json_file = "categoryPageInit.json"
+        # News detail: return single item from news list by newsSeq
+        elif path == "/en/company/news/getDetail":
+            try:
+                params = urllib.parse.parse_qs(post_data)
+                news_seq = params.get("newsSeq", [""])[0]
+                with open(os.path.join(API_DATA_DIR, "newsList.json"), "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                items = data.get("list", [])
+                item = next((x for x in items if str(x.get("newsSeq")) == str(news_seq)), items[0] if items else None)
+                if item:
+                    body = json.dumps({"code": "000", **item}).encode("utf-8")
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/json; charset=utf-8")
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.end_headers()
+                    self.wfile.write(body)
+                    return
+            except Exception:
+                pass
+            json_file = "newsList.json"
         else:
             json_file = API_ROUTES.get(path)
 

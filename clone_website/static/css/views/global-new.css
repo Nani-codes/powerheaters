@@ -1,0 +1,133 @@
+/* Global New CSS */
+
+body {
+    background-color: #fff;
+    font-family: 'Montserrat', 'Noto Sans KR', sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.global-network-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.network-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 columns */
+    gap: 24px;
+}
+
+@media (max-width: 768px) {
+    .network-grid {
+        grid-template-columns: 1fr; /* 1 column on mobile */
+    }
+}
+
+.network-card {
+    background: #fff;
+    border: 1px solid #e7e7e7;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 300px;
+    transition: box-shadow 0.3s ease;
+}
+
+.network-card:hover {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    border-color: #bb1e4d;
+}
+
+.card-header {
+    margin-bottom: 15px;
+}
+
+.country-badge {
+    display: inline-block;
+    font-size: 14px;
+    color: #767676;
+    margin-bottom: 5px;
+}
+
+.city-name {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    color: #191919;
+}
+
+.card-body {
+    flex-grow: 1;
+}
+
+.business-type {
+    font-size: 16px;
+    color: #bb1e4d;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.company-name {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    color: #191919;
+}
+
+.address {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.contact-info {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 15px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: #333;
+}
+
+.contact-item .icon {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+.contact-item .text {
+    font-family: 'Roboto', sans-serif; /* Use a standard font for numbers/email */
+}
+
+.card-footer {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.view-map-btn {
+    background: transparent;
+    border: 1px solid #ccc;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #555;
+    transition: all 0.2s;
+}
+
+.view-map-btn:hover {
+    background: #bb1e4d;
+    color: #fff;
+    border-color: #bb1e4d;
+}

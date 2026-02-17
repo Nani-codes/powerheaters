@@ -1,0 +1,122 @@
+{
+  "code": "000",
+  "mainBanner": [
+    {
+      "bnnrLocaCd": "001",
+      "imgFileNm": "hero1.jpg",
+      "imgFilePath": "https://placehold.co/1920x1080/1a1a2e/eee?text=YUDO+Global+Hot+Runner",
+      "bannerLangList": [
+        {
+          "ttl": "We make plastic that is safe, convenient, sustainable."
+        }
+      ]
+    },
+    {
+      "bnnrLocaCd": "001",
+      "imgFileNm": "hero2.jpg",
+      "imgFilePath": "https://placehold.co/1920x1080/16213e/eee?text=Innovation+Everywhere",
+      "bannerLangList": [
+        {
+          "ttl": "Technology that drives innovation in any business."
+        }
+      ]
+    },
+    {
+      "bnnrLocaCd": "002",
+      "imgFileNm": "mid1.jpg",
+      "imgFilePath": "https://placehold.co/600x400/0f3460/eee?text=At+Home",
+      "url": "/en/product/at-home",
+      "linkCd": "_self",
+      "bannerLangList": [
+        {
+          "ttl": "At Home",
+          "bannerLangHashtagList": [{"hashtagNm": "Appliances"}]
+        }
+      ]
+    },
+    {
+      "bnnrLocaCd": "002",
+      "imgFileNm": "mid2.jpg",
+      "imgFilePath": "https://placehold.co/600x400/533483/eee?text=At+Work",
+      "url": "/en/product/at-work",
+      "linkCd": "_self",
+      "bannerLangList": [
+        {
+          "ttl": "At Work",
+          "bannerLangHashtagList": [{"hashtagNm": "Office"}]
+        }
+      ]
+    },
+    {
+      "bnnrLocaCd": "002",
+      "imgFileNm": "mid3.jpg",
+      "imgFilePath": "https://placehold.co/600x400/e94560/eee?text=Mobility",
+      "url": "/en/product/mobility",
+      "linkCd": "_self",
+      "bannerLangList": [
+        {
+          "ttl": "Mobility",
+          "bannerLangHashtagList": [{"hashtagNm": "Automotive"}]
+        }
+      ]
+    },
+    {
+      "bnnrLocaCd": "003",
+      "imgFileNm": "prod1.jpg",
+      "imgFilePath": "https://placehold.co/800x500/1a1a2e/eee?text=Hot+Runner+Systems",
+      "url": "/en/product/at-home",
+      "linkCd": "_self",
+      "bannerLangList": [
+        {
+          "mfgdNm": "Hot Runner",
+          "ttl": "Precision molding solutions",
+          "mfgdExpssNm": "At Home · At Work · Everywhere"
+        }
+      ]
+    },
+    {
+      "bnnrLocaCd": "003",
+      "imgFileNm": "prod2.jpg",
+      "imgFilePath": "https://placehold.co/800x500/0f3460/eee?text=Technology",
+      "url": "/en/product/at-work",
+      "linkCd": "_self",
+      "bannerLangList": [
+        {
+          "mfgdNm": "Technology",
+          "ttl": "We solve the problems demanded by various industries",
+          "mfgdExpssNm": "Industrial solutions"
+        }
+      ]
+    }
+  ],
+  "mainNews": [
+    {
+      "newsSeq": "1",
+      "newsTpNameCache": "Press Release",
+      "dtlTpCd": "detail",
+      "url": "",
+      "linkCd": "",
+      "imgFilePath": "https://placehold.co/400x250/533483/eee?text=News",
+      "newsLangList": [
+        {
+          "ttl": "YUDO Group News and Updates",
+          "sumryCont": "Stay informed with the latest from YUDO on sustainable plastics and innovation."
+        }
+      ]
+    },
+    {
+      "newsSeq": "2",
+      "newsTpNameCache": "Company News",
+      "dtlTpCd": "link",
+      "url": "https://www.yudo.com",
+      "linkCd": "_blank",
+      "imgFilePath": "https://placehold.co/400x250/e94560/eee?text=Events",
+      "newsLangList": [
+        {
+          "ttl": "Events and Exhibitions",
+          "sumryCont": "Find us at industry events worldwide."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "code": "000",
+  "keyVisual": {
+    "title": "Download",
+    "desc": "Brochures, catalogs and technical documents"
+  },
+  "searchPlaceholder": "Search by keyword",
+  "categoryTabs": [
+    { "tabSeq": "1", "tabName": "All", "tabCd": "ALL" },
+    { "tabSeq": "2", "tabName": "Brochures", "tabCd": "BRO" },
+    { "tabSeq": "3", "tabName": "Catalogs", "tabCd": "CAT" },
+    { "tabSeq": "4", "tabName": "Technical", "tabCd": "TEC" }
+  ],
+  "downloadList": [
+    {
+      "downSeq": "1",
+      "title": "Product Brochure 2024",
+      "tagList": ["Brochure", "PDF"],
+      "name": "YUDO Product Brochure",
+      "desc": "Overview of hot runner systems and applications.",
+      "fileUrl": "#",
+      "fileSize": "2.4 MB"
+    },
+    {
+      "downSeq": "2",
+      "title": "Technical Catalog – Hot Runners",
+      "tagList": ["Catalog", "Technical", "PDF"],
+      "name": "Hot Runner Systems Catalog",
+      "desc": "Specifications and selection guide.",
+      "fileUrl": "#",
+      "fileSize": "5.1 MB"
+    },
+    {
+      "downSeq": "3",
+      "title": "Installation Guide",
+      "tagList": ["Technical", "PDF"],
+      "name": "Installation & Maintenance",
+      "desc": "Installation and maintenance instructions.",
+      "fileUrl": "#",
+      "fileSize": "1.8 MB"
+    },
+    {
+      "downSeq": "4",
+      "title": "Sustainability Report",
+      "tagList": ["Brochure", "PDF"],
+      "name": "Eco-Friendly Technology",
+      "desc": "Environmental and sustainability initiatives.",
+      "fileUrl": "#",
+      "fileSize": "3.2 MB"
+    }
+  ]
+}
